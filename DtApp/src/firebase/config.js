@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getMessaging } from "firebase/messaging";
 
 // Your web app's Firebase configuration from the .env.local file
 const firebaseConfig = {
@@ -15,9 +16,12 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // Export the services you'll need
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Initialize Firebase Cloud Messaging and get a reference to the service
+export const messaging = getMessaging(app);
