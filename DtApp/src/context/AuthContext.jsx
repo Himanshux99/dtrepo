@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { auth, db } from '../firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore'; // Make sure setDoc is imported
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  sendEmailVerification
 } from 'firebase/auth';
 
 // Create the context
@@ -23,16 +24,17 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // --- Authentication Functions ---
-  function signup(email, password, additionalData, role = 'student') { // Takes 'role' as an argument
+  function signup(email, password, additionalData, role = 'student') {
     return createUserWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
-        // After user is created in Auth, save their data in Firestore
         const user = userCredential.user;
         const userDocRef = doc(db, 'users', user.uid);
+        // Also send verification email upon signup
+        sendEmailVerification(user);
         return setDoc(userDocRef, {
           uid: user.uid,
           email: email,
-          role: role, // Uses the 'role' variable passed to the function
+          role: role,
           ...additionalData
         });
       });
@@ -44,6 +46,10 @@ export function AuthProvider({ children }) {
 
   function logout() {
     return signOut(auth);
+  }
+
+  function sendVerificationEmail(user) {
+    return sendEmailVerification(user);
   }
 
   // --- User State Management ---

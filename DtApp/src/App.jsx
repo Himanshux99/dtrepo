@@ -26,9 +26,14 @@ import ProfilePage from "./pages/Student/ProfilePage";
 import TeacherSignup from './pages/TeacherSignup';
 import ManageSchedulePage from './pages/Teacher/ManageSchedulePage';
 
+import { Toaster } from 'react-hot-toast';
+
+
 function App() {
   return (
     <Router>
+          <Toaster position="top-center" />
+
       <Routes>
         {/* Routes with Navbar */}
         <Route element={<Layout />}>

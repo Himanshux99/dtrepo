@@ -14,6 +14,7 @@ function Signup() {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ function Signup() {
     const newErrors = {};
     const emailRegex = /^[a-z]+\.[a-z]+(\d*)?@vit\.edu\.in$/;
     // Allows 2 digits, then 101/102/104/108, then one letter, then 4 digits.
-    const rollNumberRegex = /^\d{2}(101|102|104|108)[A-Z]\d{4}$/;
+    const rollNumberRegex = /^\d{2}(101|102|104|108)([A-Z]|[a-z])\d{4}$/;
 
     if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Email must be in the format: first.last@vit.edu.in';
@@ -54,14 +55,31 @@ function Signup() {
     try {
       const { email, password, rollNumber, phone } = formData;
       await signup(email, password, { rollNumber, phone });
+      setSignupSuccess(true);
       toast.success('Account created successfully! Redirecting...');
       setTimeout(() => navigate('/student'), 2000);
     } catch (error) {
-      console.error(error);
-      toast.error(error.message || 'Failed to create an account.');
+      if (error.code === 'auth/email-already-in-use') {
+        toast.error('This email is already registered. Please log in.');
+      } else {
+        toast.error(error.message || 'Failed to create an account.');
+      }
     }
     setLoading(false);
   };
+
+  if (signupSuccess) {
+    return (
+      <div className={styles.signupContainer}>
+        <h2>✅ Account Created!</h2>
+        <p>We've sent a verification link to **{formData.email}**.</p>
+        <p>Please click the link in the email to activate your account before logging in.</p>
+        <Link to="/login" className={styles.submitButton} style={{textAlign: 'center', textDecoration: 'none'}}>
+          Go to Login
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.signupContainer}>
