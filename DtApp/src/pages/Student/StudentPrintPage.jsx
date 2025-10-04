@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { db, storage } from '../../firebase/config';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, query, where, getDocs, Timestamp, orderBy, runTransaction, doc,updateDoc } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, Timestamp, orderBy, runTransaction, doc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 import styles from './StudentPrintPage.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -55,6 +55,7 @@ function PrintServicePage() {
       orderBy('submittedAt', 'desc')
     );
     const querySnapshot = await getDocs(q);
+    // CRITICAL FIX: Defensive rendering for job.files property
     const userJobs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     setJobs(userJobs);
   };
@@ -63,7 +64,7 @@ function PrintServicePage() {
     fetchJobs();
   }, [currentUser]);
 
-  const handleFilesChange = (e) => {
+  const handleFilesChange = (e) => { // handles multiple files
     const selectedFiles = Array.from(e.target.files);
     
     // Validate file types
@@ -102,37 +103,49 @@ function PrintServicePage() {
     }
   };
 
+  // NEW FUNCTION: Finds an existing active job for the current user
+  const findActiveJob = async () => {
+    const q = query(
+        collection(db, 'print_jobs'),
+        where('submittedById', '==', currentUser.uid),
+        where('status', 'in', ['In Progress', 'Ready']),
+        orderBy('submittedAt', 'asc') // This requires the composite index!
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.empty ? null : snapshot.docs[0];
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (files.length === 0) {
+    if (files.length === 0) { // Check array length
       toast.error("Please select at least one file to upload.");
       return;
     }
     
-    // --- OVERFLOW CHECK LOGIC ---
-    const activeJobsQuery = query(
-      collection(db, 'print_jobs'),
-      where('status', 'in', ['In Progress', 'Ready'])
-    );
-    const activeSnapshot = await getDocs(activeJobsQuery);
-
-    if (activeSnapshot.size >= MAX_SLOTS) {
-        toast.error(`All ${MAX_SLOTS} slots are currently active. Please ask staff to clear a slot.`);
-        setUploading(false);
-        return;
-    }
-    // --- END OVERFLOW CHECK LOGIC ---
-
     setUploading(true);
-    let toastId = toast.loading(`Uploading ${files.length} file(s) and assigning slot...`);
+    let toastId = toast.loading(`Checking active slot and uploading ${files.length} file(s)...`);
 
     try {
-      // 1. Assign Unique Slot ID (Atomic Operation)
-      const slotId = await assignNewSlot();
-      if (!slotId) throw new Error("Failed to assign a unique slot.");
+      // Step 1: Check for existing active job
+      const existingJobDoc = await findActiveJob();
       
-      // 2. Upload all files sequentially and collect URLs/Names
+      // Run overflow check ONLY if creating a NEW slot
+      if (!existingJobDoc) {
+        const activeJobsQuery = query(
+          collection(db, 'print_jobs'),
+          where('status', 'in', ['In Progress', 'Ready'])
+        );
+        const activeSnapshot = await getDocs(activeJobsQuery);
+
+        if (activeSnapshot.size >= MAX_SLOTS) {
+            toast.error(`All ${MAX_SLOTS} slots are currently active. Please ask staff to clear a slot.`, { id: toastId });
+            setUploading(false);
+            return;
+        }
+      }
+
+      // Step 2: Upload all files sequentially and collect URLs/Names
       const uploadedFilesData = [];
       
       for (let i = 0; i < files.length; i++) {
@@ -150,42 +163,66 @@ function PrintServicePage() {
       }
 
 
-      // 3. Create SINGLE document in Firestore
-      const jobData = {
-        submittedById: currentUser.uid, 
-        submittedByEmail: currentUser.email,
-        submittedByRole: currentUser.role,
-        files: uploadedFilesData, 
-        slotId: slotId, 
-        preferences: { 
-            copies: Number(copies), 
-            color, 
-            sided, 
-            isStapled,
-            instructions
-        }, 
-        status: 'In Progress',
-        submittedAt: Timestamp.now(),
-      };
-      toast.loading(`Submitting print job for slot ${slotId}...`, { id: toastId });
+      if (existingJobDoc) {
+        // SCENARIO 1: MERGE INTO EXISTING JOB
+        const existingData = existingJobDoc.data();
+        const existingFiles = existingData.files || [];
+        
+        // Append new files and update preferences to the latest submission
+        await updateDoc(existingJobDoc.ref, {
+            files: [...existingFiles, ...uploadedFilesData],
+            preferences: { 
+                copies: Number(copies), 
+                color, 
+                sided, 
+                isStapled,
+                instructions
+            },
+            submittedAt: Timestamp.now(), 
+        });
 
-      await addDoc(collection(db, 'print_jobs'), jobData);
-      toast.success(`Job submitted! Slot ${slotId} contains ${files.length} documents.`, { id: toastId });
+        toast.success(`Slot ${existingData.slotId} updated! Added ${files.length} documents. Total: ${existingFiles.length + files.length}.`, { id: toastId });
 
-      // Reset form and UI state
+      } else {
+        // SCENARIO 2: CREATE NEW JOB
+        const slotId = await assignNewSlot();
+        if (!slotId) throw new Error("Failed to assign a unique slot.");
+        
+        const jobData = {
+          submittedById: currentUser.uid, 
+          submittedByEmail: currentUser.email,
+          submittedByRole: currentUser.role,
+          files: uploadedFilesData, 
+          slotId: slotId, 
+          preferences: { 
+              copies: Number(copies), 
+              color, 
+              sided, 
+              isStapled,
+              instructions
+          }, 
+          status: 'In Progress',
+          submittedAt: Timestamp.now(),
+        };
+        
+        await addDoc(collection(db, 'print_jobs'), jobData);
+        toast.success(`New job submitted! Slot ${slotId} assigned.`, { id: toastId });
+      }
+
+
+      // Final cleanup
       setFiles([]);
-      document.getElementById('file-upload').value = null; 
+      document.getElementById('file-upload').value = null;
       setCopies(1);
       setColor('B&W');
       setSided('Single-Sided');
       setIsStapled(false);
       setInstructions('');
-      
       fetchJobs();
 
     } catch (error) {
       console.error("Error submitting print job: ", error);
-      toast.error(`An error occurred. Please try again.`, { id: toastId });
+      toast.error(`An error occurred: ${error.message || 'Failed to submit.'}`, { id: toastId });
     } finally {
       setUploading(false);
     }
@@ -215,7 +252,7 @@ function PrintServicePage() {
             onChange={handleFilesChange} 
             required 
             accept={ACCEPT_FILE_STRING} 
-            multiple // CRITICAL: Allows multiple file selection
+            multiple 
           />
           {files.length > 0 && 
             <small style={{ color: '#aaa', marginTop: '5px' }}>
