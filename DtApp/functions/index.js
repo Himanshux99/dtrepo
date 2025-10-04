@@ -7,33 +7,39 @@ const Razorpay = require("razorpay");
 admin.initializeApp();
 
 // Define secret keys in a secure way using the params module
-const razorpayKeyId = defineString("RAZORPAY_KEY_ID");
-const razorpayKeySecret = defineString("RAZORPAY_KEY_SECRET");
+
+
+
+const Razorpay = require("razorpay");
+const functions = require("firebase-functions");
+
+admin.initializeApp();
+
+const razorpayKeyId = functions.config().razorpay.key_id;
+const razorpayKeySecret = functions.config().razorpay.key_secret;
 
 // --- v2 FUNCTION: Create a Razorpay Order ---
+
 exports.createRazorpayOrder = onRequest({ cors: true }, async (request, response) => {
+  const razorpay = new Razorpay({
+    key_id: razorpayKeyId,
+    key_secret: razorpayKeySecret,
+  });
+
   try {
-    const amount = request.body.data.amount;
-    
-    // Initialize Razorpay inside the function
-    const razorpay = new Razorpay({
-      key_id: razorpayKeyId.value(),
-      key_secret: razorpayKeySecret.value(),
-    });
-
     const options = {
-      amount: amount,
+      amount: request.body.data.amount, // in paise
       currency: "INR",
-      receipt: `receipt_order_${new Date().getTime()}`,
+      receipt: "receipt_" + Date.now(),
     };
-
     const order = await razorpay.orders.create(options);
     response.status(200).send({ data: order });
   } catch (error) {
-    console.error("Razorpay order creation failed:", error);
+    console.error(error);
     response.status(500).send({ error: "Failed to create order." });
   }
 });
+
 
 // --- v2 FUNCTION: Verify the Payment Signature ---
 exports.verifyRazorpayPayment = onRequest({ cors: true }, (request, response) => {

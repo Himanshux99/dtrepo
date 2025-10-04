@@ -41,6 +41,10 @@ function Login() {
         const userData = userDoc.data();
         switch (userData.role) {
             case 'student': navigate('/student'); break;
+            case 'teacher': navigate('/teacher'); break;
+          case 'staff': navigate('/staff'); break;
+          case 'admin': navigate('/admin'); break;
+          default: navigate('/');
             // ... other roles
         }
       } else {
