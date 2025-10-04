@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { db } from '../firebase/config'; // <-- NEW: Import db
-import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore'; // <-- UPDATED: All needed Firestore imports
+import { db } from '../firebase/config'; 
+import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import styles from './Login.module.css'; // Reusing login page styles
 import toast, { Toaster } from 'react-hot-toast';
-import AssignmentForm from '../components/teacher/AssignmentForm'; // Import the new component
+import AssignmentForm from '../components/teacher/AssignmentForm'; // Import the AssignmentForm component
 
 function TeacherSignup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [assignments, setAssignments] = useState([]);
   const [showAssignmentForm, setShowAssignmentForm] = useState(false);
-  const [isApproved, setIsApproved] = useState(false); // <-- NEW: State for approval status
+  const [isApproved, setIsApproved] = useState(false); // <-- CRITICAL: isApproved state added
   
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -38,7 +38,6 @@ function TeacherSignup() {
     }
   };
   // --- END NEW FUNCTION ---
-
 
   const handleAddAssignment = (newAssignment) => {
     setAssignments([...assignments, newAssignment]);

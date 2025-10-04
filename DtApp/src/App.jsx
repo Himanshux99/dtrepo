@@ -1,3 +1,5 @@
+import SettingsPage from './components/common/SettingsPage';
+
 import StudentPrintPage from './pages/Student/StudentPrintPage';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
@@ -29,6 +31,7 @@ import ManageSchedulePage from './pages/Teacher/ManageSchedulePage';
 import { Toaster } from 'react-hot-toast';
 
 import CompleteProfile from './pages/Student/CompleteProfile';
+import ManageRatesPage from './pages/Staff/ManageRatesPage';
 
 
 function App() {
@@ -84,6 +87,17 @@ function App() {
         </ProtectedRoute>
     } 
 />
+            path="/student/profile" 
+            element={ 
+              <ProtectedRoute allowedRoles={["student"]}>
+                <ProfilePage /> 
+              </ProtectedRoute>
+            } 
+          /> 
+           <Route 
+            path="/student/settings" 
+            element={<ProtectedRoute allowedRoles={["student"]}><SettingsPage /></ProtectedRoute>} 
+          />
 
           {/* NOTE: You still need to add the /student/print route here if you haven't already */}
 
@@ -120,6 +134,18 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route 
+            path="/teacher/profile" 
+            element={ 
+              <ProtectedRoute allowedRoles={["teacher"]}>
+                <TeacherProfilePage /> 
+              </ProtectedRoute>
+            } 
+          /> 
+           <Route 
+            path="/teacher/settings" 
+            element={<ProtectedRoute allowedRoles={["teacher"]}><SettingsPage /></ProtectedRoute>}
+          />
           <Route path="/signup/teacher" element={<TeacherSignup />} />
 
           {/* Staff Routes */}
@@ -131,6 +157,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+           <Route 
+            path="/staff/settings" 
+            element={ 
+              <ProtectedRoute allowedRoles={["staff"]}>
+                <SettingsPage /> 
+              </ProtectedRoute>
+            } 
+          /> 
           <Route // NEW ROUTE ADDED HERE
             path="/staff/queue"
             element={
@@ -148,6 +182,18 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route 
+            path="/staff/settings" 
+            element={<ProtectedRoute allowedRoles={["staff"]}><SettingsPage /></ProtectedRoute>} 
+          />
+          <Route 
+    path="/admin/rates" 
+    element={
+      <ProtectedRoute allowedRoles={['staff']}>
+        <ManageRatesPage />
+      </ProtectedRoute>
+    } 
+/>
 
 
           {/* Admin Routes */}
@@ -167,7 +213,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route 
+            path="/admin/settings" 
+            element={ 
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <SettingsPage /> 
+              </ProtectedRoute>
+            } 
+          /> 
         </Route>
+        
 
         {/* Route without Navbar */}
         <Route path="/login" element={<Login />} />

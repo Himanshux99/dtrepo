@@ -25,11 +25,21 @@
 
 .slotGroupGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  /* Reduced minmax size to fit content and buttons */
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
   gap: 10px;
 }
 
+/* Wrapper for slot and button */
+.slotWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
 .slotCard {
+  width: 100%; /* Make card fill wrapper space */
   padding: 10px 5px;
   border-radius: 4px;
   font-weight: bold;
@@ -57,6 +67,29 @@
   color: white;
 }
 
+/* NEW: Action Button Styles */
+.actionReadyButton,
+.actionCollectButton {
+    width: 100%;
+    padding: 4px 0;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.actionReadyButton {
+    background-color: #007bff;
+    color: white;
+}
+
+.actionCollectButton {
+    background-color: #6c757d;
+    color: white;
+}
+
+
 /* Legend Styling */
 .statusLegend {
     display: flex;
@@ -68,6 +101,7 @@
     border-radius: 8px;
 }
 .statusLegend > div {
+    /* Use slotCard styles for legend items */
     padding: 0.5rem 1rem;
     border-radius: 4px;
     font-weight: bold;
@@ -75,4 +109,14 @@
 }
 .statusLegend .slotEmpty {
     color: #fff;
+}
+
+.refreshButton {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
