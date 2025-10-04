@@ -15,6 +15,9 @@ function StaffDashboard() {
       <Link to="/staff/slots" style={{ color: '#87CEEB', fontSize: '1.2rem' }}>
         View Print Slot Status
       </Link>
+      <Link to="/admin/rates" style={{ color: '#ffc107', fontSize: '1.2rem' }}>
+    Manage Print Rates
+</Link>
     </div>
   );
 }

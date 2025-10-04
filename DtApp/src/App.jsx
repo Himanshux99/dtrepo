@@ -28,6 +28,9 @@ import ProfilePage from "./pages/Student/ProfilePage";
 import TeacherSignup from './pages/TeacherSignup';
 import ManageSchedulePage from './pages/Teacher/ManageSchedulePage';
 
+import ManageRatesPage from './pages/Staff/ManageRatesPage';
+
+
 function App() {
   return (
     <Router>
@@ -172,6 +175,14 @@ function App() {
             path="/staff/settings" 
             element={<ProtectedRoute allowedRoles={["staff"]}><SettingsPage /></ProtectedRoute>} 
           />
+          <Route 
+    path="/admin/rates" 
+    element={
+      <ProtectedRoute allowedRoles={['staff']}>
+        <ManageRatesPage />
+      </ProtectedRoute>
+    } 
+/>
 
 
           {/* Admin Routes */}
