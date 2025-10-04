@@ -1,91 +1,135 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './Login.module.css';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { Link } from 'react-router-dom'; // Make sure this is imported
+import toast from 'react-hot-toast';
 
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login,logout } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { login, logout, sendVerificationEmail } = useAuth();
   const navigate = useNavigate();
+
+  const [unverifiedUser, setUnverifiedUser] = useState(null);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
-        const userCredential = await login(email, password);
-        // We now have to fetch the user's role from firestore,
-        // which our AuthContext already does! We just need to wait for it.
-        // A simple way is to refetch the user data from context after login
-        const user = userCredential.user;
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
+      const userCredential = await login(email, password);
+      const user = userCredential.user;
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
 
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            // Redirect based on role
-            switch (userData.role) {
-                case 'student':
-                    navigate('/student');
-                    break;
-                case 'teacher':
-                    navigate('/teacher');
-                    break;
-                case 'staff':
-                    navigate('/staff');
-                    break;
-                case 'admin':
-                    navigate('/admin');
-                    break;
-                default:
-                    navigate('/'); // Redirect to home if no role
-            }
-        } else {
-            setError('User role not found.');
-            logout();
+      if (!user.emailVerified) {
+        setUnverifiedUser(user); // Store the user object to resend email
+        setError("Please verify your email first. A link was sent to your inbox.");
+        await logout(); // Log them out so they don't get stuck
+        setLoading(false);
+        return; // Stop the login process here
+      }
+
+      if (userDoc.exists()) {
+        // Profile exists, redirect to the correct dashboard
+        const userData = userDoc.data();
+        switch (userData.role) {
+            case 'student': navigate('/student'); break;
+            // ... other roles
         }
+      } else {
+        // Profile DOES NOT exist, this is their first login.
+        // Redirect to the complete profile page.
+        navigate('/student/complete-profile');
+      }
+
+      // if (userDoc.exists()) {
+      //   const userData = userDoc.data();
+      //   switch (userData.role) {
+      //     case 'student': navigate('/student'); break;
+      //     case 'teacher': navigate('/teacher'); break;
+      //     case 'staff': navigate('/staff'); break;
+      //     case 'admin': navigate('/admin'); break;
+      //     default: navigate('/');
+      //   }
+      // } else {
+      //   setError('User data not found in the database.');
+      //   await logout();
+      // }
     } catch (err) {
-        setError('Failed to log in. Please check your email and password.');
-        console.error(err);
+      // --- THIS IS THE IMPROVED ERROR HANDLING ---
+      console.error("Firebase Login Error Code:", err.code); // Log the specific code
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+        setError('Invalid email or password. Please try again.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('The email address is not formatted correctly.');
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
+      }
+    } finally {
+      setLoading(false);
     }
-};
+  };
+
+  const handleResendVerification = async () => {
+    if (!unverifiedUser) return;
+    try {
+      await sendVerificationEmail(unverifiedUser);
+
+
+      toast.success("A new verification email has been sent!");
+
+    } catch (error) {
+      toast.error("Failed to resend verification email.");
+    }
+  };
+
   return (
+
     <div className={styles.loginContainer}>
       <h2>Login</h2>
       {error && <p className={styles.error}>{error}</p>}
+      {unverifiedUser && (
+        <button onClick={handleResendVerification} style={{ marginBottom: '1rem', backgroundColor: '#ffc107', color: '#111' }}>
+          Resend Verification Email
+        </button>
+      )}
       <form onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
           <label>Email</label>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
         <div className={styles.formGroup}>
           <label>Password</label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </div>
-        <button type="submit" className={styles.submitButton}>Log In</button>
+        <button type="submit" className={styles.submitButton} disabled={loading}>
+          {loading ? 'Logging in...' : 'Log In'}
+        </button>
       </form>
 
-      <p style={{marginTop: '1rem'}}>
-    Don't have an account? <Link to="/signup">Sign Up</Link>
-</p>
-<p>
-    Signing up as a Teacher? <Link to="/signup/teacher">Click Here</Link>
-</p>
+      <p style={{ marginTop: '1rem' }}>
+        Don't have an account? <Link to="/signup">Sign Up</Link>
+      </p>
+      <p>
+        Signing up as a Teacher? <Link to="/signup/teacher">Click Here</Link>
+      </p>
     </div>
   );
 }

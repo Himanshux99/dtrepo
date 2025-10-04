@@ -28,12 +28,17 @@ import ProfilePage from "./pages/Student/ProfilePage";
 import TeacherSignup from './pages/TeacherSignup';
 import ManageSchedulePage from './pages/Teacher/ManageSchedulePage';
 
+import { Toaster } from 'react-hot-toast';
+
+import CompleteProfile from './pages/Student/CompleteProfile';
 import ManageRatesPage from './pages/Staff/ManageRatesPage';
 
 
 function App() {
   return (
     <Router>
+          <Toaster position="top-center" />
+
       <Routes>
         {/* Routes with Navbar */}
         <Route element={<Layout />}>
@@ -57,7 +62,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/student/profile"
             element={
@@ -76,6 +80,13 @@ function App() {
             }
           />
           <Route 
+    path="/student/complete-profile" 
+    element={
+        <ProtectedRoute>
+            <CompleteProfile />
+        </ProtectedRoute>
+    } 
+/>
             path="/student/profile" 
             element={ 
               <ProtectedRoute allowedRoles={["student"]}>

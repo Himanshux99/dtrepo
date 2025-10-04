@@ -1,37 +1,35 @@
- import React, { useState } from 'react';
-import { useAuth } from './../context/AuthContext';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Signup.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 
 function Signup() {
+  // 1. Unified state for all form fields
   const [formData, setFormData] = useState({
-    rollNumber: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: '',
   });
+
   const [errors, setErrors] = useState({});
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
+  // 2. Single handler for all inputs
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // 3. Corrected validation logic
   const validate = () => {
     const newErrors = {};
     const emailRegex = /^[a-z]+\.[a-z]+(\d*)?@vit\.edu\.in$/;
-    // Allows 2 digits, then 101/102/104/108, then one letter, then 4 digits.
-    const rollNumberRegex = /^\d{2}(101|102|104|108)[A-Z]\d{4}$/;
 
     if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Email must be in the format: first.last@vit.edu.in';
-    }
-    if (!rollNumberRegex.test(formData.rollNumber)) {
-      newErrors.rollNumber = 'Invalid Roll Number format or branch code.';
     }
     if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters long.';
@@ -49,57 +47,57 @@ function Signup() {
     if (!validate()) {
       return;
     }
-
     setLoading(true);
     try {
-      const { email, password, rollNumber, phone } = formData;
-      await signup(email, password, { rollNumber, phone });
-      toast.success('Account created successfully! Redirecting...');
-      setTimeout(() => navigate('/student'), 2000);
+      // 4. Use email and password from the unified state
+      await signup(formData.email, formData.password);
+      setSignupSuccess(true);
+      toast.success('Account created! Please check your email to verify.');
     } catch (error) {
-      console.error(error);
-      toast.error(error.message || 'Failed to create an account.');
+      if (error.code === 'auth/email-already-in-use') {
+        toast.error('This email is already registered. Please log in.');
+      } else {
+        toast.error(error.message || 'Failed to create an account.');
+      }
     }
     setLoading(false);
   };
 
+  if (signupSuccess) {
+    return (
+      <div className={styles.signupContainer}>
+        <h2>✅ Account Created!</h2>
+        <p>We've sent a verification link to <strong>{formData.email}</strong>.</p>
+        <p>Please click the link in the email to activate your account before logging in.</p>
+        <Link to="/login" className={styles.submitButton} style={{ textAlign: 'center', textDecoration: 'none' }}>
+          Go to Login
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.signupContainer}>
       <Toaster position="top-center" />
-      <h2>Create Student Account</h2>
+      <h2>Create Student Account (Step 1 of 2)</h2>
       <form onSubmit={handleSubmit}>
-        {/* Roll Number */}
-        <div className={styles.formGroup}>
-          <label>Roll Number</label>
-          <input type="text" name="rollNumber" onChange={handleChange} required />
-          {errors.rollNumber && <p className={styles.error}>{errors.rollNumber}</p>}
-        </div>
-        {/* Email */}
         <div className={styles.formGroup}>
           <label>Email</label>
-          <input type="email" name="email" onChange={handleChange} required />
+          <input type="email" name="email" value={formData.email} onChange={handleChange} required />
           {errors.email && <p className={styles.error}>{errors.email}</p>}
         </div>
-        {/* Phone Number */}
-        <div className={styles.formGroup}>
-          <label>Phone Number</label>
-          <input type="tel" name="phone" onChange={handleChange} required />
-        </div>
-        {/* Password */}
         <div className={styles.formGroup}>
           <label>Password</label>
-          <input type="password" name="password" onChange={handleChange} required />
+          <input type="password" name="password" value={formData.password} onChange={handleChange} required />
           {errors.password && <p className={styles.error}>{errors.password}</p>}
         </div>
-        {/* Confirm Password */}
         <div className={styles.formGroup}>
           <label>Confirm Password</label>
-          <input type="password" name="confirmPassword" onChange={handleChange} required />
+          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
           {errors.confirmPassword && <p className={styles.error}>{errors.confirmPassword}</p>}
         </div>
-
         <button type="submit" className={styles.submitButton} disabled={loading}>
-          {loading ? 'Creating Account...' : 'Sign Up'}
+          {loading ? 'Creating Account...' : 'Sign Up & Verify'}
         </button>
       </form>
       <p className={styles.loginLink}>
