@@ -12,10 +12,10 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, logout ,sendVerificationEmail} = useAuth();
+  const { login, logout, sendVerificationEmail } = useAuth();
   const navigate = useNavigate();
 
-    const [unverifiedUser, setUnverifiedUser] = useState(null);
+  const [unverifiedUser, setUnverifiedUser] = useState(null);
 
 
   const handleSubmit = async (e) => {
@@ -23,12 +23,12 @@ function Login() {
     setError('');
     setLoading(true);
     try {
-        const userCredential = await login(email, password);
-        const user = userCredential.user;
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
+      const userCredential = await login(email, password);
+      const user = userCredential.user;
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
 
-if (!user.emailVerified) {
+      if (!user.emailVerified) {
         setUnverifiedUser(user); // Store the user object to resend email
         setError("Please verify your email first. A link was sent to your inbox.");
         await logout(); // Log them out so they don't get stuck
@@ -36,74 +36,87 @@ if (!user.emailVerified) {
         return; // Stop the login process here
       }
 
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            switch (userData.role) {
-                case 'student': navigate('/student'); break;
-                case 'teacher': navigate('/teacher'); break;
-                case 'staff': navigate('/staff'); break;
-                case 'admin': navigate('/admin'); break;
-                default: navigate('/');
-            }
-        } else {
-            setError('User data not found in the database.');
-            await logout();
+      if (userDoc.exists()) {
+        // Profile exists, redirect to the correct dashboard
+        const userData = userDoc.data();
+        switch (userData.role) {
+            case 'student': navigate('/student'); break;
+            // ... other roles
         }
+      } else {
+        // Profile DOES NOT exist, this is their first login.
+        // Redirect to the complete profile page.
+        navigate('/student/complete-profile');
+      }
+
+      // if (userDoc.exists()) {
+      //   const userData = userDoc.data();
+      //   switch (userData.role) {
+      //     case 'student': navigate('/student'); break;
+      //     case 'teacher': navigate('/teacher'); break;
+      //     case 'staff': navigate('/staff'); break;
+      //     case 'admin': navigate('/admin'); break;
+      //     default: navigate('/');
+      //   }
+      // } else {
+      //   setError('User data not found in the database.');
+      //   await logout();
+      // }
     } catch (err) {
-        // --- THIS IS THE IMPROVED ERROR HANDLING ---
-        console.error("Firebase Login Error Code:", err.code); // Log the specific code
-        if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
-            setError('Invalid email or password. Please try again.');
-        } else if (err.code === 'auth/invalid-email') {
-            setError('The email address is not formatted correctly.');
-        } else {
-            setError('An unexpected error occurred. Please try again later.');
-        }
+      // --- THIS IS THE IMPROVED ERROR HANDLING ---
+      console.error("Firebase Login Error Code:", err.code); // Log the specific code
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+        setError('Invalid email or password. Please try again.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('The email address is not formatted correctly.');
+      } else {
+        setError('An unexpected error occurred. Please try again later.');
+      }
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
-   const handleResendVerification = async () => {
+  const handleResendVerification = async () => {
     if (!unverifiedUser) return;
     try {
       await sendVerificationEmail(unverifiedUser);
 
 
       toast.success("A new verification email has been sent!");
-      
+
     } catch (error) {
       toast.error("Failed to resend verification email.");
     }
   };
 
   return (
-    
+
     <div className={styles.loginContainer}>
       <h2>Login</h2>
       {error && <p className={styles.error}>{error}</p>}
       {unverifiedUser && (
-        <button onClick={handleResendVerification} style={{marginBottom: '1rem', backgroundColor: '#ffc107', color: '#111'}}>
+        <button onClick={handleResendVerification} style={{ marginBottom: '1rem', backgroundColor: '#ffc107', color: '#111' }}>
           Resend Verification Email
         </button>
       )}
       <form onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
           <label>Email</label>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
         <div className={styles.formGroup}>
           <label>Password</label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </div>
         <button type="submit" className={styles.submitButton} disabled={loading}>
@@ -111,7 +124,7 @@ if (!user.emailVerified) {
         </button>
       </form>
 
-      <p style={{marginTop: '1rem'}}>
+      <p style={{ marginTop: '1rem' }}>
         Don't have an account? <Link to="/signup">Sign Up</Link>
       </p>
       <p>

@@ -23,22 +23,29 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+const refreshUser = async () => {
+    const user = auth.currentUser;
+    if (user && user.emailVerified) {
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        setCurrentUser({ ...user, role: userDoc.data().role });
+      }
+    }
+  };
+
   // --- Authentication Functions ---
-  function signup(email, password, additionalData, role = 'student') {
-    return createUserWithEmailAndPassword(auth, email, password)
-      .then(userCredential => {
-        const user = userCredential.user;
-        const userDocRef = doc(db, 'users', user.uid);
-        // Also send verification email upon signup
-        sendEmailVerification(user);
-        return setDoc(userDocRef, {
-          uid: user.uid,
-          email: email,
-          role: role,
-          ...additionalData
-        });
-      });
+  async function signup(email, password) { // Removed additionalData and role
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    await sendEmailVerification(user);
+    return userCredential;
+  } catch (error) {
+    console.error("Error during signup:", error);
+    throw error;
   }
+}
 
   function login(email, password) {
     return signInWithEmailAndPassword(auth, email, password);
@@ -79,6 +86,7 @@ export function AuthProvider({ children }) {
     login,
     signup,
     logout,
+    refreshUser,
   };
 
   // Render children only when not loading

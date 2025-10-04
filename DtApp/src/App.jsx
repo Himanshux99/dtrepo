@@ -28,6 +28,8 @@ import ManageSchedulePage from './pages/Teacher/ManageSchedulePage';
 
 import { Toaster } from 'react-hot-toast';
 
+import CompleteProfile from './pages/Student/CompleteProfile';
+
 
 function App() {
   return (
@@ -57,7 +59,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/student/profile"
             element={
@@ -75,6 +76,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route 
+    path="/student/complete-profile" 
+    element={
+        <ProtectedRoute>
+            <CompleteProfile />
+        </ProtectedRoute>
+    } 
+/>
 
           {/* NOTE: You still need to add the /student/print route here if you haven't already */}
 
