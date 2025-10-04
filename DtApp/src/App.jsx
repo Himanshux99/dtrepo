@@ -26,9 +26,12 @@ import ProfilePage from "./pages/Student/ProfilePage";
 import TeacherSignup from './pages/TeacherSignup';
 import ManageSchedulePage from './pages/Teacher/ManageSchedulePage';
 
+import Notifications from './components/common/Notifications';
+
 function App() {
   return (
     <Router>
+      <Notifications />
       <Routes>
         {/* Routes with Navbar */}
         <Route element={<Layout />}>
