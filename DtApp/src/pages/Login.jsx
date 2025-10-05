@@ -39,18 +39,35 @@ function Login() {
       if (userDoc.exists()) {
         // Profile exists, redirect to the correct dashboard
         const userData = userDoc.data();
+        console.log('User data found:', userData);
+        setLoading(false);
+        
         switch (userData.role) {
-            case 'student': navigate('/student'); break;
-            case 'teacher': navigate('/teacher'); break;
-            case 'staff': navigate('/staff'); break;
-            case 'admin': navigate('/admin'); break;
-            default: navigate('/');
+            case 'student':
+              console.log('Navigating to student dashboard');
+              navigate('/student');
+              break;
+            case 'teacher':
+              console.log('Navigating to teacher dashboard');
+              navigate('/teacher');
+              break;
+            case 'staff':
+              console.log('Navigating to staff dashboard');
+              navigate('/staff');
+              break;
+            case 'admin':
+              console.log('Navigating to admin dashboard');
+              navigate('/admin');
+              break;
+            default:
+              console.log('No role found, navigating to home');
+              navigate('/');
         }
       } else {
         // Profile DOES NOT exist, this is their first login.
-        // Redirect to the complete profile page.
-
-        navigate('/student/complete-profile');
+        console.log('No user profile found, redirecting to complete profile');
+        setLoading(false);
+        navigate('/student/complete-profile', { replace: true });
       }
 
     } catch (err) {

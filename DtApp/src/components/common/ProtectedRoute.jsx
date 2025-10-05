@@ -8,21 +8,36 @@ function ProtectedRoute({ children, allowedRoles }) {
   const { currentUser } = useAuth();
   const location = useLocation();
 
+  console.log('ProtectedRoute Check:', {
+    path: location.pathname,
+    currentUser: currentUser ? {
+      email: currentUser.email,
+      role: currentUser.role,
+      emailVerified: currentUser.emailVerified
+    } : null,
+    allowedRoles
+  });
+
   if (!currentUser) {
-    // If user is not logged in, redirect them to the login page
-    // We also pass the original location they tried to visit
+    console.log('No user found, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (!currentUser.emailVerified) {
-    // Give a helpful message and redirect
+    console.log('Email not verified, redirecting to login');
     toast.error("Please verify your email before logging in. Check your inbox for a verification link.");
     return <Navigate to="/login" replace />;
   }
 
+  // For complete-profile route, skip role check
+  if (location.pathname === '/student/complete-profile') {
+    console.log('Complete profile route, skipping role check');
+    return children;
+  }
 
+  // Only check roles if allowedRoles is provided and we're not on the complete-profile route
   if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
-    // If the user's role is not in the allowedRoles array, redirect them
+    console.log('Unauthorized role access, redirecting to unauthorized');
     return <Navigate to="/unauthorized" replace />;
   }
 

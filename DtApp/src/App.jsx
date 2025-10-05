@@ -9,7 +9,7 @@ import Unauthorized from "./pages/Unauthorized";
 
 import Layout from "./components/common/Layout";
 import ProtectedRoute from "./components/common/ProtectedRoute";
-import SlotStatusDashboard from './pages/Staff/SlotStatusDashboard'; 
+import SlotStatusDashboard from './pages/Staff/SlotStatusDashboard';
 import StudentDashboard from "./pages/Student/StudentDashboard";
 import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
 import StaffDashboard from "./pages/Staff/StaffDashboard";
@@ -37,15 +37,14 @@ import ManageRatesPage from './pages/Staff/ManageRatesPage';
 function App() {
   return (
     <Router>
-          <Toaster position="top-center" />
+      <Toaster position="top-center" />
 
       <Routes>
         {/* Routes with Navbar */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
-
-          {/* Student Routes */}
+         {/* Student Routes */}
           <Route
             path="/student"
             element={
@@ -79,25 +78,15 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route 
-    path="/student/complete-profile" 
-    element={
-        <ProtectedRoute>
-            <CompleteProfile />
-        </ProtectedRoute>
-    } 
-/><Route
-      
-            path="/student/profile" 
-            element={ 
-              <ProtectedRoute allowedRoles={["student"]}>
-                <ProfilePage /> 
-              </ProtectedRoute>
-            } 
-          /> 
-           <Route 
-            path="/student/settings" 
-            element={<ProtectedRoute allowedRoles={["student"]}><SettingsPage /></ProtectedRoute>} 
+          {/* Complete Profile Route - No role check needed */}
+          <Route
+            path="/student/complete-profile"
+            element={<CompleteProfile />}  // Remove ProtectedRoute wrapper entirely
+          />
+          
+          <Route
+            path="/student/settings"
+            element={<ProtectedRoute allowedRoles={["student"]}><SettingsPage /></ProtectedRoute>}
           />
 
           {/* NOTE: You still need to add the /student/print route here if you haven't already */}
@@ -135,16 +124,16 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route 
-            path="/teacher/profile" 
-            element={ 
+          <Route
+            path="/teacher/profile"
+            element={
               <ProtectedRoute allowedRoles={["teacher"]}>
-                <TeacherProfilePage /> 
+                <TeacherProfilePage />
               </ProtectedRoute>
-            } 
-          /> 
-           <Route 
-            path="/teacher/settings" 
+            }
+          />
+          <Route
+            path="/teacher/settings"
             element={<ProtectedRoute allowedRoles={["teacher"]}><SettingsPage /></ProtectedRoute>}
           />
           <Route path="/signup/teacher" element={<TeacherSignup />} />
@@ -158,14 +147,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-           <Route 
-            path="/staff/settings" 
-            element={ 
+          <Route
+            path="/staff/settings"
+            element={
               <ProtectedRoute allowedRoles={["staff"]}>
-                <SettingsPage /> 
+                <SettingsPage />
               </ProtectedRoute>
-            } 
-          /> 
+            }
+          />
           <Route // NEW ROUTE ADDED HERE
             path="/staff/queue"
             element={
@@ -178,23 +167,23 @@ function App() {
           <Route // NEW SLOT STATUS DASHBOARD ROUTE
             path="/staff/slots"
             element={
-              <ProtectedRoute allowedRoles={["staff", "admin"]}> 
+              <ProtectedRoute allowedRoles={["staff", "admin"]}>
                 <SlotStatusDashboard />
               </ProtectedRoute>
             }
           />
-          <Route 
-            path="/staff/settings" 
-            element={<ProtectedRoute allowedRoles={["staff"]}><SettingsPage /></ProtectedRoute>} 
+          <Route
+            path="/staff/settings"
+            element={<ProtectedRoute allowedRoles={["staff"]}><SettingsPage /></ProtectedRoute>}
           />
-          <Route 
-    path="/admin/rates" 
-    element={
-      <ProtectedRoute allowedRoles={['staff']}>
-        <ManageRatesPage />
-      </ProtectedRoute>
-    } 
-/>
+          <Route
+            path="/admin/rates"
+            element={
+              <ProtectedRoute allowedRoles={['staff']}>
+                <ManageRatesPage />
+              </ProtectedRoute>
+            }
+          />
 
 
           {/* Admin Routes */}
@@ -214,16 +203,16 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route 
-            path="/admin/settings" 
-            element={ 
+          <Route
+            path="/admin/settings"
+            element={
               <ProtectedRoute allowedRoles={["admin"]}>
-                <SettingsPage /> 
+                <SettingsPage />
               </ProtectedRoute>
-            } 
-          /> 
+            }
+          />
         </Route>
-        
+
 
         {/* Route without Navbar */}
         <Route path="/login" element={<Login />} />
