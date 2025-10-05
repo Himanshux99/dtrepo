@@ -29,7 +29,7 @@ function Signup() {
     const emailRegex = /^[a-z]+\.[a-z]+(\d*)?@vit\.edu\.in$/;
 
     if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Email must be in the format: first.last@vit.edu.in';
+      newErrors.email = 'Please use a valid VIT email address';
     }
     if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters long.';
