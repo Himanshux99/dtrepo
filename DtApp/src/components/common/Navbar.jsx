@@ -16,23 +16,32 @@ function Navbar() {
     }
   };
 
+  // Function to determine the settings/profile link for all roles
+  const getSettingsLink = () => {
+    switch (currentUser.role) {
+      case 'student':
+      case 'teacher':
+        // Student and Teacher click "Settings" but are sent to their Profile page
+        return `/${currentUser.role}/settings`; 
+      case 'staff':
+      case 'admin':
+        // Staff and Admin are sent to the generic Settings page
+        return `/${currentUser.role}/settings`; 
+      default:
+        return '/';
+    }
+  };
+
   return (
     <nav className={styles.navbar}>
       <Link to="/" className={styles.brand}>College Portal</Link>
       <div className={styles.navLinks}>
         {currentUser ? (
           <>
-            {/* Show profile link for students */}
-            {currentUser.role === 'student' && (
-              <Link to="/student/profile" style={{ color: 'white', textDecoration: 'none' }}>
-                Profile
-              </Link>
-            )}
-
-            {/* THIS IS THE NEW PART: Show profile link for teachers */}
-            {currentUser.role === 'teacher' && (
-              <Link to="/teacher/profile" style={{ color: 'white', textDecoration: 'none' }}>
-                Profile
+            {/* Unified Settings Link in the Navbar */}
+            {currentUser.role && (
+              <Link to={getSettingsLink()} style={{ color: 'white', textDecoration: 'none' }}>
+                Settings
               </Link>
             )}
 

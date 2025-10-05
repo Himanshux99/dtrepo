@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { extractUsernameFromEmail } from '../../utils/profileUtils';
 import styles from '../Student/ProfilePage.module.css'; // Reusing styles
 import AssignmentForm from '../../components/teacher/AssignmentForm';
+import ResetPasswordButton from '../../components/common/ResetPasswordButton'; // NEW IMPORT
 import toast, { Toaster } from 'react-hot-toast';
 
 function TeacherProfilePage() {
@@ -13,6 +14,7 @@ function TeacherProfilePage() {
   const [showAssignmentForm, setShowAssignmentForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // ... existing fetchUserData and handleAddAssignment logic ...
   const fetchUserData = async () => {
     if (!currentUser) return;
     setLoading(true);
@@ -43,6 +45,7 @@ function TeacherProfilePage() {
     }
   };
 
+
   if (loading) return <p>Loading Profile...</p>;
   if (!profileData) return <p>Could not load profile data.</p>;
 
@@ -53,8 +56,12 @@ function TeacherProfilePage() {
       <Toaster position="top-center" />
       <div className={styles.profileHeader}>
         <h2>{teacherName}</h2>
-        <p>{profileData.email}</p>
+        <p>Teacher Profile - {profileData.email}</p>
       </div>
+      
+      {/* INTEGRATE RESET BUTTON */}
+      
+
       <h4>Your Teaching Assignments:</h4>
       {profileData.teachingAssignments?.map((a, i) => (
         <div key={i} className={styles.infoItem}>
@@ -65,9 +72,6 @@ function TeacherProfilePage() {
       ))}
        {profileData.teachingAssignments?.length === 0 && <p>You have not added any assignments yet.</p>}
 
-      {/* --- THIS IS THE CORRECTED SECTION --- */}
-      
-      {/* If the form is showing, render it */}
       {showAssignmentForm && (
         <AssignmentForm 
           onAdd={handleAddAssignment} 
@@ -75,7 +79,6 @@ function TeacherProfilePage() {
         />
       )}
       
-      {/* If the form is NOT showing, render the button */}
       {!showAssignmentForm && (
         <button 
           type="button" 

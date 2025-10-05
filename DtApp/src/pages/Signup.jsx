@@ -27,9 +27,11 @@ function Signup() {
   const validate = () => {
     const newErrors = {};
     const emailRegex = /^[a-z]+\.[a-z]+(\d*)?@vit\.edu\.in$/;
+    // Allows 2 digits, then 101/102/104/108, then one letter, then 4 digits.
+    const rollNumberRegex = /^\d{2}(101|102|104|108)([A-Z]|[a-z])\d{4}$/;
 
     if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Email must be in the format: first.last@vit.edu.in';
+      newErrors.email = 'Please use a valid VIT email address.';
     }
     if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters long.';

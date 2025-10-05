@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getFunctions } from "firebase/functions"; // 1. ADD THIS IMPORT
 
 // Your web app's Firebase configuration from the .env.local file
 const firebaseConfig = {
@@ -15,8 +16,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
+export const app = initializeApp(firebaseConfig);
+export const functions = getFunctions(app); // 2. ADD THIS INITIALIZATI
 // Export the services you'll need
 export const auth = getAuth(app);
 export const db = getFirestore(app);
