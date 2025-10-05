@@ -12,7 +12,7 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, logout, sendVerificationEmail } = useAuth();
+  const { login, logout, sendVerificationEmail, sendPasswordReset } = useAuth();
   const navigate = useNavigate();
 
   const [unverifiedUser, setUnverifiedUser] = useState(null);
@@ -98,6 +98,21 @@ function Login() {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!email) {
+      return toast.error("Please enter your email address to reset your password.");
+    }
+    const toastId = toast.loading("Sending password reset link...");
+    try {
+      await sendPasswordReset(email);
+      toast.success("Password reset link sent! Please check your email.", { id: toastId });
+    } catch (error) {
+      console.error("Password Reset Error:", error);
+      toast.error("Could not send reset link. Please check the email address.", { id: toastId });
+    }
+  };
+
+
   return (
 
     <div className={styles.loginContainer}>
@@ -131,6 +146,11 @@ function Login() {
           {loading ? 'Logging in...' : 'Log In'}
         </button>
       </form>
+      <div style={{ textAlign: 'right', fontSize: '0.9em', margin: '-0.5rem 0 1rem 0' }}>
+          <a href="#" onClick={handlePasswordReset} className={styles.forgotPassword}>
+            Forgot Password?
+          </a>
+        </div>
 
       <p style={{ marginTop: '1rem' }}>
         Don't have an account? <Link to="/signup">Sign Up</Link>

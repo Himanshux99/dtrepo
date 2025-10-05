@@ -6,11 +6,13 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  sendEmailVerification
+  sendEmailVerification,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 
 // Create the context
 const AuthContext = React.createContext();
+
 
 // Custom hook to use the context
 // eslint-disable-next-line react-refresh/only-export-components
@@ -23,7 +25,10 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-const refreshUser = async () => {
+
+
+
+  const refreshUser = async () => {
     const user = auth.currentUser;
     if (user && user.emailVerified) {
       const userDocRef = doc(db, 'users', user.uid);
@@ -36,16 +41,16 @@ const refreshUser = async () => {
 
   // --- Authentication Functions ---
   async function signup(email, password) { // Removed additionalData and role
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    await sendEmailVerification(user);
-    return userCredential;
-  } catch (error) {
-    console.error("Error during signup:", error);
-    throw error;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      await sendEmailVerification(user);
+      return userCredential;
+    } catch (error) {
+      console.error("Error during signup:", error);
+      throw error;
+    }
   }
-}
 
   function login(email, password) {
     return signInWithEmailAndPassword(auth, email, password);
@@ -57,6 +62,10 @@ const refreshUser = async () => {
 
   function sendVerificationEmail(user) {
     return sendEmailVerification(user);
+  }
+
+  function sendPasswordReset(email) {
+    return sendPasswordResetEmail(auth, email);
   }
 
   // --- User State Management ---
@@ -87,6 +96,7 @@ const refreshUser = async () => {
     signup,
     logout,
     refreshUser,
+    sendPasswordReset,
   };
 
   // Render children only when not loading
