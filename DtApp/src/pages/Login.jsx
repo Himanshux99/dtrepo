@@ -41,27 +41,18 @@ function Login() {
         const userData = userDoc.data();
         switch (userData.role) {
             case 'student': navigate('/student'); break;
-            // ... other roles
+            case 'teacher': navigate('/teacher'); break;
+            case 'staff': navigate('/staff'); break;
+            case 'admin': navigate('/admin'); break;
+            default: navigate('/');
         }
       } else {
         // Profile DOES NOT exist, this is their first login.
         // Redirect to the complete profile page.
+
         navigate('/student/complete-profile');
       }
 
-      // if (userDoc.exists()) {
-      //   const userData = userDoc.data();
-      //   switch (userData.role) {
-      //     case 'student': navigate('/student'); break;
-      //     case 'teacher': navigate('/teacher'); break;
-      //     case 'staff': navigate('/staff'); break;
-      //     case 'admin': navigate('/admin'); break;
-      //     default: navigate('/');
-      //   }
-      // } else {
-      //   setError('User data not found in the database.');
-      //   await logout();
-      // }
     } catch (err) {
       // --- THIS IS THE IMPROVED ERROR HANDLING ---
       console.error("Firebase Login Error Code:", err.code); // Log the specific code
