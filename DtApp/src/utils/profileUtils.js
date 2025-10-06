@@ -31,7 +31,7 @@ export const decodeRollNumber = (rollNumber, email) => {
 
   const admissionYearShort = parseInt(rollNumber.substring(0, 2), 10);
   const branchCode = rollNumber.substring(2, 5);
-  const division = rollNumber.substring(5, 6);
+  const division = rollNumber.substring(5, 6).toUpperCase();
   const specificRollNo = rollNumber.substring(6);
   const admissionYear = 2000 + admissionYearShort;
   const currentYear = new Date().getFullYear();
