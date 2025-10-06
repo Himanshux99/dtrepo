@@ -14,3 +14,28 @@ The React Compiler is not enabled on this template. To add it, see [this documen
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+
+## how to get the already in use key and secret
+
+firebase functions:config:get
+firebase functions:config:get razorpay
+
+firebase functions:config:get razorpay.key_id
+firebase functions:config:get razorpay.key_secret
+
+
+## how to set key using cli
+
+firebase functions:config:set razorpay.key_id="YOUR_KEY_ID" razorpay.key_secret="YOUR_KEY_SECRET"
+
+
+## how to deploy the function in firebase 
+npx firebase deploy --only functions
+
+
+
+## Library you might need to install
+npm install pdf-lib
+npm install razorpay
