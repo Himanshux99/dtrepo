@@ -3,22 +3,104 @@ import { Link } from 'react-router-dom';
 
 function StudentDashboard() {
   return (
-    <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-      <h1>Student Dashboard</h1>
-      <p>Welcome to your personal dashboard.</p>
-      
-      {/* Primary Feature Links */}
-      <Link to="/student/schedule" style={{ color: '#87CEEB', fontSize: '1.2rem' }}>
-        View My Schedule
-      </Link>
-      <Link to="/student/print" style={{ color: '#90EE90', fontSize: '1.2rem' }}>
-        Go to Printing Service
-      </Link>
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-primary mb-2">Student Dashboard</h1>
+        <p className="text-secondary">Welcome to your personal academic hub</p>
+      </div>
 
-      {/* NEW: Explicit Profile Link for easy access */}
-      <Link to="/student/profile" style={{ color: '#ffc107', fontSize: '1.2rem' }}>
-        View/Update Profile
-      </Link>
+      {/* Quick Stats */}
+      <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="card">
+          <div className="flex items-center gap-4">
+            <div className="text-3xl">📅</div>
+            <div>
+              <h3 className="text-lg font-semibold">Schedule</h3>
+              <p className="text-secondary text-sm">View your classes</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="card">
+          <div className="flex items-center gap-4">
+            <div className="text-3xl">🖨️</div>
+            <div>
+              <h3 className="text-lg font-semibold">Print Jobs</h3>
+              <p className="text-secondary text-sm">Manage your printing</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="card">
+          <div className="flex items-center gap-4">
+            <div className="text-3xl">👤</div>
+            <div>
+              <h3 className="text-lg font-semibold">Profile</h3>
+              <p className="text-secondary text-sm">Update your info</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Actions */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Link to="/student/schedule" className="card hover:transform hover:scale-105 transition-all duration-200">
+          <div className="text-center">
+            <div className="text-5xl mb-4">📅</div>
+            <h3 className="text-xl font-semibold mb-2">View My Schedule</h3>
+            <p className="text-secondary">
+              Check your class schedule, upcoming events, and academic calendar.
+            </p>
+          </div>
+        </Link>
+
+        <Link to="/student/print" className="card hover:transform hover:scale-105 transition-all duration-200">
+          <div className="text-center">
+            <div className="text-5xl mb-4">🖨️</div>
+            <h3 className="text-xl font-semibold mb-2">Print Services</h3>
+            <p className="text-secondary">
+              Submit print jobs, track status, and manage your printing preferences.
+            </p>
+          </div>
+        </Link>
+
+        <Link to="/student/profile" className="card hover:transform hover:scale-105 transition-all duration-200">
+          <div className="text-center">
+            <div className="text-5xl mb-4">👤</div>
+            <h3 className="text-xl font-semibold mb-2">My Profile</h3>
+            <p className="text-secondary">
+              View and update your personal information and academic details.
+            </p>
+          </div>
+        </Link>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-semibold mb-6">Recent Activity</h2>
+        <div className="card">
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 p-4 bg-tertiary rounded-lg">
+              <div className="text-2xl">📄</div>
+              <div>
+                <h4 className="font-medium">Print Job Submitted</h4>
+                <p className="text-secondary text-sm">Assignment document - 2 hours ago</p>
+              </div>
+              <span className="badge badge-warning">In Progress</span>
+            </div>
+            
+            <div className="flex items-center gap-4 p-4 bg-tertiary rounded-lg">
+              <div className="text-2xl">📅</div>
+              <div>
+                <h4 className="font-medium">Schedule Updated</h4>
+                <p className="text-secondary text-sm">New class added to your schedule</p>
+              </div>
+              <span className="badge badge-success">Updated</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

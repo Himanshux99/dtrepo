@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { auth, db } from '../firebase/config';
-import { doc, getDoc, setDoc } from 'firebase/firestore'; // Make sure setDoc is imported
+import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -40,10 +40,23 @@ export function AuthProvider({ children }) {
   };
 
   // --- Authentication Functions ---
-  async function signup(email, password) { // Removed additionalData and role
+  async function signup(email, password, additionalData = null, role = 'student') {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      
+      // Create user document in Firestore with role and additional data
+      if (role && role !== 'student') {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userData = {
+          email: user.email,
+          role: role,
+          createdAt: Timestamp.now(),
+          ...additionalData
+        };
+        await setDoc(userDocRef, userData);
+      }
+      
       await sendEmailVerification(user);
       return userCredential;
     } catch (error) {

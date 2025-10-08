@@ -114,50 +114,96 @@ function Login() {
 
 
   return (
-
-    <div className={styles.loginContainer}>
-      <h2>Login</h2>
-      {error && <p className={styles.error}>{error}</p>}
-      {unverifiedUser && (
-        <button onClick={handleResendVerification} style={{ marginBottom: '1rem', backgroundColor: '#ffc107', color: '#111' }}>
-          Resend Verification Email
-        </button>
-      )}
-      <form onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className={styles.submitButton} disabled={loading}>
-          {loading ? 'Logging in...' : 'Log In'}
-        </button>
-      </form>
-      <div style={{ textAlign: 'right', fontSize: '0.9em', margin: '-0.5rem 0 1rem 0' }}>
-          <a href="#" onClick={handlePasswordReset} className={styles.forgotPassword}>
-            Forgot Password?
-          </a>
+    <div className="min-h-screen flex items-center justify-center bg-primary py-12 px-4">
+      <div className="max-w-md w-full">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-4">🎓</div>
+          <h1 className="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
+          <p className="text-secondary">Sign in to your College Portal account</p>
         </div>
 
-      <p style={{ marginTop: '1rem' }}>
-        Don't have an account? <Link to="/signup">Sign Up</Link>
-      </p>
-      <p>
-        Signing up as a Teacher? <Link to="/signup/teacher">Click Here</Link>
-      </p>
+        {/* Login Form */}
+        <div className="card">
+          {error && (
+            <div className="mb-4 p-3 bg-error-50 border border-error-500 rounded-lg">
+              <p className="text-error-500 text-sm">{error}</p>
+            </div>
+          )}
+          
+          {unverifiedUser && (
+            <div className="mb-4 p-3 bg-warning-50 border border-warning-500 rounded-lg">
+              <p className="text-warning-500 text-sm mb-2">Please verify your email first.</p>
+              <button 
+                onClick={handleResendVerification} 
+                className="btn btn-warning btn-sm"
+              >
+                Resend Verification Email
+              </button>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">Email Address</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="form-input"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">Password</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="form-input"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              className="btn btn-primary w-full" 
+              disabled={loading}
+            >
+              {loading ? 'Signing In...' : 'Sign In'}
+            </button>
+          </form>
+
+          <div className="mt-6 text-right">
+            <button 
+              onClick={handlePasswordReset} 
+              className="text-primary hover:text-primary-600 text-sm font-medium"
+            >
+              Forgot Password?
+            </button>
+          </div>
+        </div>
+
+        {/* Sign Up Links */}
+        <div className="mt-8 text-center">
+          <p className="text-secondary mb-4">
+            Don't have an account?
+          </p>
+          <div className="space-y-3">
+            <Link to="/signup" className="btn btn-outline w-full">
+              Create Student Account
+            </Link>
+            <Link to="/signup/teacher" className="btn btn-secondary w-full">
+              Create Teacher Account
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

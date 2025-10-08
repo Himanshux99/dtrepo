@@ -22,19 +22,25 @@ function TeacherSignup() {
     e.preventDefault();
     if (!email) return;
 
-    // 1. Query the 'approved_teachers' collection
-    const approvedCollection = collection(db, 'approved_teachers');
-    const q = query(approvedCollection, where('email', '==', email.toLowerCase()));
-    const snapshot = await getDocs(q);
+    try {
+      // 1. Query the 'approved_teachers' collection
+      const approvedCollection = collection(db, 'approved_teachers');
+      const q = query(approvedCollection, where('email', '==', email.toLowerCase()));
+      const snapshot = await getDocs(q);
 
-    if (snapshot.empty) {
-      // The email is not in the whitelist
-      toast.error('This email is not currently authorized for a Teacher account. Please contact an Administrator.');
-      setIsApproved(false);
-    } else {
-      // The email is found and approved
-      toast.success('Email approved! You may now set your password and assignments.');
-      setIsApproved(true);
+      if (snapshot.empty) {
+        // The email is not in the whitelist
+        toast.error('This email is not currently authorized for a Teacher account. Please contact an Administrator.');
+        setIsApproved(false);
+      } else {
+        // The email is found and approved
+        toast.success('Email approved! You may now set your password and assignments.');
+        setIsApproved(true);
+      }
+    } catch (error) {
+      console.error("Error checking email approval:", error);
+      // FIX: Changed toast.warning to toast.error
+      toast.error("An error occurred while checking approval. Please try again."); 
     }
   };
   // --- END NEW FUNCTION ---
@@ -64,11 +70,16 @@ function TeacherSignup() {
       await signup(email, password, { teachingAssignments: assignments }, 'teacher'); 
 
       // 2. OPTIONAL: Delete the email from the approved_teachers list after successful sign-up
-      const approvedQuery = query(collection(db, 'approved_teachers'), where('email', '==', email.toLowerCase()));
-      const snapshot = await getDocs(approvedQuery);
-      if (!snapshot.empty) {
-        // Deleting the document that was just used for approval
-        await deleteDoc(snapshot.docs[0].ref);
+      try {
+        const approvedQuery = query(collection(db, 'approved_teachers'), where('email', '==', email.toLowerCase()));
+        const snapshot = await getDocs(approvedQuery);
+        if (!snapshot.empty) {
+          // Deleting the document that was just used for approval
+          await deleteDoc(snapshot.docs[0].ref);
+        }
+      } catch (deleteError) {
+        console.warn('Could not delete from approved_teachers list:', deleteError);
+        // Don't fail the signup if we can't delete from the whitelist
       }
       
       toast.success('Teacher account created successfully! Redirecting...');

@@ -4,18 +4,139 @@
   padding: 1rem;
 }
 
+/* Tab Navigation Styles */
+.tabButton {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.tabButton:hover {
+  color: var(--text-primary);
+}
+
+.tabButton.active {
+  border-bottom-color: var(--primary-500);
+  color: var(--primary-500);
+}
+
+/* Update Card Styles */
+.updateCard {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+  transition: all var(--transition-normal);
+}
+
+.updateCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.updateHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.updateIcon {
+  font-size: 1.5rem;
+  margin-right: var(--space-3);
+}
+
+.updateInfo h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.updateMeta {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.updateMessage {
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  line-height: var(--line-height-relaxed);
+}
+
+.updateDate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
 /* Style FullCalendar to fit the dark theme */
 .scheduleContainer :global(.fc) {
   /* Overall text color */
-  color: #eee;
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
 }
+
 .scheduleContainer :global(.fc .fc-button-primary) {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--primary-500);
+  border-color: var(--primary-500);
+  border-radius: var(--radius-md);
 }
+
+.scheduleContainer :global(.fc .fc-button-primary:hover) {
+  background-color: var(--primary-600);
+  border-color: var(--primary-600);
+}
+
 .scheduleContainer :global(.fc .fc-daygrid-day.fc-day-today) {
-    background-color: rgba(0, 123, 255, 0.15);
+  background-color: rgba(59, 130, 246, 0.15);
 }
+
 .scheduleContainer :global(.fc-event) {
-    cursor: pointer;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  border: none;
+  padding: 2px 6px;
+}
+
+.scheduleContainer :global(.fc-list-event) {
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+}
+
+.scheduleContainer :global(.fc-list-event:hover) {
+  background-color: var(--bg-tertiary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .scheduleContainer {
+    padding: var(--space-2);
+  }
+  
+  .tabButton {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+  }
+  
+  .updateCard {
+    padding: var(--space-4);
+  }
+  
+  .updateHeader {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
 }
