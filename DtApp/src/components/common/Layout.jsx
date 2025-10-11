@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
+import Footer from './Footer';
 import { Toaster } from 'react-hot-toast';
 
 function Layout() {
@@ -10,6 +11,7 @@ function Layout() {
       <main className="pt-20"> {/* Add padding to avoid content being hidden by the fixed navbar */}
         <Outlet /> {/* Child routes will be rendered here */}
       </main>
+      <Footer />
       <Toaster 
         position="top-center"
         toastOptions={{

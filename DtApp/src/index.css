@@ -509,3 +509,7 @@ a {
   color: inherit !important;
   text-decoration: none !important;
 }
+
+.tabButton {
+  @apply flex flex-col items-center hover:text-blue-500 transition;
+}
