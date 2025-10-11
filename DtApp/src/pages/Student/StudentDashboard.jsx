@@ -10,8 +10,9 @@ function StudentDashboard() {
         <p className="text-secondary">Welcome to your personal academic hub</p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      {/* Quick Stats - ADJUSTED TO GRID-COLS-4 */}
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
+        {/* Schedule Stat */}
         <div className="card">
           <div className="flex items-center gap-4">
             <div className="text-3xl">📅</div>
@@ -22,6 +23,7 @@ function StudentDashboard() {
           </div>
         </div>
         
+        {/* Print Jobs Stat */}
         <div className="card">
           <div className="flex items-center gap-4">
             <div className="text-3xl">🖨️</div>
@@ -32,6 +34,18 @@ function StudentDashboard() {
           </div>
         </div>
         
+        {/* V-Refer Stat (NEW) */}
+        <div className="card">
+          <div className="flex items-center gap-4">
+            <div className="text-3xl">📚</div>
+            <div>
+              <h3 className="text-lg font-semibold">V-Refer</h3>
+              <p className="text-secondary text-sm">Access notes & resources</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Profile Stat */}
         <div className="card">
           <div className="flex items-center gap-4">
             <div className="text-3xl">👤</div>
@@ -43,10 +57,12 @@ function StudentDashboard() {
         </div>
       </div>
 
-      {/* Main Actions */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Main Actions - ADJUSTED TO GRID-COLS-4 for wider screens */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        {/* Schedule Action Card */}
         <Link to="/student/schedule" className="card hover:transform hover:scale-105 transition-all duration-200">
-          <div className="text-center">
+          <div className="text-center p-4">
             <div className="text-5xl mb-4">📅</div>
             <h3 className="text-xl font-semibold mb-2">View My Schedule</h3>
             <p className="text-secondary">
@@ -55,8 +71,9 @@ function StudentDashboard() {
           </div>
         </Link>
 
+        {/* Print Services Action Card */}
         <Link to="/student/print" className="card hover:transform hover:scale-105 transition-all duration-200">
-          <div className="text-center">
+          <div className="text-center p-4">
             <div className="text-5xl mb-4">🖨️</div>
             <h3 className="text-xl font-semibold mb-2">Print Services</h3>
             <p className="text-secondary">
@@ -65,8 +82,20 @@ function StudentDashboard() {
           </div>
         </Link>
 
+        {/* V-REFER ACTION CARD */}
+        <Link to="/student/v-refer" className="card hover:transform hover:scale-105 transition-all duration-200">
+          <div className="text-center p-4">
+            <div className="text-5xl mb-4">📚</div>
+            <h3 className="text-xl font-semibold mb-2">V-Refer</h3>
+            <p className="text-secondary">
+              Access personalized notes and academic resources.
+            </p>
+          </div>
+        </Link>
+
+        {/* Profile Action Card */}
         <Link to="/student/profile" className="card hover:transform hover:scale-105 transition-all duration-200">
-          <div className="text-center">
+          <div className="text-center p-4">
             <div className="text-5xl mb-4">👤</div>
             <h3 className="text-xl font-semibold mb-2">My Profile</h3>
             <p className="text-secondary">
