@@ -21,7 +21,7 @@ import StudentSchedulePage from "./pages/Student/StudentSchedulePage";
 import StaffPrintQueuePage from "./pages/Staff/StaffPrintQueuePage";
 import TeacherProfilePage from './pages/Teacher/TeacherProfilePage';
 import AdminWhitelistPage from './pages/Admin/AdminWhitelistPage';
-
+import VReferPage from './pages/Student/VReferPage';
 import Signup from "./pages/Signup";
 import ProfilePage from "./pages/Student/ProfilePage";
 
@@ -75,6 +75,14 @@ function App() {
               // ADD 'teacher' to allowedRoles
               <ProtectedRoute allowedRoles={["student", "teacher"]}>
                 <StudentPrintPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student/v-refer"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <VReferPage />
               </ProtectedRoute>
             }
           />
