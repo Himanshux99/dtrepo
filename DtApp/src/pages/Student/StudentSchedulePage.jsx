@@ -1,235 +1,232 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
 import { db } from '../../firebase/config';
-import { collection, getDocs, query, where, doc, getDoc, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 import { decodeRollNumber } from '../../utils/profileUtils';
 import toast, { Toaster } from 'react-hot-toast';
 import styles from './StudentSchedulePage.module.css';
 
+const updateTypes = [
+    { type: 'Scheduled', color: '#3788d8' },
+    { type: 'Cancelled', color: '#dc3545' },
+    { type: 'Venue Change', color: '#ffc107' },
+    { type: 'Delayed', color: '#fd7e14' },
+    { type: 'Substitute', color: '#17a2b8' }
+];
+
+const getColorForUpdate = (updateType) => {
+    const found = updateTypes.find(t => t.type === updateType);
+    return found ? found.color : '#007bff';
+};
+
 function StudentSchedulePage() {
-  const { currentUser } = useAuth();
-  const [events, setEvents] = useState([]);
-  const [updates, setUpdates] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('schedule');
+    const { currentUser } = useAuth();
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!currentUser) return;
+    const fetchAndProcessSchedules = useCallback(async () => {
+        if (!currentUser) return;
+        setLoading(true);
+        try {
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (!userDoc.exists()) throw new Error("Could not find user profile.");
+            
+            const studentDetails = decodeRollNumber(userDoc.data().rollNumber, userDoc.data().email);
+            if (studentDetails.error) throw new Error(studentDetails.error);
 
-    const fetchFilteredEvents = async () => {
-      try {
-        // 1. Fetch the student's user document
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        const userDoc = await getDoc(userDocRef);
+            const schedulesQuery = query(
+                collection(db, 'schedules'),
+                where('classInfo.year', '==', studentDetails.currentAcademicYear.toString()),
+                where('classInfo.branch', '==', studentDetails.branchShortName),
+                where('classInfo.division', '==', studentDetails.division)
+            );
+            const updatesQuery = query(
+                collection(db, 'lecture_updates'),
+                where('classInfo.year', '==', studentDetails.currentAcademicYear.toString()),
+                where('classInfo.branch', '==', studentDetails.branchShortName),
+                where('classInfo.division', '==', studentDetails.division)
+            );
 
-        if (!userDoc.exists()) {
-          throw new Error("Could not find user profile.");
+            const [schedulesSnapshot, updatesSnapshot] = await Promise.all([
+                getDocs(schedulesQuery),
+                getDocs(updatesQuery),
+            ]);
+            
+            const scheduleRules = schedulesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            const singleUpdates = updatesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            const finalEvents = generateAndMergeSchedules(scheduleRules, singleUpdates);
+            setEvents(finalEvents);
+
+        } catch (error) {
+            console.error("Error fetching schedule: ", error);
+            toast.error(error.message || "Could not fetch schedule.");
+        } finally {
+            setLoading(false);
         }
-        
-        const userData = userDoc.data();
-        // 2. Decode their roll number to get class details
-        const studentDetails = decodeRollNumber(userData.rollNumber, userData.email);
+    }, [currentUser]);
 
-        if (studentDetails.error) {
-            throw new Error(studentDetails.error);
-        }
+    useEffect(() => {
+        fetchAndProcessSchedules();
+    }, [fetchAndProcessSchedules]);
+    
+    const handleEventClick = (clickInfo) => {
+        const { title, extendedProps } = clickInfo.event;
+        const message = `
+          <div style="text-align: left;">
+              <strong>Type:</strong> ${extendedProps.type}<br/>
+              ${extendedProps.venue ? `<strong>Venue:</strong> ${extendedProps.venue}<br/>` : ''}
+              <strong>Message:</strong> ${extendedProps.message}
+          </div>
+        `;
 
-        // 3. Build the targeted Firestore query
-        const updatesCollection = collection(db, 'lecture_updates');
-        const q = query(
-          updatesCollection,
-          where('classInfo.year', '==', studentDetails.currentAcademicYear.toString()),
-          where('classInfo.branch', '==', studentDetails.branchShortName),
-          where('classInfo.division', '==', studentDetails.division)
-        );
-
-        // 4. Fetch the filtered updates
-        const querySnapshot = await getDocs(q);
-        const formattedEvents = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.classInfo.subject, // Use the new data structure
-            start: data.eventDate.toDate(),
-            extendedProps: {
-              type: data.updateType,
-              message: data.message,
-            }
-          };
-        });
-        
-        setEvents(formattedEvents);
-        
-        // 5. Fetch updates for the Updates tab
-        const updatesQuery = query(
-          updatesCollection,
-          where('classInfo.year', '==', studentDetails.currentAcademicYear.toString()),
-          where('classInfo.branch', '==', studentDetails.branchShortName),
-          where('classInfo.division', '==', studentDetails.division),
-          orderBy('createdAt', 'desc')
-        );
-        
-        const updatesSnapshot = await getDocs(updatesQuery);
-        const formattedUpdates = updatesSnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            subject: data.classInfo.subject,
-            updateType: data.updateType,
-            message: data.message,
-            createdAt: data.createdAt?.toDate() || new Date(),
-            eventDate: data.eventDate?.toDate(),
-            teacherName: data.teacherName || 'Unknown Teacher'
-          };
-        });
-        
-        setUpdates(formattedUpdates);
-
-      } catch (error) {
-        console.error("Error fetching filtered events: ", error);
-        toast.error(error.message || "Could not fetch schedule updates.");
-      } finally {
-        setLoading(false);
-      }
+        toast.custom((t) => (
+          <div
+            className={`${styles.toastContainer} ${t.visible ? styles.toastEnter : styles.toastLeave}`}
+          >
+            <h3 className={styles.toastHeader}>{title}</h3>
+            <div dangerouslySetInnerHTML={{ __html: message }} />
+          </div>
+        ));
     };
 
-    fetchFilteredEvents();
-  }, [currentUser]);
+    const generateAndMergeSchedules = (rules, updates) => {
+        const generatedEvents = [];
+        const today = new Date();
+        const endDate = new Date();
+        endDate.setDate(today.getDate() + 60);
 
-  const handleEventClick = (clickInfo) => {
-    const { title, extendedProps } = clickInfo.event;
-    const message = `
-      <div style="text-align: left;">
-        <strong>Type:</strong> ${extendedProps.type}<br/>
-        <strong>Message:</strong> ${extendedProps.message}
-      </div>
-    `;
-    toast.custom((t) => (
-      <div
-        style={{
-          background: '#333', color: '#fff', padding: '16px',
-          borderRadius: '8px', border: '1px solid #555',
-          opacity: t.visible ? 1 : 0, transition: 'opacity 300ms',
-        }}
-      >
-        <h3 style={{ marginTop: 0, borderBottom: '1px solid #555', paddingBottom: '8px' }}>{title}</h3>
-        <div dangerouslySetInnerHTML={{ __html: message }} />
-      </div>
-    ));
-  };
+        const updatesMap = new Map();
+        updates.forEach(upd => {
+            const eventDateStr = upd.eventDate.toDate().toISOString().split('T')[0];
+            const key = `${eventDateStr}_${upd.classInfo.subject}`;
+            updatesMap.set(key, upd);
+        });
 
-  if (loading) {
-    return <p>Loading Your Personalized Schedule...</p>;
-  }
+        for (let day = new Date(today); day <= endDate; day.setDate(day.getDate() + 1)) {
+            const dayOfWeek = day.getDay();
+            rules.forEach(rule => {
+                if (rule.dayOfWeek === dayOfWeek) {
+                    const [startHour, startMinute] = rule.startTime.split(':');
+                    const [endHour, endMinute] = rule.endTime.split(':');
+                    
+                    const startDate = new Date(day);
+                    startDate.setHours(startHour, startMinute, 0, 0);
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <Toaster position="bottom-center" />
-      
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary mb-2">Your Schedule & Updates</h1>
-        <p className="text-secondary">View your class schedule and teacher updates</p>
-      </div>
+                    const ruleEndDate = new Date(day);
+                    ruleEndDate.setHours(endHour, endMinute, 0, 0);
 
-      {/* Tab Navigation */}
-      <div className="flex border-b border-border-color mb-6">
-        <button
-          onClick={() => setActiveTab('schedule')}
-          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
-            activeTab === 'schedule'
-              ? 'border-primary-500 text-primary-500'
-              : 'border-transparent text-secondary hover:text-primary'
-          }`}
-        >
-          📅 Schedule
-        </button>
-        <button
-          onClick={() => setActiveTab('updates')}
-          className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
-            activeTab === 'updates'
-              ? 'border-primary-500 text-primary-500'
-              : 'border-transparent text-secondary hover:text-primary'
-          }`}
-        >
-          📢 Updates
-        </button>
-      </div>
+                    const eventDateStr = day.toISOString().split('T')[0];
+                    const key = `${eventDateStr}_${rule.classInfo.subject}`;
+                    
+                    const overrideUpdate = updatesMap.get(key);
 
-      {/* Tab Content */}
-      {activeTab === 'schedule' && (
-        <div className="card">
-          <FullCalendar
-            plugins={[listPlugin, interactionPlugin]}
-            initialView="listWeek"
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'listDay,listWeek,listMonth'
-            }}
-            buttonText={{ listDay: 'Day', listWeek: 'Week', listMonth: 'Month' }}
-            events={events}
-            eventClick={handleEventClick}
-            noEventsText="No lectures or updates scheduled for your class."
-            height="auto"
-          />
-        </div>
-      )}
+                    if (overrideUpdate) {
+                        generatedEvents.push({
+                            id: `update-${overrideUpdate.id}`,
+                            title: `${rule.classInfo.subject}`,
+                            start: overrideUpdate.eventDate.toDate(),
+                            end: ruleEndDate,
+                            backgroundColor: getColorForUpdate(overrideUpdate.updateType),
+                            borderColor: getColorForUpdate(overrideUpdate.updateType),
+                            extendedProps: {
+                                type: overrideUpdate.updateType,
+                                message: overrideUpdate.message,
+                                venue: overrideUpdate.updateType === 'Venue Change' ? overrideUpdate.message : rule.venue,
+                            }
+                        });
+                        updatesMap.delete(key);
+                    } else {
+                        generatedEvents.push({
+                            id: `schedule-${rule.id}-${eventDateStr}`,
+                            title: `${rule.classInfo.subject}`,
+                            start: startDate,
+                            end: ruleEndDate,
+                            backgroundColor: getColorForUpdate('Scheduled'),
+                            borderColor: getColorForUpdate('Scheduled'),
+                            extendedProps: { 
+                                type: 'Scheduled', 
+                                message: `Regularly scheduled class in ${rule.venue}`, 
+                                venue: rule.venue 
+                            }
+                        });
+                    }
+                }
+            });
+        }
 
-      {activeTab === 'updates' && (
-        <div className="space-y-4">
-          {updates.length === 0 ? (
-            <div className="card text-center py-12">
-              <div className="text-4xl mb-4">📢</div>
-              <h3 className="text-lg font-semibold mb-2">No Updates Yet</h3>
-              <p className="text-secondary">Your teachers haven't posted any updates yet.</p>
+        updatesMap.forEach(upd => {
+            generatedEvents.push({
+                id: `update-${upd.id}`,
+                title: `${upd.classInfo.subject}`,
+                start: upd.eventDate.toDate(),
+                backgroundColor: getColorForUpdate(upd.updateType),
+                borderColor: getColorForUpdate(upd.updateType),
+                extendedProps: {
+                    type: upd.updateType,
+                    message: upd.message,
+                    venue: upd.updateType === 'Venue Change' ? upd.message : 'N/A',
+                }
+            });
+        });
+
+        return generatedEvents;
+    };
+    
+    if (loading) {
+        return <p>Loading Your Personalized Schedule...</p>;
+    }
+
+    return (
+        <div className={styles.scheduleContainer}>
+            <Toaster position="bottom-center" />
+            <div className={styles.header}>
+                <h1>Your Weekly Schedule</h1>
+                <p>This calendar shows your regular classes and any important updates from teachers.</p>
             </div>
-          ) : (
-            updates.map((update) => (
-              <div key={update.id} className="card">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="text-2xl">
-                      {update.updateType === 'cancellation' ? '❌' : 
-                       update.updateType === 'reschedule' ? '🔄' : 
-                       update.updateType === 'assignment' ? '📝' : '📢'}
+            
+            {/* --- NEW: Legend for Colors --- */}
+            <div className={styles.legendContainer}>
+                {updateTypes.map(item => (
+                    <div key={item.type} className={styles.legendItem}>
+                        <span className={styles.legendColorBox} style={{ backgroundColor: item.color }}></span>
+                        {item.type}
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">{update.subject}</h3>
-                      <p className="text-secondary text-sm">
-                        by {update.teacherName} • {update.createdAt.toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <span className={`badge ${
-                    update.updateType === 'cancellation' ? 'badge-error' :
-                    update.updateType === 'reschedule' ? 'badge-warning' :
-                    update.updateType === 'assignment' ? 'badge-primary' : 'badge-secondary'
-                  }`}>
-                    {update.updateType}
-                  </span>
-                </div>
-                
-                <div className="mb-3">
-                  <p className="text-primary">{update.message}</p>
-                </div>
-                
-                {update.eventDate && (
-                  <div className="flex items-center gap-2 text-sm text-secondary">
-                    <span>📅</span>
-                    <span>Event Date: {update.eventDate.toLocaleDateString()}</span>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
+                ))}
+            </div>
+
+            <div className={styles.calendarWrapper}>
+                <FullCalendar
+                    plugins={[listPlugin, interactionPlugin]}
+                    initialView="listWeek"
+                    headerToolbar={{
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'listDay,listWeek,listMonth'
+                    }}
+                    buttonText={{ listDay: 'Day', listWeek: 'Week', listMonth: 'Month' }}
+                    events={events}
+                    eventClick={handleEventClick}
+                    noEventsText="No lectures or updates scheduled for your class in this period."
+                    height="auto"
+                    // Use eventContent to customize rendering
+                    eventContent={(arg) => (
+                        <div className={styles.eventItem}>
+                            <div className={styles.eventTime}>{arg.timeText}</div>
+                            <div className={styles.eventTitle}>{arg.event.title}</div>
+                            <div className={styles.eventType} style={{ backgroundColor: arg.event.backgroundColor }}>
+                                {arg.event.extendedProps.type}
+                            </div>
+                        </div>
+                    )}
+                />
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 }
 
 export default StudentSchedulePage;
