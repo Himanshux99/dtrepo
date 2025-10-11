@@ -3,65 +3,19 @@ import { Link } from 'react-router-dom';
 
 function StudentDashboard() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container px-4 py-10">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-primary mb-2">Student Dashboard</h1>
         <p className="text-secondary">Welcome to your personal academic hub</p>
       </div>
 
-      {/* Quick Stats - ADJUSTED TO GRID-COLS-4 */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
-        {/* Schedule Stat */}
-        <div className="card">
-          <div className="flex items-center gap-4">
-            <div className="text-3xl">📅</div>
-            <div>
-              <h3 className="text-lg font-semibold">Schedule</h3>
-              <p className="text-secondary text-sm">View your classes</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Print Jobs Stat */}
-        <div className="card">
-          <div className="flex items-center gap-4">
-            <div className="text-3xl">🖨️</div>
-            <div>
-              <h3 className="text-lg font-semibold">Print Jobs</h3>
-              <p className="text-secondary text-sm">Manage your printing</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* V-Refer Stat (NEW) */}
-        <div className="card">
-          <div className="flex items-center gap-4">
-            <div className="text-3xl">📚</div>
-            <div>
-              <h3 className="text-lg font-semibold">V-Refer</h3>
-              <p className="text-secondary text-sm">Access notes & resources</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Profile Stat */}
-        <div className="card">
-          <div className="flex items-center gap-4">
-            <div className="text-3xl">👤</div>
-            <div>
-              <h3 className="text-lg font-semibold">Profile</h3>
-              <p className="text-secondary text-sm">Update your info</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Main Actions - ADJUSTED TO GRID-COLS-4 for wider screens */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* Schedule Action Card */}
-        <Link to="/student/schedule" className="card hover:transform hover:scale-105 transition-all duration-200">
+        <Link to="/student/schedule" className="card">
           <div className="text-center p-4">
             <div className="text-5xl mb-4">📅</div>
             <h3 className="text-xl font-semibold mb-2">View My Schedule</h3>
@@ -72,7 +26,7 @@ function StudentDashboard() {
         </Link>
 
         {/* Print Services Action Card */}
-        <Link to="/student/print" className="card hover:transform hover:scale-105 transition-all duration-200">
+        <Link to="/student/print" className="card">
           <div className="text-center p-4">
             <div className="text-5xl mb-4">🖨️</div>
             <h3 className="text-xl font-semibold mb-2">Print Services</h3>
@@ -83,7 +37,7 @@ function StudentDashboard() {
         </Link>
 
         {/* V-REFER ACTION CARD */}
-        <Link to="/student/v-refer" className="card hover:transform hover:scale-105 transition-all duration-200">
+        <Link to="/student/v-refer" className="card">
           <div className="text-center p-4">
             <div className="text-5xl mb-4">📚</div>
             <h3 className="text-xl font-semibold mb-2">V-Refer</h3>
@@ -94,7 +48,7 @@ function StudentDashboard() {
         </Link>
 
         {/* Profile Action Card */}
-        <Link to="/student/profile" className="card hover:transform hover:scale-105 transition-all duration-200">
+        <Link to="/student/profile" className="card">
           <div className="text-center p-4">
             <div className="text-5xl mb-4">👤</div>
             <h3 className="text-xl font-semibold mb-2">My Profile</h3>
@@ -106,7 +60,7 @@ function StudentDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="mt-12">
+      <div className="my-12">
         <h2 className="text-2xl font-semibold mb-6">Recent Activity</h2>
         <div className="card">
           <div className="space-y-4">

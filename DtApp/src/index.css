@@ -1,4 +1,9 @@
 /* Design System Variables */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 :root {
   /* Color Palette */
   --primary-50: #eff6ff;
@@ -172,6 +177,7 @@ body {
 .mt-4 { margin-top: var(--space-4); }
 .mt-6 { margin-top: var(--space-6); }
 .mt-8 { margin-top: var(--space-8); }
+.mt-10 { margin-top: var(--space-10); }
 
 /* Component Base Styles */
 .btn {
@@ -497,4 +503,9 @@ body {
   .card {
     padding: var(--space-3);
   }
+}
+
+a {
+  color: inherit !important;
+  text-decoration: none !important;
 }
