@@ -1,33 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import listPlugin from '@fullcalendar/list';
-import interactionPlugin from '@fullcalendar/interaction';
 import { db } from '../../firebase/config';
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc, orderBy } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 import { decodeRollNumber } from '../../utils/profileUtils';
 import toast, { Toaster } from 'react-hot-toast';
 import styles from './StudentSchedulePage.module.css';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday } from 'date-fns';
 
-const updateTypes = [
-    { type: 'Scheduled', color: '#3788d8' },
-    { type: 'Cancelled', color: '#dc3545' },
-    { type: 'Venue Change', color: '#ffc107' },
-    { type: 'Delayed', color: '#fd7e14' },
-    { type: 'Substitute', color: '#17a2b8' }
-];
-
-const getColorForUpdate = (updateType) => {
-    const found = updateTypes.find(t => t.type === updateType);
-    return found ? found.color : '#007bff';
-};
+const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const dayAbbreviations = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 function StudentSchedulePage() {
     const { currentUser } = useAuth();
-    const [events, setEvents] = useState([]);
+    const [activeTab, setActiveTab] = useState('schedule');
+    const [updateFilter, setUpdateFilter] = useState('week');
+    const [schedules, setSchedules] = useState([]);
+    const [updates, setUpdates] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeDay, setActiveDay] = useState(new Date().getDay());
 
-    const fetchAndProcessSchedules = useCallback(async () => {
+    const fetchData = useCallback(async () => {
         if (!currentUser) return;
         setLoading(true);
         try {
@@ -38,17 +30,27 @@ function StudentSchedulePage() {
             const studentDetails = decodeRollNumber(userDoc.data().rollNumber, userDoc.data().email);
             if (studentDetails.error) throw new Error(studentDetails.error);
 
+            // --- DIAGNOSTIC LOG 1: What are we searching for? ---
+            console.log("Searching for updates matching:", {
+                year: studentDetails.currentAcademicYear.toString(),
+                branch: studentDetails.branchShortName,
+                division: studentDetails.division,
+            });
+            // ----------------------------------------------------
+
             const schedulesQuery = query(
                 collection(db, 'schedules'),
                 where('classInfo.year', '==', studentDetails.currentAcademicYear.toString()),
                 where('classInfo.branch', '==', studentDetails.branchShortName),
-                where('classInfo.division', '==', studentDetails.division)
+                where('classInfo.division', '==', studentDetails.division),
+                orderBy('startTime')
             );
             const updatesQuery = query(
                 collection(db, 'lecture_updates'),
                 where('classInfo.year', '==', studentDetails.currentAcademicYear.toString()),
                 where('classInfo.branch', '==', studentDetails.branchShortName),
-                where('classInfo.division', '==', studentDetails.division)
+                where('classInfo.division', '==', studentDetails.division),
+                orderBy('eventDate', 'desc')
             );
 
             const [schedulesSnapshot, updatesSnapshot] = await Promise.all([
@@ -56,174 +58,119 @@ function StudentSchedulePage() {
                 getDocs(updatesQuery),
             ]);
             
-            const scheduleRules = schedulesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            const singleUpdates = updatesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            // --- FIX APPLIED HERE ---
+            const fetchedSchedules = schedulesSnapshot.docs.map(d => d.data());
+            const fetchedUpdates = updatesSnapshot.docs.map(d => ({...d.data(), id: d.id }));
 
-            const finalEvents = generateAndMergeSchedules(scheduleRules, singleUpdates);
-            setEvents(finalEvents);
+            // --- DIAGNOSTIC LOG 2: What did we find? ---
+            console.log("Fetched Schedules:", fetchedSchedules);
+            console.log("Fetched Updates:", fetchedUpdates);
+            // -------------------------------------------------
+
+            setSchedules(fetchedSchedules);
+            setUpdates(fetchedUpdates);
 
         } catch (error) {
-            console.error("Error fetching schedule: ", error);
-            toast.error(error.message || "Could not fetch schedule.");
+            console.error("Error fetching data: ", error);
+            toast.error(error.message || "Could not fetch data.");
         } finally {
             setLoading(false);
         }
     }, [currentUser]);
 
     useEffect(() => {
-        fetchAndProcessSchedules();
-    }, [fetchAndProcessSchedules]);
-    
-    const handleEventClick = (clickInfo) => {
-        const { title, extendedProps } = clickInfo.event;
-        const message = `
-          <div style="text-align: left;">
-              <strong>Type:</strong> ${extendedProps.type}<br/>
-              ${extendedProps.venue ? `<strong>Venue:</strong> ${extendedProps.venue}<br/>` : ''}
-              <strong>Message:</strong> ${extendedProps.message}
-          </div>
-        `;
+        fetchData();
+    }, [fetchData]);
 
-        toast.custom((t) => (
-          <div
-            className={`${styles.toastContainer} ${t.visible ? styles.toastEnter : styles.toastLeave}`}
-          >
-            <h3 className={styles.toastHeader}>{title}</h3>
-            <div dangerouslySetInnerHTML={{ __html: message }} />
-          </div>
-        ));
-    };
+    const groupedSchedules = schedules.reduce((acc, sch) => {
+        const dayIndex = sch.dayOfWeek;
+        if (!acc[dayIndex]) acc[dayIndex] = [];
+        acc[dayIndex].push(sch);
+        return acc;
+    }, {});
 
-    const generateAndMergeSchedules = (rules, updates) => {
-        const generatedEvents = [];
-        const today = new Date();
-        const endDate = new Date();
-        endDate.setDate(today.getDate() + 60);
-
-        const updatesMap = new Map();
-        updates.forEach(upd => {
-            const eventDateStr = upd.eventDate.toDate().toISOString().split('T')[0];
-            const key = `${eventDateStr}_${upd.classInfo.subject}`;
-            updatesMap.set(key, upd);
-        });
-
-        for (let day = new Date(today); day <= endDate; day.setDate(day.getDate() + 1)) {
-            const dayOfWeek = day.getDay();
-            rules.forEach(rule => {
-                if (rule.dayOfWeek === dayOfWeek) {
-                    const [startHour, startMinute] = rule.startTime.split(':');
-                    const [endHour, endMinute] = rule.endTime.split(':');
-                    
-                    const startDate = new Date(day);
-                    startDate.setHours(startHour, startMinute, 0, 0);
-
-                    const ruleEndDate = new Date(day);
-                    ruleEndDate.setHours(endHour, endMinute, 0, 0);
-
-                    const eventDateStr = day.toISOString().split('T')[0];
-                    const key = `${eventDateStr}_${rule.classInfo.subject}`;
-                    
-                    const overrideUpdate = updatesMap.get(key);
-
-                    if (overrideUpdate) {
-                        generatedEvents.push({
-                            id: `update-${overrideUpdate.id}`,
-                            title: `${rule.classInfo.subject}`,
-                            start: overrideUpdate.eventDate.toDate(),
-                            end: ruleEndDate,
-                            backgroundColor: getColorForUpdate(overrideUpdate.updateType),
-                            borderColor: getColorForUpdate(overrideUpdate.updateType),
-                            extendedProps: {
-                                type: overrideUpdate.updateType,
-                                message: overrideUpdate.message,
-                                venue: overrideUpdate.updateType === 'Venue Change' ? overrideUpdate.message : rule.venue,
-                            }
-                        });
-                        updatesMap.delete(key);
-                    } else {
-                        generatedEvents.push({
-                            id: `schedule-${rule.id}-${eventDateStr}`,
-                            title: `${rule.classInfo.subject}`,
-                            start: startDate,
-                            end: ruleEndDate,
-                            backgroundColor: getColorForUpdate('Scheduled'),
-                            borderColor: getColorForUpdate('Scheduled'),
-                            extendedProps: { 
-                                type: 'Scheduled', 
-                                message: `Regularly scheduled class in ${rule.venue}`, 
-                                venue: rule.venue 
-                            }
-                        });
-                    }
-                }
+    const getFilteredUpdates = () => {
+        const now = new Date();
+        if (updateFilter === 'today') {
+            return updates.filter(upd => isToday(upd.eventDate.toDate()));
+        }
+        if (updateFilter === 'week') {
+            const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+            const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+            return updates.filter(upd => {
+                const eventDate = upd.eventDate.toDate();
+                return eventDate >= weekStart && eventDate <= weekEnd;
             });
         }
-
-        updatesMap.forEach(upd => {
-            generatedEvents.push({
-                id: `update-${upd.id}`,
-                title: `${upd.classInfo.subject}`,
-                start: upd.eventDate.toDate(),
-                backgroundColor: getColorForUpdate(upd.updateType),
-                borderColor: getColorForUpdate(upd.updateType),
-                extendedProps: {
-                    type: upd.updateType,
-                    message: upd.message,
-                    venue: upd.updateType === 'Venue Change' ? upd.message : 'N/A',
-                }
+        if (updateFilter === 'month') {
+            const monthStart = startOfMonth(now);
+            const monthEnd = endOfMonth(now);
+            return updates.filter(upd => {
+                const eventDate = upd.eventDate.toDate();
+                return eventDate >= monthStart && eventDate <= monthEnd;
             });
-        });
-
-        return generatedEvents;
+        }
+        return updates;
     };
-    
-    if (loading) {
-        return <p>Loading Your Personalized Schedule...</p>;
-    }
+
+    if (loading) return <p>Loading Schedule & Updates...</p>;
 
     return (
-        <div className={styles.scheduleContainer}>
-            <Toaster position="bottom-center" />
+        <div className={styles.container}>
+            <Toaster position="top-center" />
             <div className={styles.header}>
-                <h1>Your Weekly Schedule</h1>
-                <p>This calendar shows your regular classes and any important updates from teachers.</p>
-            </div>
-            
-            {/* --- NEW: Legend for Colors --- */}
-            <div className={styles.legendContainer}>
-                {updateTypes.map(item => (
-                    <div key={item.type} className={styles.legendItem}>
-                        <span className={styles.legendColorBox} style={{ backgroundColor: item.color }}></span>
-                        {item.type}
-                    </div>
-                ))}
+                <h1>Schedule & Updates</h1>
+                <p>View your weekly timetable and the latest updates from your teachers.</p>
             </div>
 
-            <div className={styles.calendarWrapper}>
-                <FullCalendar
-                    plugins={[listPlugin, interactionPlugin]}
-                    initialView="listWeek"
-                    headerToolbar={{
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'listDay,listWeek,listMonth'
-                    }}
-                    buttonText={{ listDay: 'Day', listWeek: 'Week', listMonth: 'Month' }}
-                    events={events}
-                    eventClick={handleEventClick}
-                    noEventsText="No lectures or updates scheduled for your class in this period."
-                    height="auto"
-                    // Use eventContent to customize rendering
-                    eventContent={(arg) => (
-                        <div className={styles.eventItem}>
-                            <div className={styles.eventTime}>{arg.timeText}</div>
-                            <div className={styles.eventTitle}>{arg.event.title}</div>
-                            <div className={styles.eventType} style={{ backgroundColor: arg.event.backgroundColor }}>
-                                {arg.event.extendedProps.type}
+            <div className={styles.tabNav}>
+                <button onClick={() => setActiveTab('schedule')} className={activeTab === 'schedule' ? styles.activeTab : ''}>Weekly Schedule</button>
+                <button onClick={() => setActiveTab('updates')} className={activeTab === 'updates' ? styles.activeTab : ''}>Updates ({updates.length})</button>
+            </div>
+
+            <div className={styles.contentArea}>
+                {activeTab === 'schedule' && (
+                    <div>
+                        <div className={styles.daySelector}>
+                            {dayAbbreviations.slice(1, 7).map((day, index) => (
+                                <button key={day} onClick={() => setActiveDay(index + 1)} className={activeDay === (index + 1) ? styles.activeDay : ''}>{day}</button>
+                            ))}
+                        </div>
+                        <div className={styles.scheduleDayView}>
+                            <h2>{daysOfWeek[activeDay]}</h2>
+                            <div className={styles.cardsContainer}>
+                                {groupedSchedules[activeDay] ? groupedSchedules[activeDay].map((sch, index) => (
+                                    <div key={index} className={styles.scheduleCard}>
+                                        <div className={styles.timeSection}><p className={styles.time}>{sch.startTime}</p><p className={styles.timeEnd}>to {sch.endTime}</p></div>
+                                        <div className={styles.detailsSection}><p className={styles.subject}>{sch.classInfo.subject}</p><p className={styles.venue}>{sch.venue} | {sch.teacherName || 'N/A'}</p></div>
+                                    </div>
+                                )) : <p className={styles.noClass}>No classes scheduled for {daysOfWeek[activeDay]}.</p>}
                             </div>
                         </div>
-                    )}
-                />
+                    </div>
+                )}
+                {activeTab === 'updates' && (
+                    <div>
+                        <div className={styles.updateFilterNav}>
+                            <button onClick={() => setUpdateFilter('today')} className={updateFilter === 'today' ? styles.activeFilter : ''}>Today</button>
+                            <button onClick={() => setUpdateFilter('week')} className={updateFilter === 'week' ? styles.activeFilter : ''}>This Week</button>
+                            <button onClick={() => setUpdateFilter('month')} className={updateFilter === 'month' ? styles.activeFilter : ''}>This Month</button>
+                        </div>
+                        <div className={styles.updatesList}>
+                            {getFilteredUpdates().length > 0 ? getFilteredUpdates().map(upd => (
+                                <div key={upd.id} className={styles.updateCard}>
+                                    <div className={styles.updateHeader}>
+                                        <span className={styles.updateType} style={{backgroundColor: upd.updateType === 'Cancelled' ? '#dc3545' : '#ffc107' }}>{upd.updateType}</span>
+                                        <span className={styles.updateDate}>{upd.eventDate.toDate().toLocaleDateString()}</span>
+                                    </div>
+                                    <h3 className={styles.updateSubject}>{upd.classInfo.subject}</h3>
+                                    <p className={styles.updateMessage}>{upd.message}</p>
+                                    <small className={styles.postedBy}>Posted by: {upd.teacherName}</small>
+                                </div>
+                            )) : <p className={styles.noUpdates}>No updates for this period.</p>}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

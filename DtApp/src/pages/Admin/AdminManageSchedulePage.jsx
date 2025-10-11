@@ -1,59 +1,72 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { db } from '../../firebase/config';
-import { collection, addDoc, getDocs, deleteDoc, doc, query, where, orderBy, updateDoc } from 'firebase/firestore';
-import { useAuth } from '../../context/AuthContext';
-import toast from 'react-hot-toast';
+import { collection, getDocs, deleteDoc, doc, query, where, orderBy, addDoc, updateDoc } from 'firebase/firestore';
+import toast, { Toaster } from 'react-hot-toast';
 import ScheduleForm from '../../components/teacher/ScheduleForm';
-import styles from './ManageSchedulePage.module.css';
+import styles from '../Teacher/ManageSchedulePage.module.css'; // Reusing styles
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const dayAbbreviations = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const years = ["1", "2", "3", "4"];
+const branches = ["INFT", "CMPN", "EXTC", "ETRX", "BIOM"];
+const divisions = ["A", "B"];
 
-function ManageSchedulePage() {
-    const { currentUser } = useAuth();
+function AdminManageSchedulePage() {
     const [schedules, setSchedules] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [showScheduleForm, setShowScheduleForm] = useState(false);
     const [editingSchedule, setEditingSchedule] = useState(null);
-    const [activeDay, setActiveDay] = useState(new Date().getDay()); // Default to current day
+
+    // State for filters
+    const [filterYear, setFilterYear] = useState('3');
+    const [filterBranch, setFilterBranch] = useState('INFT');
+    const [filterDivision, setFilterDivision] = useState('A');
+
+    // State for UI
+    const [activeDay, setActiveDay] = useState(new Date().getDay());
 
     const fetchSchedules = useCallback(async () => {
-        if (!currentUser) return;
         setLoading(true);
         try {
-            // Teacher fetches only their own schedules
+            // This query requires a composite index in Firestore.
+            // If it fails, check the browser console for a link to create it.
             const q = query(
                 collection(db, 'schedules'),
-                where('teacherId', '==', currentUser.uid),
+                where('classInfo.year', '==', filterYear),
+                where('classInfo.branch', '==', filterBranch),
+                where('classInfo.division', '==', filterDivision),
                 orderBy('startTime')
             );
             const querySnapshot = await getDocs(q);
             const schedulesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setSchedules(schedulesData);
+            if (schedulesData.length > 0) {
+                toast.success(`Fetched schedule for ${filterYear}yr ${filterBranch} Div-${filterDivision}.`);
+            } else {
+                toast.error(`No schedule found for the selected class.`);
+            }
         } catch (error) {
             console.error("Error fetching schedules: ", error);
-            toast.error("Could not fetch your schedules.");
+            toast.error("Query failed. A Firestore index is likely required. Check the console for a link.");
         } finally {
             setLoading(false);
         }
-    }, [currentUser]);
+    }, [filterYear, filterBranch, filterDivision]);
 
-    useEffect(() => {
-        fetchSchedules();
-    }, [fetchSchedules]);
-    
+    // --- ADDED MISSING FUNCTION ---
     const handleAddSchedule = async (newSchedule) => {
         try {
             await addDoc(collection(db, 'schedules'), newSchedule);
-            toast.success('New class added to your schedule!');
+            toast.success('New class schedule added successfully!');
             setShowScheduleForm(false);
-            fetchSchedules();
+            fetchSchedules(); // Refresh the view
         } catch (error) {
             console.error("Error adding schedule: ", error);
             toast.error("Failed to add schedule.");
         }
     };
-    
+    // --- END ---
+
     const handleEditSchedule = (scheduleData) => {
         setEditingSchedule(scheduleData);
         setShowScheduleForm(true);
@@ -75,7 +88,7 @@ function ManageSchedulePage() {
     };
 
     const handleDeleteSchedule = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this class from your schedule?")) return;
+        if (!window.confirm("Are you sure you want to delete this schedule entry?")) return;
         try {
             await deleteDoc(doc(db, 'schedules', id));
             toast.success('Schedule entry deleted.');
@@ -95,26 +108,42 @@ function ManageSchedulePage() {
 
     return (
         <div className={styles.container}>
-            <h1>Manage Your Schedule</h1>
-            <p>Add, edit, or remove your recurring weekly classes.</p>
+            <Toaster position="top-center" />
+            <h1>Manage Master Schedule (Admin)</h1>
+            <p>Filter by class to view, edit, or delete schedule entries.</p>
+
+            <div className={styles.filterContainer}>
+                <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)}>
+                    {years.map(y => <option key={y} value={y}>{y} Year</option>)}
+                </select>
+                <select value={filterBranch} onChange={(e) => setFilterBranch(e.target.value)}>
+                    {branches.map(b => <option key={b} value={b}>{b}</option>)}
+                </select>
+                <select value={filterDivision} onChange={(e) => setFilterDivision(e.target.value)}>
+                    {divisions.map(d => <option key={d} value={d}>Div {d}</option>)}
+                </select>
+                <button onClick={fetchSchedules} disabled={loading}>
+                    {loading ? 'Fetching...' : 'View Schedule'}
+                </button>
+            </div>
 
             {!showScheduleForm && (
                 <button onClick={() => { setEditingSchedule(null); setShowScheduleForm(true); }} className={styles.addButton}>
-                    + Add New Class
+                    + Add New Schedule Entry
                 </button>
             )}
             {showScheduleForm && (
                 <ScheduleForm
                     onAdd={editingSchedule ? handleUpdateSchedule : handleAddSchedule}
                     onCancel={() => { setShowScheduleForm(false); setEditingSchedule(null); }}
+                    isAdmin={true}
                     initialData={editingSchedule}
                 />
             )}
 
             <div className={styles.scheduleList}>
-                {/* Day Selector Tabs */}
                 <div className={styles.daySelector}>
-                    {dayAbbreviations.slice(1, 7).map((day, index) => ( // Mon-Sat
+                    {dayAbbreviations.slice(1, 7).map((day, index) => (
                         <button
                             key={day}
                             onClick={() => setActiveDay(index + 1)}
@@ -124,12 +153,10 @@ function ManageSchedulePage() {
                         </button>
                     ))}
                 </div>
-
-                {/* Schedule Cards for selected day */}
                 <div className={styles.scheduleDayView}>
                     <h2>{daysOfWeek[activeDay]}</h2>
                     <div className={styles.cardsContainer}>
-                        {loading ? <p>Loading...</p> : groupedSchedules[activeDay] ? groupedSchedules[activeDay].map((sch) => (
+                        {schedules.length > 0 && groupedSchedules[activeDay] ? groupedSchedules[activeDay].map((sch) => (
                             <div key={sch.id} className={styles.scheduleCard}>
                                 <div className={styles.timeSection}>
                                     <p className={styles.time}>{sch.startTime}</p>
@@ -137,7 +164,7 @@ function ManageSchedulePage() {
                                 </div>
                                 <div className={styles.detailsSection}>
                                     <p className={styles.subject}>{sch.classInfo.subject}</p>
-                                    <p className={styles.venue}>{sch.venue} | {sch.classInfo.year}yr {sch.classInfo.branch} Div-{sch.classInfo.division}</p>
+                                    <p className={styles.venue}>{sch.venue} | {sch.teacherName || 'N/A'}</p>
                                 </div>
                                 <div className={styles.actionsSection}>
                                     <button onClick={() => handleEditSchedule(sch)} className={styles.editButton}>Edit</button>
@@ -152,4 +179,4 @@ function ManageSchedulePage() {
     );
 }
 
-export default ManageSchedulePage;
+export default AdminManageSchedulePage;

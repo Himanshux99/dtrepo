@@ -27,7 +27,7 @@ import ProfilePage from "./pages/Student/ProfilePage";
 
 import TeacherSignup from './pages/TeacherSignup';
 import ManageSchedulePage from './pages/Teacher/ManageSchedulePage';
-
+import AdminManageSchedulePage from './pages/Admin/AdminManageSchedulePage';
 import { Toaster } from 'react-hot-toast';
 
 import CompleteProfile from './pages/Student/CompleteProfile';
@@ -208,6 +208,15 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminWhitelistPage />
+              </ProtectedRoute>
+            }
+          />
+            {/* --- NEW ADMIN SCHEDULE ROUTE --- */}
+          <Route
+            path="/admin/schedule"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminManageSchedulePage />
               </ProtectedRoute>
             }
           />

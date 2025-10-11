@@ -5,7 +5,7 @@ import styles from '../../pages/Login.module.css'; // Reusing some basic styles
 function AssignmentForm({ onAdd, onCancel }) {
   const [assignment, setAssignment] = useState({
     year: '1',
-    branch: 'IT',
+    branch: 'INFT',
     division: 'A',
     subject: '',
     batches: [],
@@ -47,7 +47,7 @@ function AssignmentForm({ onAdd, onCancel }) {
             {[1, 2, 3, 4].map(y => <option key={y} value={y}>{y}{y===1?'st':y===2?'nd':y===3?'rd':'th'} Year</option>)}
         </select>
         <select className={styles.formGroup} value={assignment.branch} onChange={e => setAssignment({...assignment, branch: e.target.value})}>
-            {['IT', 'CMPN', 'EXTC', 'EXCS'].map(b => <option key={b} value={b}>{b}</option>)}
+            {['INFT', 'CMPN', 'EXTC', 'EXCS'].map(b => <option key={b} value={b}>{b}</option>)}
         </select>
         <select className={styles.formGroup} value={assignment.division} onChange={e => setAssignment({...assignment, division: e.target.value})}>
             {['A', 'B', 'C'].map(d => <option key={d} value={d}>Division {d}</option>)}

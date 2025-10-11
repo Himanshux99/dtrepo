@@ -1,4 +1,4 @@
-.scheduleContainer {
+.container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 1rem;
@@ -9,113 +9,190 @@
     margin-bottom: 2rem;
 }
 
-.header h1 {
-    font-size: 2.5rem;
-    color: var(--color-primary, #007bff);
-    margin-bottom: 0.5rem;
-}
-
-.header p {
-    font-size: 1.1rem;
-    color: #aaa;
-}
-
-.legendContainer {
+/* Main Tab Navigation */
+.tabNav {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border, #444);
+}
+.tabNav button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    color: #aaa;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+.tabNav button:hover {
+    color: white;
+}
+.tabNav .activeTab {
+    color: var(--color-primary, #007bff);
+    border-bottom-color: var(--color-primary, #007bff);
+}
+
+.contentArea {
     padding: 1rem;
-    background-color: var(--color-card, #2c2c2c);
-    border-radius: 8px;
 }
 
-.legendItem {
+/* --- NEW: Schedule View - Day Selector --- */
+.daySelector {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-}
-
-.legendColorBox {
-    width: 15px;
-    height: 15px;
-    border-radius: 3px;
-}
-
-.calendarWrapper {
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
     background-color: var(--color-card, #2c2c2c);
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+    border-radius: 30px;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--color-border, #444);
+}
+.daySelector button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.daySelector .activeDay {
+    background-color: var(--color-primary, #007bff);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
 }
 
-/* --- FullCalendar Customization --- */
+.scheduleDayView {
+    text-align: center;
+}
+.scheduleDayView h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
 
-/* Custom Event Item Layout */
-.eventItem {
+.cardsContainer {
     display: flex;
-    align-items: center;
-    width: 100%;
+    flex-direction: column;
     gap: 1rem;
 }
 
-.eventTime {
-    font-weight: bold;
-    flex-basis: 150px; /* Fixed width for time */
+.scheduleCard {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: left;
+    border-left: 5px solid #3788d8;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.timeSection {
+    flex-basis: 100px;
     flex-shrink: 0;
+    text-align: center;
+}
+.timeSection .time {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0;
+}
+.timeSection .timeEnd {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin: 0;
 }
 
-.eventTitle {
-    flex-grow: 1; /* Title takes up remaining space */
-    font-size: 1.1rem;
+.detailsSection {
+    flex-grow: 1;
+}
+.detailsSection .subject {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0;
+}
+.detailsSection .venue {
+    color: #ffc107;
+    margin: 0.25rem 0 0;
+    font-weight: bold;
+}
+.noClass {
+    color: #777;
+    text-align: center;
+    padding: 3rem;
+    font-style: italic;
+    background-color: var(--color-card, #2c2c2c);
+    border-radius: 8px;
 }
 
-.eventType {
-    padding: 4px 12px;
+/* --- Updates View (Styles remain mostly the same) --- */
+.updateFilterNav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+.updateFilterNav button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border, #444);
+    border-radius: 20px;
+    background: none;
+    color: #aaa;
+    cursor: pointer;
+}
+.updateFilterNav .activeFilter {
+    background-color: var(--color-primary, #007bff);
+    color: white;
+    border-color: var(--color-primary, #007bff);
+}
+
+.updatesList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+.updateCard {
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+.updateHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.updateType {
+    color: black;
+    padding: 4px 10px;
     border-radius: 15px;
     font-size: 0.8rem;
     font-weight: bold;
-    color: white;
-    flex-shrink: 0;
-    min-width: 100px;
+}
+.updateDate {
+    font-size: 0.9rem;
+    color: #aaa;
+}
+.updateSubject {
+    margin: 0 0 0.5rem;
+}
+.updateMessage {
+    margin: 0 0 1rem;
+}
+.postedBy {
+    color: #777;
+    font-style: italic;
+}
+.noUpdates {
     text-align: center;
-}
-
-
-/* --- Toast Notification Styling --- */
-.toastContainer {
-    background: #333;
-    color: #fff;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid #555;
-    width: 350px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
-
-.toastHeader {
-    margin-top: 0;
-    border-bottom: 1px solid #555;
-    padding-bottom: 8px;
-    font-size: 1.2rem;
-}
-
-/* Toast Animations */
-.toastEnter {
-    animation: fadeIn 0.3s ease-out;
-}
-.toastLeave {
-    animation: fadeOut 0.3s ease-in forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(10px); }
+    padding: 2rem;
+    color: #777;
 }
