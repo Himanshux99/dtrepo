@@ -6,16 +6,44 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      strategies: 'injectManifest',
+      srcDir: 'public',
+      filename: 'sw-unified.js',
+      injectRegister: 'inline',
+      injectManifest: {
+        injectionPoint: undefined,
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}'],
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
       manifest: {
-        name: 'Your App Name',
-        short_name: 'App',
+        name: 'V++',
+        short_name: 'V++',
+        description: 'Your app description',
         theme_color: '#ffffff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        scope: '/',
+        start_url: '/',
         icons: [
-          { src: '/public/vite.svg', sizes: '64x64', type: 'image/png' },
-          { src: '/public/vite.svg', sizes: '192x192', type: 'image/png' },
-          { src: '/public/vite.svg', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: '/public/vite.svg', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+          { 
+            src: '/vite.svg', 
+            sizes: '64x64', 
+            type: 'image/svg+xml' 
+          },
+          { 
+            src: '/vite.svg', 
+            sizes: '192x192', 
+            type: 'image/svg+xml' 
+          },
+          { 
+            src: '/vite.svg', 
+            sizes: '512x512', 
+            type: 'image/svg+xml', 
+            purpose: 'any maskable' 
+          }
         ],
       },
     }),

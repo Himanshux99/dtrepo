@@ -40,18 +40,9 @@ import TestNotification from "./components/TestNotification";
 
 function App() {
 
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/firebase-messaging-sw.js') // Ensure this file is in public/
-        .then((registration) => {
-          console.log('Service Worker registered:', registration);
-        })
-        .catch((err) => {
-          console.error('Service Worker registration failed:', err);
-        });
-    }
-  }, []);
+  // REMOVED: Service worker registration - now handled by vite-plugin-pwa
+  // The unified service worker (sw-unified.js) will be automatically registered
+
   return (
     
     <Router>
@@ -90,7 +81,6 @@ function App() {
           <Route
             path="/student/print"
             element={
-              // ADD 'teacher' to allowedRoles
               <ProtectedRoute allowedRoles={["student", "teacher"]}>
                 <StudentPrintPage />
               </ProtectedRoute>
@@ -108,7 +98,7 @@ function App() {
           {/* Complete Profile Route - No role check needed */}
           <Route
             path="/student/complete-profile"
-            element={<CompleteProfile />} // Remove ProtectedRoute wrapper entirely
+            element={<CompleteProfile />}
           />
           {/* ========== NEW: Test Notification Route (Development Only) ========== */}
           <Route
@@ -131,8 +121,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* NOTE: You still need to add the /student/print route here if you haven't already */}
 
           {/* Teacher Routes */}
           <Route
@@ -202,18 +190,15 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route // NEW ROUTE ADDED HERE
+          <Route
             path="/staff/queue"
             element={
               <ProtectedRoute allowedRoles={["staff", "admin"]}>
-                {" "}
-                {/* Admin also needs access */}
                 <StaffPrintQueuePage />
               </ProtectedRoute>
             }
           />
-          {/* added a new status dashboard in staff */}
-          <Route // NEW SLOT STATUS DASHBOARD ROUTE
+          <Route
             path="/staff/slots"
             element={
               <ProtectedRoute allowedRoles={["staff", "admin"]}>
@@ -255,7 +240,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* --- NEW ADMIN SCHEDULE ROUTE --- */}
           <Route
             path="/admin/schedule"
             element={
@@ -275,7 +259,6 @@ function App() {
         </Route>
 
         {/* Route without Navbar */}
-        <Route path="/login" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
