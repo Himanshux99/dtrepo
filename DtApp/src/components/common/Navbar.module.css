@@ -5,9 +5,13 @@
   right: 0;
   z-index: 1000;
   background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xl);
   border-bottom: 1px solid var(--border-color);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .navContainer {
@@ -17,6 +21,7 @@
   padding: var(--space-4) var(--space-6);
   max-width: 1200px;
   margin: 0 auto;
+  height: 70px;
   width: 100%;
 }
 
@@ -24,9 +29,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   text-decoration: none;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
   transition: color var(--transition-fast);
 }
@@ -36,7 +41,7 @@
 }
 
 .brandIcon {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-4xl);
 }
 
 .navLinks {

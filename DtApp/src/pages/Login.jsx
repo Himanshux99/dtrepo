@@ -45,19 +45,19 @@ function Login() {
         switch (userData.role) {
             case 'student':
               console.log('Navigating to student dashboard');
-              navigate('/student');
+              navigate('/student',{ replace: true });
               break;
             case 'teacher':
               console.log('Navigating to teacher dashboard');
-              navigate('/teacher');
+              navigate('/teacher',{ replace: true });
               break;
             case 'staff':
               console.log('Navigating to staff dashboard');
-              navigate('/staff');
+              navigate('/staff',{ replace: true });
               break;
             case 'admin':
               console.log('Navigating to admin dashboard');
-              navigate('/admin');
+              navigate('/admin',{ replace: true });
               break;
             default:
               console.log('No role found, navigating to home');

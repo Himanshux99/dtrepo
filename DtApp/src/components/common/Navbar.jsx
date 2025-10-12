@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Navbar.module.css';
+import { CircleUserRound } from 'lucide-react';
 
 function Navbar() {
   const { currentUser, logout } = useAuth();
@@ -22,10 +23,10 @@ function Navbar() {
     switch (currentUser?.role) {
       case 'student':
       case 'teacher':
-        return `/${currentUser.role}/settings`; 
+        return `/${currentUser.role}/settings`;
       case 'staff':
       case 'admin':
-        return `/${currentUser.role}/settings`; 
+        return `/${currentUser.role}/settings`;
       default:
         return '/';
     }
@@ -65,44 +66,17 @@ function Navbar() {
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles.navContainer}>
+      <div className={styles.navContainer+ " bg-none"}>
         <Link to="/" className={styles.brand}>
           <div className={styles.brandIcon}>🎓</div>
-          <span>College Portal</span>
+          <span className='text-2xl'>V++</span>
         </Link>
-        
+
         {/* Desktop Navigation */}
         <div className={styles.navLinks}>
           {currentUser ? (
             <>
-              <Link to={getDashboardLink()} className={styles.navLink}>
-                Dashboard
-              </Link>
-              
-              {currentUser.role && (
-                <Link to={getSettingsLink()} className={styles.navLink}>
-                  Settings
-                </Link>
-              )}
 
-              <div className={styles.userMenu}>
-                <div className={styles.userInfo}>
-                  <div className={styles.userAvatar}>
-                    {currentUser.email?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className={styles.userDetails}>
-                    <div className={styles.userName}>
-                      {getRoleDisplayName(currentUser.role)}
-                    </div>
-                    <div className={styles.userEmail}>
-                      {currentUser.email}
-                    </div>
-                  </div>
-                </div>
-                <button onClick={handleLogout} className={styles.logoutButton}>
-                  Logout
-                </button>
-              </div>
             </>
           ) : (
             <Link to="/login" className="btn btn-primary">
@@ -111,13 +85,12 @@ function Navbar() {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button 
-          className={styles.mobileMenuButton}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
+        <button
+          className={"size-12 rounded-full  flex items-center justify-center transition-colors "}
+          onClick={() => navigate(getDashboardLink() + '/profile')}
+          aria-label="Profile Menu"
         >
-          <span className={isMenuOpen ? styles.hamburgerOpen : styles.hamburger}></span>
+          <CircleUserRound size={50} strokeWidth={1} />
         </button>
       </div>
 
@@ -126,17 +99,17 @@ function Navbar() {
         <div className={styles.mobileMenu}>
           {currentUser ? (
             <>
-              <Link 
-                to={getDashboardLink()} 
+              <Link
+                to={getDashboardLink()}
                 className={styles.mobileNavLink}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dashboard
               </Link>
-              
+
               {currentUser.role && (
-                <Link 
-                  to={getSettingsLink()} 
+                <Link
+                  to={getSettingsLink()}
                   className={styles.mobileNavLink}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -158,19 +131,19 @@ function Navbar() {
                 </div>
               </div>
 
-              <button 
+              <button
                 onClick={() => {
                   handleLogout();
                   setIsMenuOpen(false);
-                }} 
+                }}
                 className={styles.mobileLogoutButton}
               >
                 Logout
               </button>
             </>
           ) : (
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className={styles.mobileNavLink}
               onClick={() => setIsMenuOpen(false)}
             >
