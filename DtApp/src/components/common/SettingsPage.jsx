@@ -1,7 +1,8 @@
+// src/components/common/SettingsPage.jsx
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { handlePasswordReset } from '../../utils/settingsUtils'; // Utility from previous step
-import ResetPasswordButton from '../../components/common/ResetPasswordButton'; // Button from previous step
+import ResetPasswordButton from './ResetPasswordButton';
+import NotificationSettings from './NotificationSettings';
 import toast, { Toaster } from 'react-hot-toast';
 
 function SettingsPage() {
@@ -14,31 +15,28 @@ function SettingsPage() {
     };
 
     return (
-        <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '2rem', border: '1px solid #444', borderRadius: '8px', background: '#2c2c2c', textAlign: 'center' }}>
+        <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '2rem', border: '1px solid #444', borderRadius: '8px', background: '#2c2c2c', color: 'white', textAlign: 'center' }}>
             <Toaster position="top-center" />
             
             <h1>{role} Settings</h1>
             <p>Manage account security and application preferences for {userEmail}.</p>
 
-            <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+            <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', textAlign: 'left' }}>
                 
-                {/* 1. Reset Password (FULLY OPERATIONAL) */}
+                {/* 1. Notification Settings (NEW - FULLY FUNCTIONAL) */}
+                <NotificationSettings />
+                
+                {/* 2. Reset Password (FULLY OPERATIONAL) */}
                 <ResetPasswordButton />
                 
-                {/* 2. Theme Toggle (Placeholder) */}
+                {/* --- Placeholders --- */}
+                
+                {/* 3. Theme Toggle (Placeholder) */}
                 <button 
                     onClick={() => handlePlaceholderClick('Change Theme')}
-                    style={{ padding: '0.75rem', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    style={{ padding: '0.75rem', background: '#555', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                 >
                     Change Theme (Placeholder)
-                </button>
-                
-                {/* 3. Notifications Toggle (Placeholder) */}
-                <button 
-                    onClick={() => handlePlaceholderClick('Notifications')}
-                    style={{ padding: '0.75rem', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                >
-                    Notification Settings (Placeholder)
                 </button>
                 
                 <hr style={{width: '100%', borderTop: '1px solid #555'}}/>
