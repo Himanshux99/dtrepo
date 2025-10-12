@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import styles from './StudentPrintPage.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 import { PDFDocument } from 'pdf-lib';
+import { FileUp } from 'lucide-react';
 
 // --- Configuration ---
 const RATES_DOC_REF = doc(db, 'config', 'print_rates');
@@ -30,36 +31,36 @@ const countPDFPages = async (file) => {
         console.log(`Starting PDF processing for: ${file.name}`);
         console.log(`File size: ${file.size} bytes`);
         console.log(`File type: ${file.type}`);
-        
+
         // Check if file is actually a PDF
         if (file.type !== 'application/pdf') {
             throw new Error(`File is not a PDF. Type: ${file.type}`);
         }
-        
+
         // Check file size (limit to 50MB for processing)
         const maxSize = 50 * 1024 * 1024; // 50MB
         if (file.size > maxSize) {
             throw new Error(`File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB. Maximum size: 50MB`);
         }
-        
+
         // Convert file to array buffer
         const arrayBuffer = await file.arrayBuffer();
         console.log(`Array buffer size: ${arrayBuffer.byteLength} bytes`);
-        
+
         if (arrayBuffer.byteLength === 0) {
             throw new Error('File is empty or corrupted');
         }
-        
+
         // Load PDF document
         const pdfDoc = await PDFDocument.load(arrayBuffer);
         const pageCount = pdfDoc.getPageCount();
-        
+
         console.log(`Successfully counted ${pageCount} pages in ${file.name}`);
         return pageCount;
-        
+
     } catch (error) {
         console.error(`Error counting pages in ${file.name}:`, error);
-        
+
         // Try fallback method for simple PDFs
         try {
             console.log(`Attempting fallback method for ${file.name}`);
@@ -71,7 +72,7 @@ const countPDFPages = async (file) => {
         } catch (fallbackError) {
             console.error(`Fallback method also failed:`, fallbackError);
         }
-        
+
         // Provide more specific error messages
         if (error.message.includes('Invalid PDF')) {
             throw new Error(`Invalid PDF file: ${file.name}. The file may be corrupted.`);
@@ -90,14 +91,14 @@ const countPDFPagesFallback = async (file) => {
     try {
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
-        
+
         // Convert to string to search for page markers
         const pdfString = new TextDecoder('latin1').decode(uint8Array);
-        
+
         // Count occurrences of /Type /Page (case insensitive)
         const pageMatches = pdfString.match(/\/Type\s*\/Page\b/gi);
         const pageCount = pageMatches ? pageMatches.length : 0;
-        
+
         console.log(`Fallback method found ${pageCount} pages in ${file.name}`);
         return pageCount;
     } catch (error) {
@@ -148,14 +149,14 @@ function StudentPrintPage() {
         console.log('PDF-lib availability check:');
         console.log('PDFDocument:', typeof PDFDocument);
         console.log('PDFDocument.load:', typeof PDFDocument?.load);
-        
+
         // Test if PDF-lib is properly loaded
         if (typeof PDFDocument === 'undefined') {
             console.error('PDF-lib is not properly loaded!');
             toast.error('PDF processing library is not available. Please refresh the page.');
         } else {
             console.log('PDF-lib is available and ready to use.');
-            
+
             // Test PDF-lib with a simple operation
             try {
                 const testDoc = PDFDocument.create();
@@ -169,7 +170,7 @@ function StudentPrintPage() {
 
     useEffect(() => {
         const effectivePageCount = useManualCount ? manualPageCount : totalPageCount;
-        
+
         if (!rates || effectivePageCount <= 0) {
             setTotalPrice(0);
             return;
@@ -181,7 +182,7 @@ function StudentPrintPage() {
         setTotalPrice(total);
     }, [totalPageCount, manualPageCount, useManualCount, copies, color, sided, isStapled, rates]);
 
- const getStatusColor = (status) => {
+    const getStatusColor = (status) => {
         switch (status) {
             case 'In Progress': return '#ffc107'; // Yellow
             case 'Ready': return '#28a745';       // Green
@@ -197,7 +198,7 @@ function StudentPrintPage() {
             setTotalPageCount(0);
             return;
         }
-        
+
         // Validate file types
         const invalidFile = selectedFiles.find(file => !ALLOWED_FILE_TYPES.includes(file.type));
         if (invalidFile) {
@@ -206,11 +207,11 @@ function StudentPrintPage() {
             e.target.value = null;
             return;
         }
-        
+
         setFiles(selectedFiles);
         setIsCounting(true);
         const loadingToast = toast.loading("Counting pages...");
-        
+
         try {
             const pageCountPromises = selectedFiles.map(async (file, index) => {
                 try {
@@ -218,12 +219,12 @@ function StudentPrintPage() {
                         console.log(`Image file ${index + 1}: ${file.name} - 1 page`);
                         return 1;
                     }
-                    
+
                     if (file.type === 'application/pdf') {
                         console.log(`Processing PDF file ${index + 1}: ${file.name}`);
                         return await countPDFPages(file);
                     }
-                    
+
                     console.log(`Unknown file type: ${file.type}`);
                     return 0;
                 } catch (fileError) {
@@ -232,13 +233,13 @@ function StudentPrintPage() {
                     return 0;
                 }
             });
-            
+
             const counts = await Promise.all(pageCountPromises);
             const pages = counts.reduce((sum, count) => sum + count, 0);
-            
+
             console.log(`Total pages calculated: ${pages}`);
             setTotalPageCount(pages);
-            
+
             toast.dismiss(loadingToast);
             if (pages > 0) {
                 toast.success(`Total pages calculated: ${pages}`);
@@ -317,8 +318,8 @@ function StudentPrintPage() {
         } catch (error) {
             console.error("Error submitting print job after payment:", error);
             toast.error("Payment successful, but job submission failed. Please contact staff.", { id: toastId });
-        } finally{
-          setUploading(false);
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -326,14 +327,14 @@ function StudentPrintPage() {
         e.preventDefault();
 
         const effectivePageCount = useManualCount ? manualPageCount : totalPageCount;
-        
+
         if (totalPrice <= 0 || files.length === 0 || effectivePageCount <= 0) {
             toast.error("Please select files, ensure page count is set, and price is calculated.");
             return;
         }
-        
+
         setUploading(true);
-        
+
         // TEMPORARY: Skip payment for testing
         const toastId = toast.loading("Submitting print job (Payment skipped for testing)...");
         try {
@@ -345,7 +346,7 @@ function StudentPrintPage() {
             toast.error("Could not submit print job. Please try again.");
             setUploading(false);
         }
-        
+
         /* ORIGINAL PAYMENT LOGIC - COMMENTED OUT FOR TESTING
         if (!window.Razorpay) {
             toast.error("Payment gateway is still loading. Please wait a moment and try again.");
@@ -401,85 +402,114 @@ function StudentPrintPage() {
     return (
         <div className={styles.printContainer}>
             <Toaster position="top-center" />
-            
+
             {/* Header */}
             <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-primary mb-2">Print Services</h1>
-                <p className="text-secondary">Submit your documents for printing with our secure service</p>
+                <h1 className="text-3xl font-bold mb-2">Print Services</h1>
+                <p >Submit your documents for printing with our secure service</p>
             </div>
 
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className="text-center mb-6">
-                    <h2 className="text-2xl font-semibold mb-2">Submit a Print Job</h2>
-                    <p className="text-secondary">Upload your documents and configure printing options</p>
-                </div>
+                <div className="border-dashed border-2 border-[var(--bg-primary)] flex flex-col gap-3 items-center
+      justify-center p-6 rounded-lg cursor-pointer hover:border-blue-500 
+      transition relative"
+                >
+                    <span className="text-[var(--bg-primary)] text-sm"><FileUp size={60} /> </span>
 
-                <div className={styles.formGroup}>
-                    <label htmlFor="file-upload">Documents (PDF & Images Only)</label>
-                    <input 
-                        id="file-upload" 
-                        type="file" 
-                        onChange={handleFilesChange} 
-                        required 
-                        accept={ACCEPT_FILE_STRING} 
-                        multiple 
+                    <input
+                        id="file-upload"
+                        type="file"
+                        onChange={handleFilesChange}
+                        accept={ACCEPT_FILE_STRING}
+                        multiple
+                        className="hidden"
                     />
+
+                    <label
+                        htmlFor="file-upload"
+                        className="
+      inline-block bg-tertiary text-[var(--bg-primary)] px-5 py-2 rounded-full 
+      font-medium text-sm cursor-pointer hover:bg-blue-700 transition
+    "
+                    >
+                        Upload Files
+                    </label>
+
                     {files.length > 0 && (
-                        <div className="mt-2 p-3 bg-primary-50 border border-primary-500 rounded-lg">
-                            <p className="text-primary-600 text-sm">
+                        <div className="mt-2 p-3 bg-blue-50 border border-blue-400 rounded-lg">
+                            <p className="text-blue-700 text-sm">
                                 <strong>{files.length}</strong> file(s) selected
                             </p>
                         </div>
                     )}
                 </div>
-
-                <div className={styles.priceDisplay}>
-                    <div className="flex items-center justify-center gap-2">
-                        <span className="text-secondary">Total Pages:</span>
-                        <span className="text-primary font-semibold text-xl">
-                            {isCounting ? "Counting..." : (useManualCount ? manualPageCount : totalPageCount)}
-                        </span>
-                    </div>
-                    {totalPageCount === 0 && !isCounting && (
-                        <div className="mt-4 p-3 bg-warning-50 border border-warning-500 rounded-lg">
-                            <p className="text-warning-500 text-sm mb-2">
-                                Automatic page counting failed. You can manually enter the page count below.
-                            </p>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={manualPageCount}
-                                    onChange={(e) => setManualPageCount(parseInt(e.target.value) || 0)}
-                                    className="form-input w-20"
-                                    placeholder="Pages"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setUseManualCount(true);
-                                        toast.success(`Using manual page count: ${manualPageCount}`);
-                                    }}
-                                    className="btn btn-warning btn-sm"
-                                    disabled={manualPageCount <= 0}
-                                >
-                                    Use Manual Count
-                                </button>
-                            </div>
+                {files.length > 0 && (
+                    <div className={`${styles.priceDisplay} border-none `}>
+                        <div className="flex items-center justify-center gap-2 rounded-lg">
+                            <span className="text-secondary">Total Pages:</span>
+                            <span className="text-secondary font-semibold text-xl">
+                                {isCounting ? "Counting..." : (useManualCount ? manualPageCount : totalPageCount)}
+                            </span>
                         </div>
-                    )}
-                </div>
+                        {totalPageCount === 0 && !isCounting && (
+                            <div className="mt-4 p-3 bg-warning-50 border border-warning-500 rounded-lg">
+                                <p className="text-warning-500 text-secondary text-sm mb-2">
+                                    Automatic page counting failed. You can manually enter the page count below.
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={manualPageCount}
+                                        onChange={(e) => setManualPageCount(parseInt(e.target.value) || 0)}
+                                        className="form-input w-20"
+                                        placeholder="Pages"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setUseManualCount(true);
+                                            toast.success(`Using manual page count: ${manualPageCount}`);
+                                        }}
+                                        className="btn btn-warning btn-sm"
+                                        disabled={manualPageCount <= 0}
+                                    >
+                                        Use Manual Count
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>)}
 
-                <div className="grid md:grid-cols-2 gap-6">
-                    <div className={styles.formGroup}>
-                        <label>Number of Copies</label>
-                        <input 
-                            type="number" 
-                            min="1" 
-                            value={copies} 
-                            onChange={(e) => setCopies(e.target.value)} 
-                            required 
-                        />
+                <div className="grid md:grid-cols-2 gap-6 font-family">
+                    <div className={`${styles.formGroup} text-secondary flex flex-col gap-4 items-center bg-tertiary p-3 rounded-lg`}>
+                        <div className="flex items-center gap-1 border-none border-gray-300 rounded-lg overflow-hidden w-max">
+                            <label className='text-3xl'>Copies</label>
+
+                            <input
+                                type="number"
+                                min="1"
+                                value={copies}
+                                onChange={(e) => setCopies(Number(e.target.value))}
+                                required
+                                className="h-10 w-16 bg-white text-center text-secondary flex items-center justify-center border-none"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setCopies(Math.max(1, copies - 1))}
+                                className="px-2 py-1 w-10 bg-white hover:bg-gray-300 text-xl transition font-bold"
+                            >
+                                -
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setCopies(copies + 1)}
+                                className="px-2 py-1 w-10 bg-white hover:bg-gray-300 text-xl transition"
+                            >
+                                +
+                            </button>
+                        </div>
+
                     </div>
 
                     <div className={styles.formGroup}>
@@ -494,16 +524,16 @@ function StudentPrintPage() {
                 <div className={styles.formGroup}>
                     <label>Color Preference</label>
                     <div className={styles.toggleGroup}>
-                        <button 
-                            type="button" 
-                            onClick={() => setColor('B&W')} 
+                        <button
+                            type="button"
+                            onClick={() => setColor('B&W')}
                             className={color === 'B&W' ? styles.toggleActive : ''}
                         >
                             Black & White
                         </button>
-                        <button 
-                            type="button" 
-                            onClick={() => setColor('Color')} 
+                        <button
+                            type="button"
+                            onClick={() => setColor('Color')}
                             className={color === 'Color' ? styles.toggleActive : ''}
                         >
                             Color
@@ -514,30 +544,30 @@ function StudentPrintPage() {
                 <div className={styles.formGroup}>
                     <label>Stapling</label>
                     <div className={styles.toggleGroup}>
-                        <button 
-                            type="button" 
-                            onClick={() => setIsStapled(false)} 
+                        <button
+                            type="button"
+                            onClick={() => setIsStapled(false)}
                             className={!isStapled ? styles.toggleActive : ''}
                         >
                             No Stapling
                         </button>
-                        <button 
-                            type="button" 
-                            onClick={() => setIsStapled(true)} 
+                        <button
+                            type="button"
+                            onClick={() => setIsStapled(true)}
                             className={isStapled ? styles.toggleActive : ''}
                         >
                             Staple
                         </button>
                     </div>
                 </div>
-                
+
                 <div className={styles.formGroup}>
                     <label htmlFor="instructions">Additional Instructions (Optional)</label>
-                    <textarea 
-                        id="instructions" 
-                        rows="3" 
-                        value={instructions} 
-                        onChange={(e) => setInstructions(e.target.value)} 
+                    <textarea
+                        id="instructions"
+                        rows="3"
+                        value={instructions}
+                        onChange={(e) => setInstructions(e.target.value)}
                         placeholder="e.g., 'Print pages 1-5 only', 'Bind spiral', 'Special paper type'"
                     />
                 </div>
@@ -553,9 +583,9 @@ function StudentPrintPage() {
                     </div>
                 </div>
 
-                <button 
-                    type="submit" 
-                    className={styles.submitButton} 
+                <button
+                    type="submit"
+                    className={styles.submitButton}
                     disabled={uploading || totalPrice <= 0 || isCounting}
                 >
                     {isCounting ? 'Calculating...' : (uploading ? 'Processing...' : `Proceed to Pay (₹${totalPrice.toFixed(2)})`)}
@@ -582,13 +612,13 @@ function StudentPrintPage() {
                                             Slot: {job.slotId}
                                         </div>
                                         <div className="text-secondary text-sm">
-                                            {job.files ? `${job.files.length} file(s)` : 'Legacy Job'} • 
+                                            {job.files ? `${job.files.length} file(s)` : 'Legacy Job'} •
                                             Submitted {new Date(job.submittedAt?.toDate()).toLocaleDateString()}
                                         </div>
                                     </div>
                                 </div>
-                                <span 
-                                    className={styles.statusBadge} 
+                                <span
+                                    className={styles.statusBadge}
                                     style={{ backgroundColor: getStatusColor(job.status) }}
                                 >
                                     {job.status}

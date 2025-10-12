@@ -25,8 +25,7 @@
 .formGroup label {
   margin-bottom: var(--space-2);
   font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
 }
 
 .formGroup input,
@@ -34,9 +33,7 @@
 .formGroup textarea {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   font-size: var(--font-size-base);
   transition: all var(--transition-fast);
   font-family: inherit;
