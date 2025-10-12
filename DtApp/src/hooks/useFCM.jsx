@@ -39,11 +39,11 @@ const useFCM = (currentUser) => {
     }
 
     try {
-      // Register service worker
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-      console.log('Service Worker registered:', registration);
+      // Wait for service worker to be ready
+      const registration = await navigator.serviceWorker.ready;
+      console.log('Using service worker:', registration.active?.scriptURL);
 
-      // Get FCM token
+      // Get FCM token using the active service worker
       const token = await getToken(messaging, {
         vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
         serviceWorkerRegistration: registration
@@ -76,7 +76,7 @@ const useFCM = (currentUser) => {
     try {
       const userRef = doc(db, 'users', currentUser.uid);
       await updateDoc(userRef, {
-        fcmTokens: arrayUnion(token), // Store as array (user might use multiple devices)
+        fcmTokens: arrayUnion(token),
         lastTokenUpdate: new Date()
       });
       console.log('FCM token saved to Firestore');
@@ -95,28 +95,28 @@ const useFCM = (currentUser) => {
       const { title, body } = payload.notification || {};
       
       // Show toast notification when app is in foreground
-     toast.custom((t) => {
-  return (
-    <div
-      style={{
-        background: '#333',
-        color: '#fff',
-        padding: '16px',
-        borderRadius: '8px',
-        border: '2px solid #007bff',
-        maxWidth: '400px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-      }}
-    >
-      <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>
-        {title || 'New Notification'}
-      </div>
-      <div style={{ fontSize: '14px' }}>
-        {body || 'You have a new notification'}
-      </div>
-    </div>
-  );
-}, { duration: 5000 });
+      toast.custom((t) => {
+        return (
+          <div
+            style={{
+              background: '#333',
+              color: '#fff',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '2px solid #007bff',
+              maxWidth: '400px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            }}
+          >
+            <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>
+              {title || 'New Notification'}
+            </div>
+            <div style={{ fontSize: '14px' }}>
+              {body || 'You have a new notification'}
+            </div>
+          </div>
+        );
+      }, { duration: 5000 });
     });
 
     return () => unsubscribe();
