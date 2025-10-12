@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import SettingsPage from "./components/common/SettingsPage";
 
 import StudentPrintPage from "./pages/Student/StudentPrintPage";
@@ -37,6 +39,19 @@ import TestNotification from "./components/TestNotification";
 
 
 function App() {
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/firebase-messaging-sw.js') // Ensure this file is in public/
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+        })
+        .catch((err) => {
+          console.error('Service Worker registration failed:', err);
+        });
+    }
+  }, []);
   return (
     
     <Router>
