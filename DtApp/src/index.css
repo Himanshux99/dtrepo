@@ -6,7 +6,7 @@
 
 :root {
   /* Color Palette */
-  --primary-50: #eff6ff;
+  --primary-50: #0059cd;
   --primary-100: #dbeafe;
   --primary-200: #bfdbfe;
   --primary-300: #93c5fd;
@@ -96,11 +96,11 @@
   --transition-slow: 350ms ease-in-out;
 
   /* Theme Colors */
-  --bg-primary: var(--secondary-900);
-  --bg-secondary: var(--secondary-800);
-  --bg-tertiary: var(--secondary-700);
-  --text-primary: var(--secondary-50);
-  --text-secondary: var(--secondary-300);
+  --bg-primary: #463B68;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #D9D9D9;
+  --text-primary: #ffffff;
+  --text-secondary: #463B68;
   --text-muted: var(--secondary-400);
   --border-color: var(--secondary-600);
   --accent-color: var(--primary-500);
@@ -508,4 +508,8 @@ body {
 a {
   color: inherit !important;
   text-decoration: none !important;
+}
+
+.tabButton {
+  @apply flex flex-col items-center hover:text-blue-500 transition;
 }
