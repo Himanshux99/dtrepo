@@ -5,6 +5,7 @@ import { ref, deleteObject } from 'firebase/storage';
 import { useAuth } from '../../context/AuthContext'; 
 import styles from './StaffPrintQueuePage.module.css';
 import toast, { Toaster } from 'react-hot-toast';
+import { sendNotificationToUser, NotificationTemplates } from '../../utils/notificationHelper';
 
 // Define 24 hours in milliseconds (for the client-side cleanup proxy)
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000; 
@@ -14,6 +15,55 @@ function StaffPrintQueuePage() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('In Progress'); 
+  const sendManualNotification = async (job) => {
+  const toastId = toast.loading(`Sending notification to ${job.submittedByEmail}...`);
+  
+  try {
+    const notification = NotificationTemplates.printJobReady(job.slotId);
+    
+    await sendNotificationToUser(
+      job.submittedById,
+      notification.title,
+      notification.body,
+      notification.data
+    );
+    
+    toast.success(`Notification sent to ${job.submittedByEmail}!`, { id: toastId });
+  } catch (error) {
+    console.error('Error sending notification:', error);
+    toast.error('Failed to send notification', { id: toastId });
+  }
+};
+
+// Add this button in your JSX where you render job actions:
+{job.status === 'Ready' && (
+  <>
+    <button
+      className={styles.collectedButton}
+      onClick={() => updateJobStatus(job.id, 'Collected')}
+    >
+      Mark Collected (Empty Slot)
+    </button>
+    
+    {/* NEW: Manual notification button */}
+    <button
+      style={{
+        padding: '0.5rem 1rem',
+        borderRadius: '4px',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: '0.9rem',
+        fontWeight: 'bold',
+        backgroundColor: '#17a2b8',
+        color: 'white',
+        marginTop: '0.5rem'
+      }}
+      onClick={() => sendManualNotification(job)}
+    >
+      🔔 Send Reminder
+    </button>
+  </>
+)}
 
   // Function to perform cleanup (1-Day Auto-Deletion Logic)
   const cleanupOldJobs = useCallback(async () => {

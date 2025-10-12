@@ -1,142 +1,198 @@
-.scheduleContainer {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 1rem;
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
 }
 
-/* Tab Navigation Styles */
-.tabButton {
-  padding: 0.75rem 1.5rem;
-  font-weight: 500;
-  font-size: 0.875rem;
-  border-bottom: 2px solid transparent;
-  transition: all var(--transition-fast);
-  color: var(--text-secondary);
-  background: none;
-  border: none;
-  cursor: pointer;
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.tabButton:hover {
-  color: var(--text-primary);
+/* Main Tab Navigation */
+.tabNav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border, #444);
+}
+.tabNav button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    color: #aaa;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+.tabNav button:hover {
+    color: white;
+}
+.tabNav .activeTab {
+    color: var(--color-primary, #007bff);
+    border-bottom-color: var(--color-primary, #007bff);
 }
 
-.tabButton.active {
-  border-bottom-color: var(--primary-500);
-  color: var(--primary-500);
+.contentArea {
+    padding: 1rem;
 }
 
-/* Update Card Styles */
-.updateCard {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  margin-bottom: var(--space-4);
-  transition: all var(--transition-normal);
+/* --- NEW: Schedule View - Day Selector --- */
+.daySelector {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 0.5rem;
+    border-radius: 30px;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--color-border, #444);
+}
+.daySelector button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.daySelector .activeDay {
+    background-color: var(--color-primary, #007bff);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
 }
 
-.updateCard:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+.scheduleDayView {
+    text-align: center;
+}
+.scheduleDayView h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
 }
 
-.updateHeader {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: var(--space-3);
-}
-
-.updateIcon {
-  font-size: 1.5rem;
-  margin-right: var(--space-3);
-}
-
-.updateInfo h3 {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  margin: 0 0 var(--space-1) 0;
-}
-
-.updateMeta {
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-  margin: 0;
-}
-
-.updateMessage {
-  color: var(--text-primary);
-  margin-bottom: var(--space-3);
-  line-height: var(--line-height-relaxed);
-}
-
-.updateDate {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-/* Style FullCalendar to fit the dark theme */
-.scheduleContainer :global(.fc) {
-  /* Overall text color */
-  color: var(--text-primary);
-  background-color: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-}
-
-.scheduleContainer :global(.fc .fc-button-primary) {
-  background-color: var(--primary-500);
-  border-color: var(--primary-500);
-  border-radius: var(--radius-md);
-}
-
-.scheduleContainer :global(.fc .fc-button-primary:hover) {
-  background-color: var(--primary-600);
-  border-color: var(--primary-600);
-}
-
-.scheduleContainer :global(.fc .fc-daygrid-day.fc-day-today) {
-  background-color: rgba(59, 130, 246, 0.15);
-}
-
-.scheduleContainer :global(.fc-event) {
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  border: none;
-  padding: 2px 6px;
-}
-
-.scheduleContainer :global(.fc-list-event) {
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-2);
-}
-
-.scheduleContainer :global(.fc-list-event:hover) {
-  background-color: var(--bg-tertiary);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .scheduleContainer {
-    padding: var(--space-2);
-  }
-  
-  .tabButton {
-    padding: var(--space-2) var(--space-3);
-    font-size: var(--font-size-xs);
-  }
-  
-  .updateCard {
-    padding: var(--space-4);
-  }
-  
-  .updateHeader {
+.cardsContainer {
+    display: flex;
     flex-direction: column;
-    gap: var(--space-2);
-  }
+    gap: 1rem;
+}
+
+.scheduleCard {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: left;
+    border-left: 5px solid #3788d8;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.timeSection {
+    flex-basis: 100px;
+    flex-shrink: 0;
+    text-align: center;
+}
+.timeSection .time {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0;
+}
+.timeSection .timeEnd {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.detailsSection {
+    flex-grow: 1;
+}
+.detailsSection .subject {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0;
+}
+.detailsSection .venue {
+    color: #ffc107;
+    margin: 0.25rem 0 0;
+    font-weight: bold;
+}
+.noClass {
+    color: #777;
+    text-align: center;
+    padding: 3rem;
+    font-style: italic;
+    background-color: var(--color-card, #2c2c2c);
+    border-radius: 8px;
+}
+
+/* --- Updates View (Styles remain mostly the same) --- */
+.updateFilterNav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+.updateFilterNav button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border, #444);
+    border-radius: 20px;
+    background: none;
+    color: #aaa;
+    cursor: pointer;
+}
+.updateFilterNav .activeFilter {
+    background-color: var(--color-primary, #007bff);
+    color: white;
+    border-color: var(--color-primary, #007bff);
+}
+
+.updatesList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+.updateCard {
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+.updateHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.updateType {
+    color: black;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.updateDate {
+    font-size: 0.9rem;
+    color: #aaa;
+}
+.updateSubject {
+    margin: 0 0 0.5rem;
+}
+.updateMessage {
+    margin: 0 0 1rem;
+}
+.postedBy {
+    color: #777;
+    font-style: italic;
+}
+.noUpdates {
+    text-align: center;
+    padding: 2rem;
+    color: #777;
 }

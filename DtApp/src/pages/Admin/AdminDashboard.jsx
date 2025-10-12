@@ -55,13 +55,11 @@ function AdminDashboard() {
           </div>
         </Link>
 
-        <Link to="/staff/queue" className="card hover:transform hover:scale-105 transition-all duration-200">
-          <div className="text-center">
-            <div className="text-5xl mb-4">📋</div>
-            <h3 className="text-xl font-semibold mb-2">System Administration</h3>
-            <p className="text-secondary">
-              Access print queue management and administrative tools.
-            </p>
+        <Link to="/admin/schedule" className="card hover:transform hover:scale-105 transition-all duration-200">
+          <div className="text-center p-4">
+            <div className="text-5xl mb-4">📅</div>
+            <h3 className="text-xl font-semibold mb-2">Manage Schedules</h3>
+            <p className="text-secondary">Set the master weekly timetable.</p>
           </div>
         </Link>
       </div>
@@ -76,7 +74,16 @@ function AdminDashboard() {
             <p className="text-2xl font-bold text-primary">150+</p>
             <p className="text-secondary text-sm">Active users</p>
           </div>
-          
+          {/* --- NEW CARD for Schedule Management --- */}
+        <Link to="/admin/schedule" className="card hover:transform hover:scale-105 transition-all duration-200">
+          <div className="text-center">
+            <div className="text-5xl mb-4">📅</div>
+            <h3 className="text-xl font-semibold mb-2">Manage Schedules</h3>
+            <p className="text-secondary">
+              Set and update the master weekly timetable for all classes.
+            </p>
+          </div>
+        </Link>
           <div className="card text-center">
             <div className="text-3xl mb-3">👨‍🏫</div>
             <h3 className="text-lg font-semibold mb-1">Teachers</h3>

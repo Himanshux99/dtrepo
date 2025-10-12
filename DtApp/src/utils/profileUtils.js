@@ -6,7 +6,8 @@ const BRANCH_MAP = {
 };
 
 const BRANCH_SHORT_MAP = {
-  101: "INTF",
+  101: "INFT",
+  
   102: "CMPN",
   104: "EXTC",
   108: "EXCS",

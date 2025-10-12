@@ -1,15 +1,17 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
+import styles from './Layout.module.css'; // Import a new CSS module
 import Footer from './Footer';
 import { Toaster } from 'react-hot-toast';
 
 function Layout() {
   return (
-    <div className="min-h-screen bg-primary">
+    <>
       <Navbar />
-      <main className="pt-20"> {/* Add padding to avoid content being hidden by the fixed navbar */}
-        <Outlet /> {/* Child routes will be rendered here */}
+      {/* This main tag will wrap every page and apply consistent padding */}
+      <main className={styles.mainContent}>
+        <Outlet /> {/* Your page components render here */}
       </main>
       <Footer />
       <Toaster 
