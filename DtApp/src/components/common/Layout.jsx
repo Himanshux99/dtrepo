@@ -12,8 +12,6 @@ function Layout() {
       {/* This main tag will wrap every page and apply consistent padding */}
       <main className={`${styles.mainContent}`}>
         <Outlet /> {/* Your page components render here */}
-        {/* Spacer div to ensure content is not hidden behind bottom navbar */}
-        <div style={{ height: '80px' }} />
       </main>
       <Footer />
       <Toaster 

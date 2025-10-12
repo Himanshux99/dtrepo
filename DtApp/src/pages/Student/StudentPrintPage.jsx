@@ -377,7 +377,7 @@ function StudentPrintPage() {
     };
 
     return (
-        <div className={"p-4"}>
+        <div className={"p-4 pb-16"}>
             <Toaster position="top-center" />
 
             {/* Header */}

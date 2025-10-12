@@ -6,9 +6,10 @@ import { decodeRollNumber } from '../../utils/profileUtils';
 import toast, { Toaster } from 'react-hot-toast';
 import styles from './StudentSchedulePage.module.css';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, isToday } from 'date-fns';
-
+import { CalendarDays } from 'lucide-react';
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const dayAbbreviations = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+let roll;
 
 function StudentSchedulePage() {
     const { currentUser } = useAuth();
@@ -26,8 +27,9 @@ function StudentSchedulePage() {
             const userDocRef = doc(db, 'users', currentUser.uid);
             const userDoc = await getDoc(userDocRef);
             if (!userDoc.exists()) throw new Error("Could not find user profile.");
-            
+
             const studentDetails = decodeRollNumber(userDoc.data().rollNumber, userDoc.data().email);
+            roll = userDoc.data().rollNumber;
             if (studentDetails.error) throw new Error(studentDetails.error);
 
             // --- DIAGNOSTIC LOG 1: What are we searching for? ---
@@ -57,10 +59,10 @@ function StudentSchedulePage() {
                 getDocs(schedulesQuery),
                 getDocs(updatesQuery),
             ]);
-            
+
             // --- FIX APPLIED HERE ---
             const fetchedSchedules = schedulesSnapshot.docs.map(d => d.data());
-            const fetchedUpdates = updatesSnapshot.docs.map(d => ({...d.data(), id: d.id }));
+            const fetchedUpdates = updatesSnapshot.docs.map(d => ({ ...d.data(), id: d.id }));
 
             // --- DIAGNOSTIC LOG 2: What did we find? ---
             console.log("Fetched Schedules:", fetchedSchedules);
@@ -113,36 +115,53 @@ function StudentSchedulePage() {
         return updates;
     };
 
-    if (loading) return <p>Loading Schedule & Updates...</p>;
+    if (loading) return <div className={"flex flex-row justify-between border-2 mx-4 mt-2 py-2 px-4 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
+                <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
+                    <span className={"text-2xl font-bold text-left  "}>Your<br />Schedule</span>
+                    <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>{roll===undefined?'2410XX00XX':roll}</span>
+                </div>
+                <div>
+                <img src="/calendar.svg" alt="Calendar" className='w-80' />
+
+                </div>
+                {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}
+            </div>;
 
     return (
-        <div className={styles.container}>
+        <div className={"mt-2 !mb-0"}>
             <Toaster position="top-center" />
-            <div className={styles.header}>
-                <h1>Schedule & Updates</h1>
-                <p>View your weekly timetable and the latest updates from your teachers.</p>
+            <div className={"flex flex-row justify-between border-2 mt-4 mx-4 py-2 px-8 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
+                <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
+                    <span className={"text-2xl font-bold text-left  "}>Your<br />Schedule</span>
+                    <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>{roll}</span>
+                </div>
+                <div>
+                <img src="/calendar.svg" alt="Calendar" className='w-80' />
+
+                </div>
+                {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}
             </div>
 
-            <div className={styles.tabNav}>
-                <button onClick={() => setActiveTab('schedule')} className={activeTab === 'schedule' ? styles.activeTab : ''}>Weekly Schedule</button>
-                <button onClick={() => setActiveTab('updates')} className={activeTab === 'updates' ? styles.activeTab : ''}>Updates ({updates.length})</button>
+            <div className={"flex flex-row items-center justify-center gap-2 my-8"}>
+                <button onClick={() => setActiveTab('schedule')} className={`${activeTab === 'schedule' ? 'bg-secondary text-secondary' : 'bg-fourth text-white' } px-4 py-2 rounded-xl text-xl font-bold font-inter`}>TIMETABLE</button>
+                <button onClick={() => setActiveTab('updates')} className={` ${activeTab === 'updates' ? 'bg-secondary text-secondary' : 'bg-fourth text-white' } px-4 py-2 rounded-xl text-xl font-bold font-inter`}>UPDATES ({updates.length})</button>
             </div>
 
-            <div className={styles.contentArea}>
+            <div className={"bg-white rounded-t-3xl pt-4 mt-2 pb-16"}>
                 {activeTab === 'schedule' && (
                     <div>
-                        <div className={styles.daySelector}>
-                            {dayAbbreviations.slice(1, 7).map((day, index) => (
-                                <button key={day} onClick={() => setActiveDay(index + 1)} className={activeDay === (index + 1) ? styles.activeDay : ''}>{day}</button>
+                        <div className={"flex flex-row items-center justify-around mb-2 mx-8 "}>
+                            {dayAbbreviations.slice(1, 6).map((day, index) => (
+                                <button key={day} onClick={() => setActiveDay(index + 1)} className={`${activeDay === (index + 1) ? 'bg-primary text-primary' : 'bg-tertiary text-secondary'} px-2 py-4 w-16 rounded-lg font-bold tracking-widest`}>{day}</button>
                             ))}
                         </div>
-                        <div className={styles.scheduleDayView}>
+                        <div className={""}>
                             <h2>{daysOfWeek[activeDay]}</h2>
-                            <div className={styles.cardsContainer}>
+                            <div className={" flex flex-col gap-4 mx-6 mb-4 text-xl font-bold font-inter"}>
                                 {groupedSchedules[activeDay] ? groupedSchedules[activeDay].map((sch, index) => (
-                                    <div key={index} className={styles.scheduleCard}>
-                                        <div className={styles.timeSection}><p className={styles.time}>{sch.startTime}</p><p className={styles.timeEnd}>to {sch.endTime}</p></div>
-                                        <div className={styles.detailsSection}><p className={styles.subject}>{sch.classInfo.subject}</p><p className={styles.venue}>{sch.venue} | {sch.teacherName || 'N/A'}</p></div>
+                                    <div key={index} className={"flex flex-row items-center justify-start gap-4 bg-[var(--primary-900)] shadow-hard py-4 px-4 rounded-lg"}>
+                                        <div className={"pl-2"}><p className={"text-secondary"}>{sch.startTime}</p><p className={""}>{sch.endTime}</p></div>
+                                        <div className={"border-l-8 border-[var(--primary-800)] pl-4 text-[var(--secondary-900)] w-full"}><p className={"ml-2"}>{sch.classInfo.subject}</p><p className={"bg-white px-4 mt-2 py-1 w-full rounded-full"}>{sch.venue} <span className={"border-l-4 border-[var(--secondary-900)] pl-2"}>{sch.teacherName || 'N/A'}</span></p></div>
                                     </div>
                                 )) : <p className={styles.noClass}>No classes scheduled for {daysOfWeek[activeDay]}.</p>}
                             </div>
@@ -151,21 +170,21 @@ function StudentSchedulePage() {
                 )}
                 {activeTab === 'updates' && (
                     <div>
-                        <div className={styles.updateFilterNav}>
-                            <button onClick={() => setUpdateFilter('today')} className={updateFilter === 'today' ? styles.activeFilter : ''}>Today</button>
-                            <button onClick={() => setUpdateFilter('week')} className={updateFilter === 'week' ? styles.activeFilter : ''}>This Week</button>
-                            <button onClick={() => setUpdateFilter('month')} className={updateFilter === 'month' ? styles.activeFilter : ''}>This Month</button>
+                        <div className={"flex flex-row items-center justify-center gap-4 mb-4 p-2"}>
+                            <button onClick={() => setUpdateFilter('today')} className={`${updateFilter === 'today' ? 'text-primary bg-primary' : 'text-secondary bg-secondary'} rounded-full border-2 border-[var(--bg-primary)] font-bold p-2 w-20`}>Today</button>
+                            <button onClick={() => setUpdateFilter('week')} className={`${updateFilter === 'week' ? 'text-primary bg-primary' : 'text-secondary bg-secondary'} rounded-full border-2 border-[var(--bg-primary)] font-bold p-2 w-20`}>Week</button>
+                            <button onClick={() => setUpdateFilter('month')} className={`${updateFilter === 'month' ? 'text-primary bg-primary' : 'text-secondary bg-secondary'} rounded-full border-2 border-[var(--bg-primary)] font-bold p-2 w-20`}>Month</button>
                         </div>
-                        <div className={styles.updatesList}>
+                        <div className={"flex flex-col gap-6 mx-6 mb-4 text-xl font-inter"}>
                             {getFilteredUpdates().length > 0 ? getFilteredUpdates().map(upd => (
-                                <div key={upd.id} className={styles.updateCard}>
-                                    <div className={styles.updateHeader}>
-                                        <span className={styles.updateType} style={{backgroundColor: upd.updateType === 'Cancelled' ? '#dc3545' : '#ffc107' }}>{upd.updateType}</span>
+                                <div key={upd.id} className={"flex flex-col gap-4 mx-6 mb-4 text-2xl font-bold font-inter"}>
+                                    <div className={"flex flex-row items-center justify-start gap-4 bg-[var(--primary-900)] shadow-hard py-4 px-4 rounded-lg"}>
+                                        <span className={styles.updateType} style={{ backgroundColor: upd.updateType === 'Cancelled' ? '#dc3545' : '#ffc107' }}>{upd.updateType}</span>
                                         <span className={styles.updateDate}>{upd.eventDate.toDate().toLocaleDateString()}</span>
-                                    </div>
                                     <h3 className={styles.updateSubject}>{upd.classInfo.subject}</h3>
                                     <p className={styles.updateMessage}>{upd.message}</p>
                                     <small className={styles.postedBy}>Posted by: {upd.teacherName}</small>
+                                    </div>
                                 </div>
                             )) : <p className={styles.noUpdates}>No updates for this period.</p>}
                         </div>
