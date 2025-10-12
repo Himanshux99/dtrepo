@@ -1,7 +1,7 @@
 .mainContent {
   /* This value should be slightly more than your Navbar's height.
      90px is a safe and common value that should work well. */
-  padding-top: 90px;
+  padding-top: 70px;
 
   /* Add some horizontal padding for better spacing on all pages */
   padding-left: 1rem;

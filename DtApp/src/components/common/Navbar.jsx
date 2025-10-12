@@ -69,7 +69,7 @@ function Navbar() {
       <div className={styles.navContainer+ " bg-none"}>
         <Link to="/" className={styles.brand}>
           <div className={styles.brandIcon}>🎓</div>
-          <span>V++</span>
+          <span className='text-2xl'>V++</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -86,7 +86,7 @@ function Navbar() {
         </div>
 
         <button
-          className={"size-12 rounded-full border-2 border-black flex items-center justify-center hover:bg-gray-300 transition-colors "}
+          className={"size-12 rounded-full  flex items-center justify-center transition-colors "}
           onClick={() => navigate(getDashboardLink() + '/profile')}
           aria-label="Profile Menu"
         >

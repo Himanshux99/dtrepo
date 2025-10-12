@@ -4,10 +4,10 @@ import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, query, where, getDocs, Timestamp, orderBy, runTransaction, doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
-import styles from './StudentPrintPage.module.css';
 import toast, { Toaster } from 'react-hot-toast';
 import { PDFDocument } from 'pdf-lib';
 import { FileUp } from 'lucide-react';
+import {  Check ,Ellipsis} from 'lucide-react';
 
 // --- Configuration ---
 const RATES_DOC_REF = doc(db, 'config', 'print_rates');
@@ -143,30 +143,7 @@ function StudentPrintPage() {
         };
         if (currentUser) fetchInitialData();
     }, [currentUser, fetchJobs]);
-
-    // Debug: Test PDF-lib availability
-    useEffect(() => {
-        console.log('PDF-lib availability check:');
-        console.log('PDFDocument:', typeof PDFDocument);
-        console.log('PDFDocument.load:', typeof PDFDocument?.load);
-
-        // Test if PDF-lib is properly loaded
-        if (typeof PDFDocument === 'undefined') {
-            console.error('PDF-lib is not properly loaded!');
-            toast.error('PDF processing library is not available. Please refresh the page.');
-        } else {
-            console.log('PDF-lib is available and ready to use.');
-
-            // Test PDF-lib with a simple operation
-            try {
-                const testDoc = PDFDocument.create();
-                console.log('PDF-lib test successful - can create documents');
-            } catch (testError) {
-                console.error('PDF-lib test failed:', testError);
-                toast.error('PDF processing library test failed. Please refresh the page.');
-            }
-        }
-    }, []);
+    
 
     useEffect(() => {
         const effectivePageCount = useManualCount ? manualPageCount : totalPageCount;
@@ -293,7 +270,7 @@ function StudentPrintPage() {
                 submittedByEmail: currentUser.email,
                 files: uploadedFilesData,
                 slotId,
-                preferences: { copies: Number(copies), color, sided, isStapled, instructions, totalPageCount: effectivePageCount },
+                totalPageCount: effectivePageCount,
                 status: 'In Progress',
                 submittedAt: Timestamp.now(),
                 paymentId,
@@ -303,7 +280,6 @@ function StudentPrintPage() {
 
             await addDoc(collection(db, 'print_jobs'), jobData);
             toast.success(`Job submitted! Your Slot ID is ${slotId}`, { id: toastId });
-
             setFiles([]);
             setTotalPageCount(0);
             setManualPageCount(0);
@@ -313,6 +289,7 @@ function StudentPrintPage() {
             setSided('Single-Sided');
             setIsStapled(false);
             setInstructions('');
+            
             document.getElementById('file-upload').value = null;
             fetchJobs();
         } catch (error) {
@@ -400,7 +377,7 @@ function StudentPrintPage() {
     };
 
     return (
-        <div className={styles.printContainer}>
+        <div className={"p-4"}>
             <Toaster position="top-center" />
 
             {/* Header */}
@@ -409,9 +386,9 @@ function StudentPrintPage() {
                 <p >Submit your documents for printing with our secure service</p>
             </div>
 
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <div className="border-dashed border-2 border-[var(--bg-primary)] flex flex-col gap-3 items-center
-      justify-center p-6 rounded-lg cursor-pointer hover:border-blue-500 
+            <form onSubmit={handleSubmit} className={"flex flex-col gap-6 w-full bg-secondary p-6 rounded-lg"}>
+                <div className="border-dashed border-4 border-[var(--bg-tertiary)] flex flex-col gap-3 items-center
+      justify-center p-6 rounded-lg cursor-pointer
       transition relative"
                 >
                     <span className="text-[var(--bg-primary)] text-sm"><FileUp size={60} /> </span>
@@ -429,22 +406,22 @@ function StudentPrintPage() {
                         htmlFor="file-upload"
                         className="
       inline-block bg-tertiary text-[var(--bg-primary)] px-5 py-2 rounded-full 
-      font-medium text-sm cursor-pointer hover:bg-blue-700 transition
+      font-medium text-sm cursor-pointer 
     "
                     >
                         Upload Files
                     </label>
 
                     {files.length > 0 && (
-                        <div className="mt-2 p-3 bg-blue-50 border border-blue-400 rounded-lg">
-                            <p className="text-blue-700 text-sm">
+                        <div className="mt-2  border border-blue-400 rounded-lg">
+                            <p className="text-secondary p-3 text-lg font-bold rounded-lg bg-tertiary">
                                 <strong>{files.length}</strong> file(s) selected
                             </p>
                         </div>
                     )}
                 </div>
                 {files.length > 0 && (
-                    <div className={`${styles.priceDisplay} border-none `}>
+                    <div className={` border-none `}>
                         <div className="flex items-center justify-center gap-2 rounded-lg">
                             <span className="text-secondary">Total Pages:</span>
                             <span className="text-secondary font-semibold text-xl">
@@ -482,110 +459,123 @@ function StudentPrintPage() {
                     </div>)}
 
                 <div className="grid md:grid-cols-2 gap-6 font-family">
-                    <div className={`${styles.formGroup} text-secondary flex flex-col gap-4 items-center bg-tertiary p-3 rounded-lg`}>
-                        <div className="flex items-center gap-1 border-none border-gray-300 rounded-lg overflow-hidden w-max">
-                            <label className='text-3xl'>Copies</label>
-
-                            <input
-                                type="number"
-                                min="1"
-                                value={copies}
-                                onChange={(e) => setCopies(Number(e.target.value))}
-                                required
-                                className="h-10 w-16 bg-white text-center text-secondary flex items-center justify-center border-none"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setCopies(Math.max(1, copies - 1))}
-                                className="px-2 py-1 w-10 bg-white hover:bg-gray-300 text-xl transition font-bold"
-                            >
-                                -
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setCopies(copies + 1)}
-                                className="px-2 py-1 w-10 bg-white hover:bg-gray-300 text-xl transition"
-                            >
-                                +
-                            </button>
+                    <div className={`font-inter font-bold text-secondary flex flex-col items-center  gap-4 bg-tertiary p-3 rounded-lg`}>
+                        <div className="flex items-center justify-between gap-1 w-full  overflow-hidden w-max">
+                            <div className=" w-1/2 flex flex-col items-center pr-4">
+                                <label className='text-2xl pl-2'>Copies</label>
+                            </div>
+                            <div className=" flex gap-2 pr-4">
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={copies}
+                                    onChange={(e) => setCopies(Number(e.target.value))}
+                                    required
+                                    className="h-10 w-16 bg-white text-center text-secondary text-2xl font-bold flex items-center justify-center border-none rounded-lg"
+                                />
+                                <div className="h-10 flex flex-col-2 item-center gap-1px-2 rounded-lg py-1 bg-white text-2xl transition font-bold">
+                                    <button
+                                        type="button"
+                                        onClick={() => setCopies(Math.max(1, copies - 1))}
+                                        className="p-4 flex items-center justify-center"
+                                    >
+                                        -
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setCopies(copies + 1)}
+                                        className="p-4  border-l-4 border-[var(--color-primary)] flex items-center justify-center"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-
                     </div>
+                </div>
 
-                    <div className={styles.formGroup}>
+                    {/* <div className={styles.formGroup}>
                         <label>Sided</label>
                         <select value={sided} onChange={(e) => setSided(e.target.value)}>
                             <option>Single-Sided</option>
                             <option>Double-Sided</option>
                         </select>
-                    </div>
-                </div>
+                    </div> */}
 
-                <div className={styles.formGroup}>
-                    <label>Color Preference</label>
-                    <div className={styles.toggleGroup}>
+                        <div className={"flex flex-col-2 bg-tertiary  font-inter font-bold rounded-lg w-full text-secondary"}>
+                        <button
+                            type="button"
+                            onClick={() => setSided('Single-Sided')}
+                            className={`${sided === 'Single-Sided' ? 'bg-primary text-primary' : ''} selectButton`}
+                        >
+                            Single-Sided
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setSided('Double-Sided')}
+                            className={`${sided === 'Double-Sided' ? 'bg-primary text-primary' : ''} selectButton`}
+                        >
+                            Double-Sided
+                        </button>
+                    </div>
+
+                    <div className={"flex flex-col-2 bg-tertiary  font-inter font-bold rounded-lg w-full text-secondary"}>
                         <button
                             type="button"
                             onClick={() => setColor('B&W')}
-                            className={color === 'B&W' ? styles.toggleActive : ''}
+                            className={`${color === 'B&W' ? 'bg-primary text-primary' : ''} selectButton`}
                         >
-                            Black & White
+                            B&W
                         </button>
                         <button
                             type="button"
                             onClick={() => setColor('Color')}
-                            className={color === 'Color' ? styles.toggleActive : ''}
+                            className={`${color === 'Color' ? 'bg-primary text-primary' : ''} selectButton`}
                         >
                             Color
                         </button>
                     </div>
-                </div>
 
-                <div className={styles.formGroup}>
-                    <label>Stapling</label>
-                    <div className={styles.toggleGroup}>
+
+                    <div className={"flex flex-col-2 bg-tertiary  font-inter font-bold rounded-lg w-full text-secondary"}>
                         <button
                             type="button"
                             onClick={() => setIsStapled(false)}
-                            className={!isStapled ? styles.toggleActive : ''}
+                            className={!isStapled ? 'bg-primary text-primary selectButton' : 'selectButton'}
                         >
                             No Stapling
                         </button>
                         <button
                             type="button"
                             onClick={() => setIsStapled(true)}
-                            className={isStapled ? styles.toggleActive : ''}
+                            className={isStapled ?  'bg-primary text-primary selectButton' : 'selectButton'}
                         >
                             Staple
                         </button>
                     </div>
-                </div>
+                
 
-                <div className={styles.formGroup}>
+                <div className={"flex flex-col gap-2 text-secondary font-bold text-xl"}>
                     <label htmlFor="instructions">Additional Instructions (Optional)</label>
                     <textarea
                         id="instructions"
                         rows="3"
                         value={instructions}
                         onChange={(e) => setInstructions(e.target.value)}
+                        className="border border-gray-300 rounded-md px-4 py-2 w-full bg-tertiary text-secondary placeholder:text-lg focus:outline-none  focus:border-black-200"
                         placeholder="e.g., 'Print pages 1-5 only', 'Bind spiral', 'Special paper type'"
                     />
                 </div>
 
-                <div className={styles.priceDisplay}>
-                    <div className="text-center">
-                        <h3 className="text-2xl font-bold text-primary mb-2">
-                            Estimated Cost: <span className="text-success-500">₹{totalPrice.toFixed(2)}</span>
+                    <div className=" text-center text-secondary border-4 border-[var(--border-color)] rounded-md p-2 w-full">
+                        <h3 className="text-xl font-bold p-2">
+                            Estimated Cost: <span>₹{totalPrice.toFixed(2)}</span>
                         </h3>
-                        <p className="text-secondary text-sm">
-                            Payment will be processed securely through Razorpay
-                        </p>
                     </div>
-                </div>
 
                 <button
                     type="submit"
-                    className={styles.submitButton}
+                    className={"tabButton w-full p-4 font-bold text-lg bg-primary rounded-lg text-primary hover:none"}
                     disabled={uploading || totalPrice <= 0 || isCounting}
                 >
                     {isCounting ? 'Calculating...' : (uploading ? 'Processing...' : `Proceed to Pay (₹${totalPrice.toFixed(2)})`)}
@@ -595,7 +585,7 @@ function StudentPrintPage() {
             {/* Print Jobs History */}
             <div className="mt-12">
                 <h2 className="text-2xl font-semibold mb-6">Your Print Jobs</h2>
-                <div className={styles.jobList}>
+                <div className={""}>
                     {jobs.length === 0 ? (
                         <div className="card text-center py-12">
                             <div className="text-4xl mb-4">📄</div>
@@ -604,24 +594,28 @@ function StudentPrintPage() {
                         </div>
                     ) : (
                         jobs.map(job => (
-                            <div key={job.id} className={styles.jobCard}>
+                            <div key={job.id} className={"flex flex-cols-3 bg-tertiary p-4 mb-2 rounded-lg justify-between items-center"}>
                                 <div className="flex items-center gap-4">
-                                    <div className="text-2xl">📄</div>
+                                    <div className="text-xl bg-primary p-2 rounded-lg font-inter font-bold">{job.slotId}</div>
                                     <div>
-                                        <div className="font-semibold text-lg">
-                                            Slot: {job.slotId}
+                                        <div className="font-semibold text-lg text-secondary font-bold">
+                                             ₹{job.paymentAmount?.toFixed(0)}
+                                            {job.totalPageCount ? ` • ${job.totalPageCount} Page(s)` : ' NaN'}
+                                            {` • `+new Date(job.submittedAt?.toDate()).toLocaleDateString("en-IN", { month: 'short', day: 'numeric'})}
+                                        </div>
+                                        <div className="text-secondary text-lg font-bold">
+                                            {job.files[0].fileName.length >  18 ? `${job.files[0].fileName.substring(0,  18)}...` : `${job.files[0].fileName}`}
                                         </div>
                                         <div className="text-secondary text-sm">
-                                            {job.files ? `${job.files.length} file(s)` : 'Legacy Job'} •
-                                            Submitted {new Date(job.submittedAt?.toDate()).toLocaleDateString()}
+                                            {job.instructions && <>Instructions: <em>{job.instructions}</em></>}
                                         </div>
                                     </div>
                                 </div>
                                 <span
-                                    className={styles.statusBadge}
+                                    className={"p-2 mr-4 rounded-full text-sm font-semibold"}
                                     style={{ backgroundColor: getStatusColor(job.status) }}
                                 >
-                                    {job.status}
+                                    {job.status==="Ready"?<Check size={35}/>:<Ellipsis  size={35}/>}
                                 </span>
                             </div>
                         ))

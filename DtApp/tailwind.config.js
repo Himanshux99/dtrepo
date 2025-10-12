@@ -13,5 +13,8 @@ export default {
         accent: "#f97316",     // orange-500
       },},
   },
+  fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+      },
   plugins: [],
 };

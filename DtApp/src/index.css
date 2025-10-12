@@ -74,6 +74,7 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
+  --space-18: 4.5rem;
   --space-20: 5rem;
 
   /* Border Radius */
@@ -102,7 +103,7 @@
   --text-primary: #ffffff;
   --text-secondary: #463B68;
   --text-muted: var(--secondary-400);
-  --border-color: var(--secondary-600);
+  --border-color: #463B68;
   --accent-color: var(--primary-500);
 }
 
@@ -512,4 +513,15 @@ a {
 
 .tabButton {
   @apply flex flex-col items-center hover:text-blue-500 transition;
+}
+
+.selectButton {
+  @apply flex items-center justify-center w-full p-4  rounded-lg;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
