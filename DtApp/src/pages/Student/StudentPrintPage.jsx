@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import toast, { Toaster } from 'react-hot-toast';
 import { PDFDocument } from 'pdf-lib';
 import { FileUp } from 'lucide-react';
-import {  Check ,Ellipsis} from 'lucide-react';
+import {  Check ,Ellipsis,File } from 'lucide-react';
 
 // --- Configuration ---
 const RATES_DOC_REF = doc(db, 'config', 'print_rates');
@@ -587,14 +587,14 @@ function StudentPrintPage() {
                 <h2 className="text-2xl font-semibold mb-6">Your Print Jobs</h2>
                 <div className={""}>
                     {jobs.length === 0 ? (
-                        <div className="card text-center py-12">
-                            <div className="text-4xl mb-4">📄</div>
-                            <h3 className="text-lg font-semibold mb-2">No Print Jobs Yet</h3>
+                        <div className="card text-center py-12 text-secondary font-bold">
+                            <div className="text-4xl mb-4 flex flex-col items-center"><File size={60}/></div>
+                            <h3 className="text-lg mb-2">No Print Jobs Yet</h3>
                             <p className="text-secondary">Submit your first print job using the form above</p>
                         </div>
                     ) : (
                         jobs.map(job => (
-                            <div key={job.id} className={"flex flex-cols-3 bg-tertiary p-4 mb-2 rounded-lg justify-between items-center"}>
+                            <div key={job.id} className={"flex flex-cols-3 bg-white p-4 mb-2 rounded-lg justify-between items-center"}>
                                 <div className="flex items-center gap-4">
                                     <div className="text-xl bg-primary p-2 rounded-lg font-inter font-bold">{job.slotId}</div>
                                     <div>

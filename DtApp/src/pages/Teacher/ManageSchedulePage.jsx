@@ -41,7 +41,7 @@ function ManageSchedulePage() {
     useEffect(() => {
         fetchSchedules();
     }, [fetchSchedules]);
-    
+
     const handleAddSchedule = async (newSchedule) => {
         try {
             await addDoc(collection(db, 'schedules'), newSchedule);
@@ -53,7 +53,7 @@ function ManageSchedulePage() {
             toast.error("Failed to add schedule.");
         }
     };
-    
+
     const handleEditSchedule = (scheduleData) => {
         setEditingSchedule(scheduleData);
         setShowScheduleForm(true);
@@ -94,12 +94,12 @@ function ManageSchedulePage() {
     }, {});
 
     return (
-        <div className={styles.container}>
+        <div className={'flex flex-col text-center mt-2 text-xl font-bold px-4 pb-16'}>
             <h1>Manage Your Schedule</h1>
-            <p>Add, edit, or remove your recurring weekly classes.</p>
+            <p className='text-sm mb-4'>Add, edit, or remove your recurring weekly classes.</p>
 
             {!showScheduleForm && (
-                <button onClick={() => { setEditingSchedule(null); setShowScheduleForm(true); }} className={styles.addButton}>
+                <button onClick={() => { setEditingSchedule(null); setShowScheduleForm(true); }} className={'btn-secondary mb-4'}>
                     + Add New Class
                 </button>
             )}
@@ -111,35 +111,33 @@ function ManageSchedulePage() {
                 />
             )}
 
-            <div className={styles.scheduleList}>
+            <div className={''}>
                 {/* Day Selector Tabs */}
-                <div className={styles.daySelector}>
-                    {dayAbbreviations.slice(1, 7).map((day, index) => ( // Mon-Sat
-                        <button
-                            key={day}
+                <div className={"flex flex-row items-center justify-around mb-2 mx-4 bg-white p-2 rounded-lg shadow"}>
+                    {dayAbbreviations.slice(1, 7).map((day, index) => (
+                        <button key={day}
                             onClick={() => setActiveDay(index + 1)}
-                            className={activeDay === (index + 1) ? styles.activeDay : ''}
-                        >
+                            className={`${activeDay === (index + 1) ? 'bg-primary text-primary' : 'bg-tertiary text-secondary'} px-2 py-4 w-16 rounded-lg font-bold tracking-widest`}>
                             {day}
                         </button>
                     ))}
                 </div>
 
                 {/* Schedule Cards for selected day */}
-                <div className={styles.scheduleDayView}>
-                    <h2>{daysOfWeek[activeDay]}</h2>
-                    <div className={styles.cardsContainer}>
+                <div className={''}>
+                    <h2 className='text-2xl font-bold my-3'>{daysOfWeek[activeDay]}</h2>
+                    <div className={'bg-white p-4 rounded-lg shadow flex flex-col gap-4'}>
                         {loading ? <p>Loading...</p> : groupedSchedules[activeDay] ? groupedSchedules[activeDay].map((sch) => (
-                            <div key={sch.id} className={styles.scheduleCard}>
-                                <div className={styles.timeSection}>
-                                    <p className={styles.time}>{sch.startTime}</p>
-                                    <p className={styles.timeEnd}>to {sch.endTime}</p>
+                            <div key={sch.id} className={'flex flex-row bg-[var(--primary-900)] p-2 rounded-lg text-secondary items-center'}>
+                                <div>
+                                    <p >{sch.startTime}</p>
+                                    <p >{sch.endTime}</p>
                                 </div>
-                                <div className={styles.detailsSection}>
-                                    <p className={styles.subject}>{sch.classInfo.subject}</p>
-                                    <p className={styles.venue}>{sch.venue} | {sch.classInfo.year}yr {sch.classInfo.branch} Div-{sch.classInfo.division}</p>
+                                <div className={'border-l-2 border-[var(--bg-primary)] mx-4 px-4 text-left'}>
+                                    <p >{sch.classInfo.subject}</p>
+                                    <p >{sch.venue} | {sch.classInfo.year} Yr {sch.classInfo.branch} Div-{sch.classInfo.division}</p>
                                 </div>
-                                <div className={styles.actionsSection}>
+                                <div className={'ml-auto flex flex-col gap-2 pr-2'}>
                                     <button onClick={() => handleEditSchedule(sch)} className={styles.editButton}>Edit</button>
                                     <button onClick={() => handleDeleteSchedule(sch.id)} className={styles.deleteButton}>Delete</button>
                                 </div>

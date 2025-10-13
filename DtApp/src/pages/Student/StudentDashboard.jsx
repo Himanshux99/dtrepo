@@ -4,7 +4,7 @@ import { CalendarDays,Link as Linkicon, Printer, CircleUser } from 'lucide-react
 
 function StudentDashboard() {
   return (
-    <div className="container !p-8 pb-16">
+    <div className="container !px-8 !pt-2 pb-16">
       {/* Header */}
       <div className="">
         <h1 className="text-3xl font-bold text-primary p-2">Student Dashboard</h1>

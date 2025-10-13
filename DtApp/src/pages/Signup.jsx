@@ -67,7 +67,7 @@ function Signup() {
 
   if (signupSuccess) {
     return (
-      <div className={styles.signupContainer}>
+      <div className={"card"}>
         <h2>✅ Account Created!</h2>
         <p>We've sent a verification link to <strong>{formData.email}</strong>.</p>
         <p>Please click the link in the email to activate your account before logging in.</p>
@@ -79,31 +79,31 @@ function Signup() {
   }
 
   return (
-    <div className={styles.signupContainer}>
+    <div className={"card m-4 !p-4 bg-white text-secondary font-bold"}>
       <Toaster position="top-center" />
-      <h2>Create Student Account (Step 1 of 2)</h2>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
+      <h2 className='flex flex-col items-center text-2xl mb-4'>Create Student Account</h2>
+      <form onSubmit={handleSubmit} className={"flex flex-col gap-4"}>
+        <div className={"imp"}>
           <label>Email</label>
-          <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+          <input type="email" className='inp' name="email" value={formData.email} onChange={handleChange} required />
           {errors.email && <p className={styles.error}>{errors.email}</p>}
         </div>
-        <div className={styles.formGroup}>
+        <div className={""}>
           <label>Password</label>
-          <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+          <input type="password" className='inp' name="password" value={formData.password} onChange={handleChange} required />
           {errors.password && <p className={styles.error}>{errors.password}</p>}
         </div>
-        <div className={styles.formGroup}>
+        <div className={""}>
           <label>Confirm Password</label>
-          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
+          <input type="password" className='inp' name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
           {errors.confirmPassword && <p className={styles.error}>{errors.confirmPassword}</p>}
         </div>
-        <button type="submit" className={styles.submitButton} disabled={loading}>
+        <button type="submit" className={"btn-main"} disabled={loading}>
           {loading ? 'Creating Account...' : 'Sign Up & Verify'}
         </button>
       </form>
-      <p className={styles.loginLink}>
-        Already have an account? <Link to="/login">Log In</Link>
+      <p className={'mt-4 text-center'}>
+        Already have an account? <Link to="/login" className='text-blue-400'>Log In</Link>
       </p>
     </div>
   );

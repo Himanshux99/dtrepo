@@ -15,7 +15,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const { login, logout, sendVerificationEmail, sendPasswordReset } = useAuth();
   const navigate = useNavigate();
-
+  const [showEmailRequired, setShowEmailRequired] = useState(false);
   const [unverifiedUser, setUnverifiedUser] = useState(null);
 
 
@@ -101,6 +101,7 @@ function Login() {
 
   const handlePasswordReset = async () => {
     if (!email) {
+      setShowEmailRequired(true);
       return toast.error("Please enter your email address to reset your password.");
     }
     const toastId = toast.loading("Sending password reset link...");
@@ -141,6 +142,12 @@ function Login() {
               >
                 Resend Verification Email
               </button>
+            </div>
+          )}
+
+          {showEmailRequired && (
+            <div className="mb-4 p-3 rounded-lg !bg-white border !border-[var(--bg-primary)] text-secondary text-center text-lg flex flex-col items-center">
+              <p className="mb-2">Please enter your email first.</p>
             </div>
           )}
 

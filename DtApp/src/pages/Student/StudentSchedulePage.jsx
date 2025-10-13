@@ -30,6 +30,8 @@ function StudentSchedulePage() {
                 return 'bg-green-500';
             case 'Venue Change':
                 return 'bg-yellow-500';
+            case 'Delayed':
+                return 'bg-blue-500';
             default:
                 return 'bg-pink-500';
         }
@@ -130,28 +132,29 @@ function StudentSchedulePage() {
         return updates;
     };
 
-    if (loading) return <div className={"flex flex-row justify-between border-2 mx-4 mt-2 py-2 px-4 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
-        <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
-            <span className={"text-2xl font-bold text-left  "}>Your<br />Schedule</span>
-            <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>{roll === undefined ? '2410XX00XX' : roll}</span>
-        </div>
-        <div>
-            <img src="/calendar.svg" alt="Calendar" className='w-80' />
+    if (loading) return <div className={"mt-2 w-full h-full"}>
+    <div className={"flex flex-row justify-between border-2 mt-4 mx-4 py-2 px-8 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
+                <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
+                    <span className={"text-2xl font-bold text-left  "}>Your<br />Schedule</span>
+                    <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>24101X00XX</span>
+                </div>
+                <div>
+                    <img src="/calendar.svg" alt="Calendar" className='w-80' />
 
-        </div>
-        {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}
-    </div>;
+                </div>
+                {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}
+            </div></div>;
 
     return (
         <div className={"mt-2 w-full h-full"}>
             <Toaster position="top-center" />
-            <div className={"flex flex-row justify-between border-2 mt-4 mx-4 py-2 px-8 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
+            <div className={"flex flex-row justify-between border-2 mt-4 mx-2 py-2 px-4 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
                 <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
                     <span className={"text-2xl font-bold text-left  "}>Your<br />Schedule</span>
                     <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>{roll}</span>
                 </div>
                 <div>
-                    <img src="/calendar.svg" alt="Calendar" className='w-80' />
+                    <img src="/calendar.svg" alt="Calendar" className='w-80 ml-2' />
 
                 </div>
                 {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { CalendarDays , Settings ,Link as LinkIcon,Printer,Home} from "lucide-react"; // icon library
+import { CalendarDays,Megaphone , Settings ,Link as LinkIcon,Printer,Home} from "lucide-react"; // icon library
 import { useLocation } from 'react-router-dom';
 
 function Navbar() {
@@ -97,10 +97,25 @@ const getTabsForRole = (role) => {
             ];
         case 'teacher':
             return [
+              {
+                    label: "Updates",
+                    icon: <Megaphone size={24} />,
+                    path: "/teacher/updates"
+                },
                 {
                     label: "Schedule",
                     icon: <CalendarDays size={24} />,
                     path: "/teacher/schedule"
+                },
+                {
+                    label: "Home",
+                    icon: <Home size={24} />,
+                    path: "/teacher"
+                },
+                {
+                    label: "V-Print",
+                    icon: <Printer size={24} />,
+                    path: "/student/print"
                 },
                 {
                     label: "Settings",
@@ -114,6 +129,10 @@ const getTabsForRole = (role) => {
                     label: "Dashboard",
                     icon: <CalendarDays size={24} />,
                     path: "/staff"
+                },{
+                    label: "Queue",
+                    icon: <Printer size={24} />,
+                    path: "/staff/queue"
                 },
                 {
                     label: "Settings",
@@ -141,7 +160,7 @@ const getTabsForRole = (role) => {
 
 const location = useLocation();
 const tabs = getTabsForRole(currentUser?.role);
-
+if(location.pathname==="/student/complete-profile" || location.pathname==="/login" || location.pathname==="/signup") return null;
 return (
     <nav className="fixed bottom-4 left-6 right-6 bg-primary shadow-md border-2 border-white rounded-full">
         <div className="flex justify-around items-center text-white mx-4 py-2">
