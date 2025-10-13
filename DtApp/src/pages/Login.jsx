@@ -5,6 +5,7 @@ import styles from './Login.module.css';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import toast from 'react-hot-toast';
+import {GraduationCap } from 'lucide-react'
 
 
 function Login() {
@@ -114,57 +115,57 @@ function Login() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-primary py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-primary py-12 px-4 text-primary">
       <div className="max-w-md w-full">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="text-5xl mb-4">🎓</div>
-          <h1 className="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
-          <p className="text-secondary">Sign in to your College Portal account</p>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <div className="text-5xl mb-1"><GraduationCap size={60}/></div>
+          <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
+          <p className="text-[var(--bg-tertiary)] font-bold">Sign in to your College Portal account</p>
         </div>
 
         {/* Login Form */}
-        <div className="card">
+        <div className="flex flex-col bg-white text-red-600 font-bold px-6 pt-4 pb-2 rounded-lg shadow-md">
           {error && (
-            <div className="mb-4 p-3 bg-error-50 border border-error-500 rounded-lg">
-              <p className="text-error-500 text-sm">{error}</p>
+            <div className="mb-4 p-3 rounded-lg border !border-red-500 bg-red-50">
+              <p className="text-sm">{error}</p>
             </div>
           )}
           
           {unverifiedUser && (
-            <div className="mb-4 p-3 bg-warning-50 border border-warning-500 rounded-lg">
-              <p className="text-warning-500 text-sm mb-2">Please verify your email first.</p>
+            <div className="mb-4 p-3 rounded-lg !bg-white border !border-[var(--bg-primary)] text-secondary text-center text-lg flex flex-col items-center !border-yellow-400 bg-yellow-50">
+              <p className="mb-2">Please verify your email first.</p>
               <button 
                 onClick={handleResendVerification} 
-                className="btn btn-warning btn-sm"
+                className="flex flex-col py-2 px-4 text-sm bg-yellow-400 text-white rounded-lg font-bold  items-center justify-center"
               >
                 Resend Verification Email
               </button>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">Email Address</label>
+          <form onSubmit={handleSubmit} className="">
+            <div className="pb-2">
+              <label htmlFor="email" className="text-secondary font-bold font-inter">Email Address</label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="form-input"
+                className="flex flex-col p-3 border w-full font-bold font-inter bg-tertiary text-secondary rounded-lg"
                 placeholder="Enter your email"
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">Password</label>
+            <div className="pb-2">
+              <label htmlFor="password" className="text-secondary font-bold font-inter">Password</label>
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="form-input"
+                className="flex flex-col p-3 border w-full font-bold font-inter bg-tertiary text-secondary rounded-lg"
                 placeholder="Enter your password"
                 required
               />
@@ -172,17 +173,17 @@ function Login() {
 
             <button 
               type="submit" 
-              className="btn btn-primary w-full" 
+              className='btn-main' 
               disabled={loading}
             >
               {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 
-          <div className="mt-6 text-right">
+          <div className="mt-2 text-right">
             <button 
               onClick={handlePasswordReset} 
-              className="text-primary hover:text-primary-600 text-sm font-medium"
+              className="text-secondary hover:text-secondary-600 text-sm font-medium"
             >
               Forgot Password?
             </button>
@@ -190,16 +191,13 @@ function Login() {
         </div>
 
         {/* Sign Up Links */}
-        <div className="mt-8 text-center">
+        <div className="text-center">
           <p className="text-secondary mb-4">
             Don't have an account?
           </p>
           <div className="space-y-3">
-            <Link to="/signup" className="btn btn-outline w-full">
-              Create Student Account
-            </Link>
-            <Link to="/signup/teacher" className="btn btn-secondary w-full">
-              Create Teacher Account
+            <Link to="/signup" className="btn-secondary">
+              Don't have an Account? Create Account
             </Link>
           </div>
         </div>

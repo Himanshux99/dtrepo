@@ -1,0 +1,209 @@
+.printContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-8);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-8);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-lg);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.formGroup label {
+  margin-bottom: var(--space-2);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.submitButton {
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-lg);
+  border: none;
+  background-color: var(--success-500);
+  color: white;
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--success-600);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.submitButton:disabled {
+  background-color: var(--secondary-600);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.priceDisplay {
+  background-color: var(--bg-tertiary);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.jobList {
+  text-align: left;
+}
+
+.jobCard {
+  background-color: var(--bg-secondary);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.jobCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.statusBadge {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  color: white;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Toggle Buttons */
+.toggleGroup {
+  display: flex;
+  border: 1px solid var(--primary-500);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--bg-tertiary);
+}
+
+.toggleGroup button {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  background-color: transparent;
+  color: var(--primary-500);
+}
+
+.toggleGroup button:hover {
+  background-color: var(--primary-100);
+}
+
+.toggleActive {
+  background-color: var(--primary-500) !important;
+  color: white !important;
+  font-weight: var(--font-weight-semibold);
+}
+
+.toggleInactive:hover {
+  background-color: var(--primary-100);
+}
+
+/* File Upload Styling */
+.formGroup input[type="file"] {
+  padding: var(--space-4);
+  border: 2px dashed var(--border-color);
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.formGroup input[type="file"]:hover {
+  border-color: var(--primary-500);
+  background-color: var(--primary-50);
+}
+
+.formGroup input[type="file"]:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .printContainer {
+    padding: var(--space-4);
+  }
+  
+  .form {
+    padding: var(--space-6);
+  }
+  
+  .jobCard {
+    flex-direction: column;
+    gap: var(--space-4);
+    text-align: center;
+  }
+  
+  .toggleGroup {
+    flex-direction: column;
+  }
+  
+  .toggleGroup button {
+    border-radius: 0;
+  }
+  
+  .toggleGroup button:first-child {
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+  
+  .toggleGroup button:last-child {
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+  }
+}

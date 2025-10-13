@@ -5,7 +5,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import { decodeRollNumber } from '../../utils/profileUtils';
 import toast, { Toaster } from 'react-hot-toast';
 import{Link as Linkicon} from 'lucide-react';
-import styles from './VReferPage.module.css';
 
 // Helper function to convert semester number to Roman numeral
 const toRoman = (num) => {

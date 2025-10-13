@@ -541,3 +541,9 @@ input::-webkit-inner-spin-button {
 .bg-fourth{
   background-color: var(--bg-fourth);
 }
+.btn-main{
+  @apply flex flex-col items-center p-4 bg-primary rounded-lg text-white font-bold w-full;
+}
+.btn-secondary{
+  @apply flex flex-col items-center p-4 bg-secondary rounded-lg text-secondary font-bold w-full;
+}
