@@ -7,6 +7,7 @@ console.log('[SW] Starting to load unified service worker...');
 // PART 1: Firebase Cloud Messaging Setup (Load First)
 // ============================================
 
+
 try {
   // Import Firebase scripts
   importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
