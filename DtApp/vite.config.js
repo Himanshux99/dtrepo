@@ -15,12 +15,11 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}'],
       },
       devOptions: {
-        enabled: true,
-        type: 'module',
+        enabled: false, // Changed to false to avoid dev-sw issues
       },
       manifest: {
-        name: 'V++',
-        short_name: 'V++',
+        name: 'DT App',
+        short_name: 'DT App',
         description: 'Your app description',
         theme_color: '#ffffff',
         background_color: '#ffffff',
