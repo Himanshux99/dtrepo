@@ -18,8 +18,8 @@ export default defineConfig({
         enabled: false, // Changed to false to avoid dev-sw issues
       },
       manifest: {
-        name: 'DT App',
-        short_name: 'DT App',
+        name: 'V++',
+        short_name: 'V++',
         description: 'Your app description',
         theme_color: '#ffffff',
         background_color: '#ffffff',
@@ -28,17 +28,17 @@ export default defineConfig({
         start_url: '/',
         icons: [
           { 
-            src: '/vite.svg', 
+            src: '/android-chrome-48x48.png', 
             sizes: '64x64', 
             type: 'image/svg+xml' 
           },
           { 
-            src: '/vite.svg', 
+            src: '/android-chrome-192x192.png', 
             sizes: '192x192', 
-            type: 'image/svg+xml' 
+            type: 'file/svg+xml' 
           },
           { 
-            src: '/vite.svg', 
+            src: '/android-chrome-512x512.png', 
             sizes: '512x512', 
             type: 'image/svg+xml', 
             purpose: 'any maskable' 

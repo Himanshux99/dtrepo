@@ -2,15 +2,15 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "standalone",
-  "name": "dancing-torrone-1a67dd.netlify",
+  "name": "V++",
   "orientation": "any",
   "scope": "/",
-  "short_name": "dancing-torrone-1a67dd.netlify",
+  "short_name": "V++",
   "start_url": "/",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "https://dancing-torrone-1a67dd.netlify.app/vite.svg",
+      "src": "/file.svg",
       "type": "image/svg+xml",
       "isSquare": false,
       "isPng": false,
@@ -22,7 +22,7 @@
       "is192x192": false
     },
     {
-      "src": "https://dancing-torrone-1a67dd.netlify.app/favicon.ico",
+      "src": "/file.svg",
       "type": "image/x-icon",
       "isSquare": false,
       "isPng": false,
