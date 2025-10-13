@@ -179,7 +179,7 @@ function StudentSchedulePage() {
                                 {groupedSchedules[activeDay] ? groupedSchedules[activeDay].map((sch, index) => (
                                     <div key={index} className={"flex flex-row items-center justify-start gap-4 bg-[var(--primary-900)] shadow-hard py-4 px-4 rounded-lg"}>
                                         <div className={"pl-2"}><p className={"text-secondary"}>{sch.startTime}</p><p className={""}>{sch.endTime}</p></div>
-                                        <div className={"border-l-8 border-[var(--primary-800)] pl-4 text-[var(--secondary-900)] w-full"}><p className={"ml-2"}>{sch.classInfo.subject}</p><p className={"bg-white px-4 mt-2 py-1 w-full rounded-full"}>{sch.venue} <span className={"border-l-4 border-[var(--secondary-900)] pl-2"}>{sch.teacherName || 'N/A'}</span></p></div>
+                                        <div className={"border-l-8 border-[var(--primary-800)] pl-4 text-[var(--secondary-900)] w-full"}><p className={"ml-2"}>{sch.classInfo.subject}</p><p className={"bg-white px-4 mt-2 py-1 w-full rounded-full"}>{sch.venue} <span className={"border-l-4 border-[var(--secondary-900)] pl-2"}>{sch.teacherName.substring(0, 9) || 'N/A'}</span></p></div>
                                     </div>
                                 )) : <p className={styles.noClass}>No classes scheduled for {daysOfWeek[activeDay]}.</p>}
                             </div>

@@ -14,7 +14,7 @@ function ScheduleForm({ onAdd, onCancel, isAdmin = false, initialData = null }) 
     const [branch, setBranch] = useState('INFT');
     const [division, setDivision] = useState('A');
     const [subject, setSubject] = useState('');
-    const [dayOfWeek, setDayOfWeek] = useState(1);
+    const [dayOfWeek, setDayOfWeek] = useState(0);
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [venue, setVenue] = useState('');
@@ -43,7 +43,7 @@ function ScheduleForm({ onAdd, onCancel, isAdmin = false, initialData = null }) 
         e.preventDefault();
         const scheduleData = {
             classInfo: { year, branch, division, subject },
-            dayOfWeek: Number(dayOfWeek),
+            dayOfWeek: Number(dayOfWeek +1),
             startTime,
             endTime,
             venue,
@@ -130,7 +130,7 @@ function ScheduleForm({ onAdd, onCancel, isAdmin = false, initialData = null }) 
         <button
           key={day}
           type="button"
-          onClick={() => setDayOfWeek(index)}
+          onClick={() => { setDayOfWeek(index); console.log(day+" "+ index); }}
           className={`px-4 py-2 rounded-md border ${
             dayOfWeek === index
               ? "bg-primary text-white border-secondary"
@@ -138,6 +138,8 @@ function ScheduleForm({ onAdd, onCancel, isAdmin = false, initialData = null }) 
           } transition-colors duration-150`}
         >
           {day.substring(0, 3).toUpperCase()}
+          
+          
         </button>
       ))}
     </div>
