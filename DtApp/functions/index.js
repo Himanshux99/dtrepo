@@ -1,11 +1,14 @@
 // functions/index.js
-// Cloud Functions for FCM Notifications - Updated for firebase-functions v5+
+// Complete Cloud Functions for FCM Notifications & Razorpay Payment
 
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { onDocumentUpdated, onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { defineString } = require('firebase-functions/params');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const { getMessaging } = require('firebase-admin/messaging');
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
 
 // Initialize Firebase Admin SDK
 initializeApp();
@@ -13,21 +16,143 @@ initializeApp();
 const db = getFirestore();
 const messaging = getMessaging();
 
+// Define Razorpay secret keys
+const razorpayKeyId = defineString('RAZORPAY_KEY_ID');
+const razorpayKeySecret = defineString('RAZORPAY_KEY_SECRET');
+
 // ============================================
-// HELPER FUNCTION: Send Notification to User
+// HELPER: Initialize Razorpay
 // ============================================
 
-/**
- * Send notification to a specific user by UID
- * Can be called from frontend or other cloud functions
- */
+const getRazorpayInstance = () => {
+  return new Razorpay({
+    key_id: razorpayKeyId.value(),
+    key_secret: razorpayKeySecret.value(),
+  });
+};
+
+// ============================================
+// RAZORPAY: Create Order
+// ============================================
+
+exports.createRazorpayOrder = onCall({ cors: true }, async (request) => {
+  try {
+    // Optional: Check if user is authenticated
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'User must be authenticated');
+    }
+
+    const { amount } = request.data;
+
+    // Validate input
+    if (!amount || typeof amount !== 'number' || amount <= 0) {
+      throw new HttpsError('invalid-argument', 'Amount must be a positive number');
+    }
+
+    // Amount should be in paise (smallest currency unit)
+    if (amount < 100) {
+      throw new HttpsError('invalid-argument', 'Amount must be at least 100 paise (1 INR)');
+    }
+
+    const razorpay = getRazorpayInstance();
+    
+    const options = {
+      amount: amount,
+      currency: 'INR',
+      receipt: `receipt_order_${new Date().getTime()}`,
+      notes: {
+        userId: request.auth.uid,
+        created_at: new Date().toISOString(),
+      },
+    };
+
+    const order = await razorpay.orders.create(options);
+    
+    console.log(`Order created: ${order.id} for user ${request.auth.uid}`);
+    return { order };
+
+  } catch (error) {
+    console.error('Razorpay order creation failed:', error);
+    
+    if (error instanceof HttpsError) {
+      throw error;
+    }
+    
+    throw new HttpsError('internal', 'Failed to create order. Please try again.', error.message);
+  }
+});
+
+// ============================================
+// RAZORPAY: Verify Payment
+// ============================================
+
+exports.verifyRazorpayPayment = onCall({ cors: true }, async (request) => {
+  try {
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'User must be authenticated');
+    }
+
+    const { order_id, payment_id, signature } = request.data;
+
+    // Validate input
+    if (!order_id || !payment_id || !signature) {
+      throw new HttpsError(
+        'invalid-argument',
+        'Missing required fields: order_id, payment_id, or signature'
+      );
+    }
+
+    // Verify signature
+    const body = order_id + '|' + payment_id;
+    const expectedSignature = crypto
+      .createHmac('sha256', razorpayKeySecret.value())
+      .update(body.toString())
+      .digest('hex');
+
+    const isValid = expectedSignature === signature;
+
+    if (isValid) {
+      console.log(`Payment verified: ${payment_id} for user ${request.auth.uid}`);
+      
+      // Store payment info in Firestore
+      await db.collection('payments').doc(payment_id).set({
+        order_id,
+        payment_id,
+        userId: request.auth.uid,
+        verified: true,
+        verified_at: FieldValue.serverTimestamp(),
+        created_at: FieldValue.serverTimestamp(),
+      });
+
+      return { 
+        status: 'success',
+        verified: true,
+        payment_id 
+      };
+    } else {
+      console.warn(`Payment verification failed for: ${payment_id}`);
+      throw new HttpsError('permission-denied', 'Payment verification failed. Signature mismatch.');
+    }
+
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    
+    if (error instanceof HttpsError) {
+      throw error;
+    }
+    
+    throw new HttpsError('internal', 'Verification failed. Please contact support.', error.message);
+  }
+});
+
+// ============================================
+// FCM: Send Notification to Single User
+// ============================================
+
 exports.sendNotificationToUser = onCall(async (request) => {
   // Verify user is authenticated
   if (!request.auth) {
-    throw new HttpsError(
-      'unauthenticated', 
-      'User must be authenticated to send notifications'
-    );
+    throw new HttpsError('unauthenticated', 'User must be authenticated to send notifications');
   }
 
   const { userId, title, body, data: extraData } = request.data;
@@ -79,8 +204,7 @@ exports.sendNotificationToUser = onCall(async (request) => {
     // Collect invalid tokens for cleanup
     const invalidTokens = [];
     results.forEach((result, index) => {
-      if (result.status === 'rejected' || 
-          (result.value && result.value.error)) {
+      if (result.status === 'rejected' || (result.value && result.value.error)) {
         console.log(`Removing invalid token: ${fcmTokens[index]}`);
         invalidTokens.push(fcmTokens[index]);
       }
@@ -114,12 +238,9 @@ exports.sendNotificationToUser = onCall(async (request) => {
 });
 
 // ============================================
-// HELPER FUNCTION: Send to Multiple Users
+// FCM: Send Notification to Multiple Users
 // ============================================
 
-/**
- * Send notification to multiple users (bulk notification)
- */
 exports.sendNotificationToUsers = onCall(async (request) => {
   // Verify authentication
   if (!request.auth) {
@@ -129,10 +250,7 @@ exports.sendNotificationToUsers = onCall(async (request) => {
   const { userIds, title, body, data: extraData } = request.data;
 
   if (!Array.isArray(userIds) || userIds.length === 0) {
-    throw new HttpsError(
-      'invalid-argument', 
-      'userIds must be a non-empty array'
-    );
+    throw new HttpsError('invalid-argument', 'userIds must be a non-empty array');
   }
 
   try {
@@ -180,13 +298,50 @@ exports.sendNotificationToUsers = onCall(async (request) => {
 });
 
 // ============================================
+// FCM: Send Test Notification
+// ============================================
+
+exports.sendTestNotification = onCall({ cors: true }, async (request) => {
+  try {
+    const { token } = request.data;
+
+    // Validate input
+    if (!token || typeof token !== 'string') {
+      throw new HttpsError('invalid-argument', 'The function must be called with a valid FCM token');
+    }
+
+    const payload = {
+      notification: {
+        title: '🧪 Test Notification!',
+        body: 'If you received this, your setup is working correctly.',
+      },
+      token: token,
+    };
+
+    const response = await messaging.send(payload);
+    
+    console.log('Test notification sent successfully:', response);
+    return { 
+      success: true,
+      messageId: response 
+    };
+
+  } catch (error) {
+    console.error('Error sending test notification:', error);
+    
+    if (error.code === 'messaging/invalid-registration-token' ||
+        error.code === 'messaging/registration-token-not-registered') {
+      throw new HttpsError('invalid-argument', 'Invalid or expired FCM token');
+    }
+    
+    throw new HttpsError('internal', 'Error sending notification. Please try again.', error.message);
+  }
+});
+
+// ============================================
 // FIRESTORE TRIGGER: Print Job Ready
 // ============================================
 
-/**
- * Automatically send notification when print job status changes to "Ready"
- * This triggers whenever a document in print_jobs collection is updated
- */
 exports.notifyPrintJobReady = onDocumentUpdated('print_jobs/{jobId}', async (event) => {
   const beforeData = event.data.before.data();
   const afterData = event.data.after.data();
@@ -249,10 +404,6 @@ exports.notifyPrintJobReady = onDocumentUpdated('print_jobs/{jobId}', async (eve
 // FIRESTORE TRIGGER: Lecture Update Posted
 // ============================================
 
-/**
- * Automatically notify students when teacher posts a lecture update
- * This triggers when a new document is created in lecture_updates collection
- */
 exports.notifyLectureUpdate = onDocumentCreated('lecture_updates/{updateId}', async (event) => {
   const updateData = event.data.data();
   const updateId = event.params.updateId;
@@ -328,9 +479,3 @@ exports.notifyLectureUpdate = onDocumentCreated('lecture_updates/{updateId}', as
   return null;
 });
 
-// ============================================
-// EXISTING RAZORPAY FUNCTIONS (if you have them)
-// ============================================
-
-// Keep your existing Razorpay functions here
-// They should already be using the correct v2 syntax if they're working
