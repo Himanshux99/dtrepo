@@ -139,18 +139,18 @@ const location = useLocation();
 const tabs = getTabsForRole(currentUser?.role);
 
 return (
-    <nav className="fixed bottom-4 left-6 right-6 bg-white shadow-md border-2 border-[var(--border-color)] rounded-full">
-        <div className="flex justify-around items-center text-gray-600 mx-4 py-2">
+    <nav className="fixed bottom-4 left-6 right-6 bg-primary shadow-md border-2 border-white rounded-full">
+        <div className="flex justify-around items-center text-white mx-4 py-2">
             {tabs.map(tab => {
                 const isActive = location.pathname === tab.path;
                 return (
                     <button
                         key={tab.path}
-                        className={`tabButton flex flex-col items-center text-sm text-gray-500"}`}
+                        className={`tabButton flex flex-col items-center text-sm "}`}
                         onClick={() => navigate(tab.path, { replace: true })}
                     >
-                        {isActive ? <span className="text-white bg-primary rounded-full p-2">{tab.icon}</span> :<span className="p-1.5">{tab.icon}</span>}
-                        <span className="text-xs font-inter font-bold">{tab.label}</span>
+                        {isActive ? <span className="text-secondary bg-white rounded-full p-2">{tab.icon}</span> :<span className="p-1.5">{tab.icon}</span>}
+                        <span className="text-xs text-white font-inter font-bold">{tab.label}</span>
                     </button>
                 );
             })}

@@ -20,6 +20,21 @@ function StudentSchedulePage() {
     const [loading, setLoading] = useState(true);
     const [activeDay, setActiveDay] = useState(new Date().getDay());
 
+    const getColorForUpdateType = (type) => {
+        switch (type) {
+            case 'Cancelled':
+                return 'bg-red-500';
+            case 'Rescheduled':
+                return 'bg-yellow-500';
+            case 'Updated':
+                return 'bg-green-500';
+            case 'Venue Change':
+                return 'bg-yellow-500';
+            default:
+                return 'bg-pink-500';
+        }
+    };
+
     const fetchData = useCallback(async () => {
         if (!currentUser) return;
         setLoading(true);
@@ -116,19 +131,19 @@ function StudentSchedulePage() {
     };
 
     if (loading) return <div className={"flex flex-row justify-between border-2 mx-4 mt-2 py-2 px-4 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
-                <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
-                    <span className={"text-2xl font-bold text-left  "}>Your<br />Schedule</span>
-                    <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>{roll===undefined?'2410XX00XX':roll}</span>
-                </div>
-                <div>
-                <img src="/calendar.svg" alt="Calendar" className='w-80' />
+        <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
+            <span className={"text-2xl font-bold text-left  "}>Your<br />Schedule</span>
+            <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>{roll === undefined ? '2410XX00XX' : roll}</span>
+        </div>
+        <div>
+            <img src="/calendar.svg" alt="Calendar" className='w-80' />
 
-                </div>
-                {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}
-            </div>;
+        </div>
+        {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}
+    </div>;
 
     return (
-        <div className={"mt-2 !mb-0"}>
+        <div className={"mt-2 w-full h-full"}>
             <Toaster position="top-center" />
             <div className={"flex flex-row justify-between border-2 mt-4 mx-4 py-2 px-8 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
                 <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
@@ -136,20 +151,20 @@ function StudentSchedulePage() {
                     <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>{roll}</span>
                 </div>
                 <div>
-                <img src="/calendar.svg" alt="Calendar" className='w-80' />
+                    <img src="/calendar.svg" alt="Calendar" className='w-80' />
 
                 </div>
                 {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}
             </div>
 
             <div className={"flex flex-row items-center justify-center gap-2 my-8"}>
-                <button onClick={() => setActiveTab('schedule')} className={`${activeTab === 'schedule' ? 'bg-secondary text-secondary' : 'bg-fourth text-white' } px-4 py-2 rounded-xl text-xl font-bold font-inter`}>TIMETABLE</button>
-                <button onClick={() => setActiveTab('updates')} className={` ${activeTab === 'updates' ? 'bg-secondary text-secondary' : 'bg-fourth text-white' } px-4 py-2 rounded-xl text-xl font-bold font-inter`}>UPDATES ({updates.length})</button>
+                <button onClick={() => setActiveTab('schedule')} className={`${activeTab === 'schedule' ? 'bg-secondary text-secondary' : 'bg-fourth text-white'} px-4 py-2 rounded-xl text-xl font-bold font-inter`}>TIMETABLE</button>
+                <button onClick={() => setActiveTab('updates')} className={` ${activeTab === 'updates' ? 'bg-secondary text-secondary' : 'bg-fourth text-white'} px-4 py-2 rounded-xl text-xl font-bold font-inter`}>UPDATES ({updates.length})</button>
             </div>
 
-            <div className={"bg-white rounded-t-3xl pt-4 mt-2 pb-16"}>
+            <div className={"bg-white rounded-t-3xl h-full pt-4 mt-2 pb-16"}>
                 {activeTab === 'schedule' && (
-                    <div>
+                    <div className={`bg-white h-full pb-16 `}>
                         <div className={"flex flex-row items-center justify-around mb-2 mx-8 "}>
                             {dayAbbreviations.slice(1, 6).map((day, index) => (
                                 <button key={day} onClick={() => setActiveDay(index + 1)} className={`${activeDay === (index + 1) ? 'bg-primary text-primary' : 'bg-tertiary text-secondary'} px-2 py-4 w-16 rounded-lg font-bold tracking-widest`}>{day}</button>
@@ -175,18 +190,22 @@ function StudentSchedulePage() {
                             <button onClick={() => setUpdateFilter('week')} className={`${updateFilter === 'week' ? 'text-primary bg-primary' : 'text-secondary bg-secondary'} rounded-full border-2 border-[var(--bg-primary)] font-bold p-2 w-20`}>Week</button>
                             <button onClick={() => setUpdateFilter('month')} className={`${updateFilter === 'month' ? 'text-primary bg-primary' : 'text-secondary bg-secondary'} rounded-full border-2 border-[var(--bg-primary)] font-bold p-2 w-20`}>Month</button>
                         </div>
-                        <div className={"flex flex-col gap-6 mx-6 mb-4 text-xl font-inter"}>
+                        <div className={"flex flex-col gap-6 mx-2 mb-4 text-xl font-inter"}>
                             {getFilteredUpdates().length > 0 ? getFilteredUpdates().map(upd => (
                                 <div key={upd.id} className={"flex flex-col gap-4 mx-6 mb-4 text-2xl font-bold font-inter"}>
-                                    <div className={"flex flex-row items-center justify-start gap-4 bg-[var(--primary-900)] shadow-hard py-4 px-4 rounded-lg"}>
-                                        <span className={styles.updateType} style={{ backgroundColor: upd.updateType === 'Cancelled' ? '#dc3545' : '#ffc107' }}>{upd.updateType}</span>
-                                        <span className={styles.updateDate}>{upd.eventDate.toDate().toLocaleDateString()}</span>
-                                    <h3 className={styles.updateSubject}>{upd.classInfo.subject}</h3>
-                                    <p className={styles.updateMessage}>{upd.message}</p>
-                                    <small className={styles.postedBy}>Posted by: {upd.teacherName}</small>
+                                    <div className={"flex flex-row items-center justify-between gap-4 bg-[var(--primary-900)] shadow-hard py-4 pl-2 rounded-lg"}>
+                                        <span className={"text-secondary fnt-inter"}>{upd.eventDate.toDate().toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+                                        
+                                        <div className='flex flex-col justify-between w-full items-center gap-2 border-l-4 border-[var(--primary-800)]  p-4'>
+                                        <div className='flex flex-row justify-between w-full items-center flex-wrap'>
+                                            <h3 className={"text-secondary pl-2"}>{upd.classInfo.subject}</h3>
+                                            <span className={`text-lg text-white px-2 rounded-lg ${getColorForUpdateType(upd.updateType)}`}>{upd.updateType}</span>
+                                        </div>
+                                        <p className={"bg-white w-full rounded-full px-4 py-1 text-lg text-secondary capitalize"}>{upd.message}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            )) : <p className={styles.noUpdates}>No updates for this period.</p>}
+                            )) : <p className={"text-secondary font-inter font-bold"}>No updates for this period.</p>}
                         </div>
                     </div>
                 )}
