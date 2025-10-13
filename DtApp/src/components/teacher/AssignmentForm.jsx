@@ -30,44 +30,138 @@ function AssignmentForm({ onAdd, onCancel }) {
 
   const handleAddClick = () => {
     if (!assignment.subject) {
-      toast.error('Please enter a subject name.');
+      toast.error('Please enter a subject name.', {
+        style: {
+          color: 'yellow', // font color
+          background: '#ff4d4f', // optional: change background
+        },
+      }); 
       return;
     }
     if (assignment.batches.length === 0) {
-      toast.error('Please select at least one batch or "All".');
+      toast.error('Please select at least one batch or "All".', {
+        style: {
+          color: 'yellow', // font color
+          background: '#ff4d4f', // optional: change background
+        },
+      });
       return;
     }
     onAdd(assignment);
   };
 
   return (
-    <div style={{ border: '1px solid #555', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-        <select className={styles.formGroup} value={assignment.year} onChange={e => setAssignment({...assignment, year: e.target.value})}>
-            {[1, 2, 3, 4].map(y => <option key={y} value={y}>{y}{y===1?'st':y===2?'nd':y===3?'rd':'th'} Year</option>)}
-        </select>
-        <select className={styles.formGroup} value={assignment.branch} onChange={e => setAssignment({...assignment, branch: e.target.value})}>
-            {['INFT', 'CMPN', 'EXTC', 'EXCS'].map(b => <option key={b} value={b}>{b}</option>)}
-        </select>
-        <select className={styles.formGroup} value={assignment.division} onChange={e => setAssignment({...assignment, division: e.target.value})}>
-            {['A', 'B', 'C'].map(d => <option key={d} value={d}>Division {d}</option>)}
-        </select>
-        <input className={styles.formGroup} type="text" placeholder="Subject Name" value={assignment.subject} onChange={e => setAssignment({...assignment, subject: e.target.value})} />
+    <div className="bg-white border-4 border-[var(--bg-primary)] p-4 rounded-lg space-y-4 mb-16">
+
+      {/* Year Selection */}
+      <div>
+        <label className="block mb-2 text-secondary text-left font-bold">Year</label>
+        <div className="flex flex-wrap gap-2">
+          {[1, 2, 3, 4].map((y) => (
+            <button
+              key={y}
+              type="button"
+              onClick={() => setAssignment({ ...assignment, year: y })}
+              className={`px-4 py-2 rounded-md border ${assignment.year === y
+                  ? "bg-primary text-white border-secondary"
+                  : "bg-tertiary text-secondary border-gray-500 hover:bg-secondary/20"
+                } transition-colors duration-150`}
+            >
+              {y}{y === 1 ? 'st' : y === 2 ? 'nd' : y === 3 ? 'rd' : 'th'} Year
+            </button>
+          ))}
+        </div>
       </div>
-      <div style={{ textAlign: 'left', marginTop: '1rem' }}>
-        <strong>Batches:</strong>
-        {['1', '2', '3', 'All'].map(batch => (
-          <label key={batch} style={{ marginRight: '1rem', marginLeft: '0.5rem' }}>
-            <input type="checkbox" value={batch} checked={assignment.batches.includes(batch)} onChange={handleBatchChange} />
-            {batch === 'All' ? 'Theory (All)' : `Batch ${batch}`}
-          </label>
-        ))}
+
+      {/* Branch Selection */}
+      <div>
+        <label className="block mb-2 text-secondary text-left font-bold">Branch</label>
+        <div className="flex flex-wrap gap-2">
+          {['INFT', 'CMPN', 'EXTC', 'EXCS'].map((b) => (
+            <button
+              key={b}
+              type="button"
+              onClick={() => setAssignment({ ...assignment, branch: b })}
+              className={`px-4 py-2 rounded-md border ${assignment.branch === b
+                  ? "bg-primary text-white border-secondary"
+                  : "bg-tertiary text-secondary border-gray-500 hover:bg-secondary/20"
+                } transition-colors duration-150`}
+            >
+              {b}
+            </button>
+          ))}
+        </div>
       </div>
-      <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
-        <button type="button" onClick={handleAddClick} style={{flexGrow: 1, padding: '0.5rem', backgroundColor: '#28a745'}}>Add This Assignment</button>
-        <button type="button" onClick={onCancel} style={{padding: '0.5rem', backgroundColor: '#6c757d'}}>Cancel</button>
+
+      {/* Division Selection */}
+      <div>
+        <label className="block mb-2 text-secondary text-left font-bold">Division</label>
+        <div className="flex flex-wrap gap-2">
+          {['A', 'B', 'C'].map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => setAssignment({ ...assignment, division: d })}
+              className={`px-4 py-2 rounded-md border ${assignment.division === d
+                  ? "bg-primary text-white border-secondary"
+                  : "bg-tertiary text-secondary border-gray-500 hover:bg-secondary/20"
+                } transition-colors duration-150`}
+            >
+              Div {d}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Subject Name */}
+      <input
+        type="text"
+        placeholder="Subject Name"
+        value={assignment.subject}
+        required
+        onChange={(e) => setAssignment({ ...assignment, subject: e.target.value })}
+        className="bg-tertiary border border-gray-500 rounded-md p-2 text-secondary placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-secondary w-full"
+      />
+
+      {/* Batches Selection */}
+      <div>
+        <strong className="block mb-2">Batches:</strong>
+        <div className="flex flex-wrap items-center gap-4">
+          {['1', '2', '3', 'All'].map((batch) => (
+            <label key={batch} className="flex items-center gap-1">
+              <input
+                type="checkbox"
+                value={batch}
+                checked={assignment.batches.includes(batch)}
+                onChange={handleBatchChange}
+                className="accent-primary"
+              />
+              {batch === 'All' ? 'Theory (All)' : `Batch ${batch}`}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex gap-4 mt-4">
+        <button
+          type="button"
+          onClick={handleAddClick}
+          className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+        >
+          Add This Class
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 rounded-md bg-gray-500 text-white hover:bg-gray-600 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+
     </div>
+
   );
 }
 

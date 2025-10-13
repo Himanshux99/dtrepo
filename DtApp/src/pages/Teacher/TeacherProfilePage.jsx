@@ -52,22 +52,22 @@ function TeacherProfilePage() {
   const teacherName = extractUsernameFromEmail(profileData.email);
 
   return (
-    <div className={styles.profileContainer}>
+    <div className={'flex flex-col p-8 mx-4 bg-white mt-4 rounded-lg text-secondary font-bold pd-16'}>
       <Toaster position="top-center" />
-      <div className={styles.profileHeader}>
-        <h2>{teacherName}</h2>
+      <div className={'text-center border-b-4 border-[var(--color-primary)] pb-4 mb-4'}>
+        <h2 className='text-2xl'>{teacherName}</h2>
         <p>Teacher Profile - {profileData.email}</p>
       </div>
       
       {/* INTEGRATE RESET BUTTON */}
       
 
-      <h4>Your Teaching Assignments:</h4>
+      <h4 className=''>Your Teaching Assignments:</h4>
       {profileData.teachingAssignments?.map((a, i) => (
-        <div key={i} className={styles.infoItem}>
+        <div key={i} className={'flex flex-row justify-between py-2 my-2 bg-[var(--primary-900)] rounded-lg px-4'}>
+          <span>{a.year} Yr {a.branch}, Division {a.division}</span>
+          <span>Batches: {a.batches.join(', ')}</span>
           <label>{a.subject}</label>
-          <span>{a.year} Year {a.branch}, Division {a.division}</span>
-          <small style={{display: 'block', color: '#aaa'}}>Batches: {a.batches.join(', ')}</small>
         </div>
       ))}
        {profileData.teachingAssignments?.length === 0 && <p>You have not added any assignments yet.</p>}

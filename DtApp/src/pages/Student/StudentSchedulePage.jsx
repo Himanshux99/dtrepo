@@ -148,13 +148,13 @@ function StudentSchedulePage() {
     return (
         <div className={"mt-2 w-full h-full"}>
             <Toaster position="top-center" />
-            <div className={"flex flex-row justify-between border-2 mt-4 mx-4 py-2 px-8 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
+            <div className={"flex flex-row justify-between border-2 mt-4 mx-2 py-2 px-4 border-[var(--bg-tertiary)] rounded-[var(--radius-4xl)] text-[var(--text-primary)]"}>
                 <div className="text flex flex-col gap-2 pl-4 justify-center items-start">
                     <span className={"text-2xl font-bold text-left  "}>Your<br />Schedule</span>
                     <span className={"text-xl bg-white rounded-full text-secondary px-4 py-1 font-bold text-center "}>{roll}</span>
                 </div>
                 <div>
-                    <img src="/calendar.svg" alt="Calendar" className='w-80' />
+                    <img src="/calendar.svg" alt="Calendar" className='w-80 ml-2' />
 
                 </div>
                 {/* <span className={"text-text-3xl font-bold text-center w-full  flex flex-col items-center "}>  <CalendarDays size={80} /></span> */}

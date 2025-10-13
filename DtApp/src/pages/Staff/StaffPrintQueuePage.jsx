@@ -36,7 +36,7 @@ function StaffPrintQueuePage() {
 };
 
 // Add this button in your JSX where you render job actions:
-{job.status === 'Ready' && (
+{jobs.status === 'Ready' && (
   <>
     <button
       className={styles.collectedButton}
