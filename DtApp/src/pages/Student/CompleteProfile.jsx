@@ -50,20 +50,20 @@ function CompleteProfile() {
   };
 
   return (
-    <div className={styles.signupContainer}>
+    <div className={"card m-4 !p-4 bg-white text-secondary font-bold"}>
       <Toaster position="top-center" />
-      <h2>Complete Your Profile (Step 2 of 2)</h2>
-      <p>Please provide your remaining details to continue.</p>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
+      <h2 className='flex flex-col items-center text-2xl'>Complete Your Profile</h2>
+      <p className='text-center mb-2'>Please provide your remaining details to continue.</p>
+      <form onSubmit={handleSubmit} className={"flex flex-col gap-2"}>
+        <div className={""}>
           <label>Roll Number</label>
-          <input type="text" value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} required />
+          <input type="text" className='inp' value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} required />
         </div>
-        <div className={styles.formGroup}>
+        <div className={""}>
           <label>Phone Number</label>
-          <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+          <input type="tel" className='inp' value={phone} onChange={(e) => setPhone(e.target.value)} required />
         </div>
-        <button type="submit" className={styles.submitButton} disabled={loading}>
+        <button type="submit" className={"btn-main mt-2"} disabled={loading}>
           {loading ? 'Saving...' : 'Complete Profile'}
         </button>
       </form>

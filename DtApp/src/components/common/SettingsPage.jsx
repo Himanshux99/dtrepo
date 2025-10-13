@@ -38,7 +38,7 @@ function SettingsPage() {
                     onClick={() => handlePlaceholderClick('Change Theme')}
                     className='flex flex-col items-center p-4 bg-primary rounded-lg text-white font-bold font-inter'
                 >
-                    Change Theme (Placeholder)
+                    Change Theme
                 </button>
 
                 {/* 3. Notifications Toggle (Placeholder) */}
@@ -46,7 +46,7 @@ function SettingsPage() {
                     onClick={() => handlePlaceholderClick('Notifications')}
                     className='flex flex-col items-center p-4 bg-primary rounded-lg text-white font-bold font-inter'
                 >
-                    Notification Settings (Placeholder)
+                    Notification Settings
                 </button>
 
                 <button onClick={handleLogout} className='flex flex-col items-center p-2 bg-secondary border-4 border-[var(--bg-primary)] rounded-lg text-secondary font-bold font-inter text-xl'

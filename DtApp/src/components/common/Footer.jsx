@@ -141,7 +141,7 @@ const getTabsForRole = (role) => {
 
 const location = useLocation();
 const tabs = getTabsForRole(currentUser?.role);
-
+if(location.pathname==="/student/complete-profile" || location.pathname==="/login" || location.pathname==="/signup") return null;
 return (
     <nav className="fixed bottom-4 left-6 right-6 bg-primary shadow-md border-2 border-white rounded-full">
         <div className="flex justify-around items-center text-white mx-4 py-2">

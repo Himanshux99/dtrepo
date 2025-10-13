@@ -547,3 +547,6 @@ input::-webkit-inner-spin-button {
 .btn-secondary{
   @apply flex flex-col items-center p-4 bg-secondary rounded-lg text-secondary font-bold w-full;
 }
+.inp{
+  @apply flex flex-col p-3 border w-full font-bold bg-tertiary text-secondary rounded-lg;
+}
