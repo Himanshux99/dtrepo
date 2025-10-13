@@ -4,7 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import { decodeRollNumber } from '../../utils/profileUtils';
-import styles from './ProfilePage.module.css';
+import {CircleUser} from "lucide-react";
+
 // REMOVE: import ResetPasswordButton from '../../components/common/ResetPasswordButton'; 
 
 function ProfilePage() {
@@ -46,12 +47,11 @@ function ProfilePage() {
 
   return (
     <div className={"container !px-8 p-4 pb-16"}>
-      <div className={"flex flex-col items-center gap-2 my-8 text-2xl font-bold font-inter"}>
+      <div className={"flex flex-col items-center gap-2 mt-4 mb-3 text-2xl font-bold font-inter"}>
+        <CircleUser size={60}/>
         <h2>{decodedData.username}</h2>
         <p className='text-[var(--bg-tertiary)] text-lg border-t-2 border-white'>{profileData.email}</p>
       </div>
-      
-      {/* REMOVE: <ResetPasswordButton /> */} 
       
       <h3 className='flex flex-col items-center text-xl font-bold font-inter'>Academic Information</h3>
       <div className={'grid grid-cols-2 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg'}>

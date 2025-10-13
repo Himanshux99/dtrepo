@@ -6,7 +6,7 @@ import NotificationSettings from './NotificationSettings';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 function SettingsPage() {
-      const { currentUser, logout } = useAuth();
+    const { currentUser, logout } = useAuth();
     const navigate = useNavigate();
     const userEmail = currentUser?.email || 'N/A';
     const role = currentUser?.role?.charAt(0).toUpperCase() + currentUser?.role?.slice(1) || 'User';
@@ -16,73 +16,66 @@ function SettingsPage() {
     };
 
     const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Failed to log out', error);
-    }
-  };
+        try {
+            await logout();
+            navigate('/login');
+        } catch (error) {
+            console.error('Failed to log out', error);
+        }
+    };
 
     return (
-        <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '2rem', border: '1px solid #444', borderRadius: '8px', background: '#2c2c2c', color: 'white', textAlign: 'center' }}>
+        <div className="max-w-[600px] mx-auto m-8 pb-16 rounded-lg  text-white text-center">
             <Toaster position="top-center" />
-            
-            <h1>{role} Settings</h1>
-            <p>Manage account security and application preferences for {userEmail}.</p>
 
-            <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', textAlign: 'left' }}>
-                
-                {/* 1. Notification Settings (NEW - FULLY FUNCTIONAL) */}
-                <NotificationSettings />
-                
-                {/* 2. Reset Password (FULLY OPERATIONAL) */}
-                <ResetPasswordButton />
-                
-                {/* --- Placeholders --- */}
-                
+            <div className=" grid grid-cols-1 gap-4 text-left bg-white p-8 rounded-lg">
+                {/* <NotificationSettings />
+
+                <ResetPasswordButton /> */}
+
                 {/* 3. Theme Toggle (Placeholder) */}
-                <button 
+                <button
                     onClick={() => handlePlaceholderClick('Change Theme')}
-                    style={{ padding: '0.75rem', background: '#555', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    className='flex flex-col items-center p-4 bg-primary rounded-lg text-white font-bold font-inter'
                 >
                     Change Theme (Placeholder)
                 </button>
-                
+
                 {/* 3. Notifications Toggle (Placeholder) */}
-                <button 
+                <button
                     onClick={() => handlePlaceholderClick('Notifications')}
-                    style={{ padding: '0.75rem', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    className='flex flex-col items-center p-4 bg-primary rounded-lg text-white font-bold font-inter'
                 >
                     Notification Settings (Placeholder)
                 </button>
-                
-                <button onClick={handleLogout} className="btn btn-danger" style={{ padding: '0.75rem', background: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                                  Logout
-                                </button>
 
-                <hr style={{width: '100%', borderTop: '1px solid #555'}}/>
+                <button onClick={handleLogout} className='flex flex-col items-center p-2 bg-secondary border-4 border-[var(--bg-primary)] rounded-lg text-secondary font-bold font-inter text-xl'
+                >
+                    Logout
+                </button>
+
+                <hr style={{ width: '100%', borderTop: '1px solid #555' }} />
 
                 {/* 4. About App (Placeholder) */}
-                <button 
+                <button
                     onClick={() => handlePlaceholderClick('About App')}
-                    style={{ padding: '0.75rem', background: '#7f8c8d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    className='flex flex-col items-center p-4 bg-primary rounded-lg text-white font-bold font-inter'
                 >
                     About App
                 </button>
 
                 {/* 5. Submit Feedback (Placeholder) */}
-                <button 
+                <button
                     onClick={() => handlePlaceholderClick('Submit Feedback')}
-                    style={{ padding: '0.75rem', background: '#7f8c8d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    className='flex flex-col items-center p-4 bg-primary rounded-lg text-white font-bold font-inter'
                 >
                     Submit Feedback
                 </button>
 
                 {/* 6. Contact Us (Placeholder) */}
-                <button 
+                <button
                     onClick={() => handlePlaceholderClick('Contact Us')}
-                    style={{ padding: '0.75rem', background: '#7f8c8d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    className='flex flex-col items-center p-4 bg-primary rounded-lg text-white font-bold font-inter'
                 >
                     Contact Us
                 </button>

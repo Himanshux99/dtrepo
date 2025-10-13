@@ -4,6 +4,7 @@ import { db } from '../../firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import { decodeRollNumber } from '../../utils/profileUtils';
 import toast, { Toaster } from 'react-hot-toast';
+import{Link as Linkicon} from 'lucide-react';
 import styles from './VReferPage.module.css';
 
 // Helper function to convert semester number to Roman numeral
@@ -63,24 +64,25 @@ function VReferPage() {
     }
 
     return (
-        <div className={styles.container}>
+        <div className={'flex flex-col bg-white m-8 rounded-lg text-secondary font-bold text-center'}>
             <Toaster position="top-center" />
-            <div className={styles.card}>
-                <div className={styles.icon}>🔗</div>
+            <div className={"flex flex-col items-center p-8"}>
+                <div className={"mb-4"}><Linkicon size={50}/></div>
                 <h1>Your V-Refer Link</h1>
                 <p>
                     This link is personalized for your branch and semester. Use it to access notes and other resources.
                 </p>
                 
-                <div className={styles.linkDisplay}>
+                <div className={"p-4"}>
                     {vReferLink ? vReferLink : "Could not generate link."}
                 </div>
 
-                <div className={styles.buttonGroup}>
-                    <a href={vReferLink} target="_blank" rel="noopener noreferrer" className={styles.primaryButton}>
+                <div className={"flex flex-row w-full mt-4 justify-center"}>
+                    <a href={vReferLink} target="_blank" rel="noopener noreferrer" 
+                    className='mx-8 flex flex-col items-center  bg-primary rounded-lg text-white font-bold font-inter w-full p-2'>
                         Go to V-Refer
                     </a>
-                    <button onClick={handleCopyLink} className={styles.secondaryButton}>
+                    <button onClick={handleCopyLink} className='mx-8 flex flex-col items-center bg-primary rounded-lg text-white font-bold font-inter w-full p-2'>
                         Copy Link
                     </button>
                 </div>

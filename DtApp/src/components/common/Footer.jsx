@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { CalendarDays , Settings ,Link as LinkIcon,Printer} from "lucide-react"; // icon library
+import { CalendarDays , Settings ,Link as LinkIcon,Printer,Home} from "lucide-react"; // icon library
 import { useLocation } from 'react-router-dom';
 
 function Navbar() {
@@ -79,6 +79,10 @@ const getTabsForRole = (role) => {
                     label: "V-Print",
                     icon: <Printer size={24} />,
                     path: "/student/print"
+                },{
+                    label: "Home",
+                    icon: <Home size={24} />,
+                    path: "/student"
                 },
                 {
                     label: "Schedule",

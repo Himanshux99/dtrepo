@@ -1,24 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { CalendarDays,Link as Linkicon, Printer, CircleUser } from 'lucide-react';
 
 function StudentDashboard() {
   return (
-    <div className="container px-4 py-10">
+    <div className="container !p-8 pb-16">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary mb-2">Student Dashboard</h1>
-        <p className="text-secondary">Welcome to your personal academic hub</p>
+      <div className="">
+        <h1 className="text-3xl font-bold text-primary p-2">Student Dashboard</h1>
       </div>
 
 
       {/* Main Actions - ADJUSTED TO GRID-COLS-4 for wider screens */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-4 items-center text-secondary font-bold">
         
         {/* Schedule Action Card */}
         <Link to="/student/schedule" className="card">
-          <div className="text-center p-4">
-            <div className="text-5xl mb-4">📅</div>
-            <h3 className="text-xl font-semibold mb-2">View My Schedule</h3>
+          <div className="text-center p-4 items-center flex flex-col">
+            <div className="text-5xl"><CalendarDays size={70} /></div>
+            <h3 className="text-xl font-bold my-2">View My Schedule</h3>
             <p className="text-secondary">
               Check your class schedule, upcoming events, and academic calendar.
             </p>
@@ -27,9 +27,9 @@ function StudentDashboard() {
 
         {/* Print Services Action Card */}
         <Link to="/student/print" className="card">
-          <div className="text-center p-4">
-            <div className="text-5xl mb-4">🖨️</div>
-            <h3 className="text-xl font-semibold mb-2">Print Services</h3>
+          <div className="text-center p-4 items-center flex flex-col">
+            <div className="text-5xl"><Printer size={70} /></div>
+            <h3 className="text-xl font-bold my-2">Print Services</h3>
             <p className="text-secondary">
               Submit print jobs, track status, and manage your printing preferences.
             </p>
@@ -38,9 +38,9 @@ function StudentDashboard() {
 
         {/* V-REFER ACTION CARD */}
         <Link to="/student/v-refer" className="card">
-          <div className="text-center p-4">
-            <div className="text-5xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold mb-2">V-Refer</h3>
+          <div className="text-center p-4 items-center flex flex-col">
+            <div className="text-5xl"><Linkicon size={70} /></div>
+            <h3 className="text-xl font-bold my-2">V-Refer</h3>
             <p className="text-secondary">
               Access personalized notes and academic resources.
             </p>
@@ -49,9 +49,9 @@ function StudentDashboard() {
 
         {/* Profile Action Card */}
         <Link to="/student/profile" className="card">
-          <div className="text-center p-4">
-            <div className="text-5xl mb-4">👤</div>
-            <h3 className="text-xl font-semibold mb-2">My Profile</h3>
+          <div className="text-center p-4 items-center flex flex-col">
+            <div className="text-5xl"><CircleUser size={70} /></div>
+            <h3 className="text-xl font-bold my-2">My Profile</h3>
             <p className="text-secondary">
               View and update your personal information and academic details.
             </p>
@@ -60,8 +60,8 @@ function StudentDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="my-12">
-        <h2 className="text-2xl font-semibold mb-6">Recent Activity</h2>
+      {/* <div className="my-12">
+        <h2 className="text-2xl font-bold my-6">Recent Activity</h2>
         <div className="card">
           <div className="space-y-4">
             <div className="flex items-center gap-4 p-4 bg-tertiary rounded-lg">
@@ -83,7 +83,7 @@ function StudentDashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
