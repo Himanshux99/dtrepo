@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Navbar.module.css';
 import { CircleUserRound } from 'lucide-react';
+import { extractUsernameFromEmail } from '../../utils/profileUtils';
 
 function Navbar() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const [name,setName]=useState("")
+  
   const handleLogout = async () => {
     try {
       await logout();
@@ -68,8 +70,10 @@ function Navbar() {
     <nav className={styles.navbar}>
       <div className={styles.navContainer+ " bg-none"}>
         <Link to="/" className={styles.brand}>
-          <div className={styles.brandIcon}>🎓</div>
-          <span className='text-2xl'>V++</span>
+          <div className={styles.brandIcon}>
+            <img src="/Ellipse 41.png" alt="Logo" className={'w-12'} />
+          </div>
+          <span className='text-2xl'>Hello User</span>
         </Link>
 
         {/* Desktop Navigation */}
