@@ -120,7 +120,7 @@ function Login() {
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8 flex flex-col items-center">
-          <div className="text-5xl mb-1"><GraduationCap size={60}/></div>
+          <div className="text-5xl mb-1"><img src="/Ellipse 40.svg" alt="Logo" className={'w-16'} /></div>
           <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
           <p className="text-[var(--bg-tertiary)] font-bold">Sign in to your College Portal account</p>
         </div>
