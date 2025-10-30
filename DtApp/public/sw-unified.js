@@ -4,9 +4,8 @@
 console.log('[SW] Starting to load unified service worker...');
 
 // ============================================
-// PART 1: Firebase Cloud Messaging Setup (Load First)
+// PART 1: Firebase Cloud Messaging Setup
 // ============================================
-
 
 try {
   // Import Firebase scripts
@@ -38,8 +37,8 @@ try {
     const notificationTitle = payload.notification?.title || 'New Notification';
     const notificationOptions = {
       body: payload.notification?.body || 'You have a new notification',
-      icon: '/vite.svg',
-      badge: '/vite.svg',
+      icon: '/Ellipse 41 (1).png',
+      badge: '/Ellipse 41 (1).png',
       tag: payload.data?.tag || 'default-notification',
       data: payload.data,
       requireInteraction: true,
@@ -64,26 +63,26 @@ try {
   
   console.log('[SW] Workbox loaded successfully');
 
+  // Configure Workbox
+  workbox.setConfig({
+    debug: false
+  });
+
   const { registerRoute } = workbox.routing;
   const { CacheFirst, NetworkFirst } = workbox.strategies;
   const { CacheableResponsePlugin } = workbox.cacheableResponse;
-  const { ExpirationPlugin } = workbox.expiration;
 
-  // Cache static assets
+  // Cache static assets (WITHOUT ExpirationPlugin to avoid IndexedDB)
   registerRoute(
     ({ request }) => request.destination === 'style' || 
                      request.destination === 'script' ||
                      request.destination === 'worker',
     new CacheFirst({
-      cacheName: 'static-cache',
+      cacheName: 'static-cache-v1',
       plugins: [
         new CacheableResponsePlugin({
           statuses: [0, 200],
-        }),
-        new ExpirationPlugin({
-          maxEntries: 60,
-          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-        }),
+        })
       ],
     })
   );
@@ -92,15 +91,11 @@ try {
   registerRoute(
     ({ request }) => request.destination === 'image',
     new CacheFirst({
-      cacheName: 'image-cache',
+      cacheName: 'image-cache-v1',
       plugins: [
         new CacheableResponsePlugin({
           statuses: [0, 200],
-        }),
-        new ExpirationPlugin({
-          maxEntries: 60,
-          maxAgeSeconds: 30 * 24 * 60 * 60,
-        }),
+        })
       ],
     })
   );
@@ -109,7 +104,7 @@ try {
   registerRoute(
     ({ url }) => url.pathname.startsWith('/api/'),
     new NetworkFirst({
-      cacheName: 'api-cache',
+      cacheName: 'api-cache-v1',
       plugins: [
         new CacheableResponsePlugin({
           statuses: [0, 200],
@@ -122,7 +117,7 @@ try {
   registerRoute(
     ({ request }) => request.destination === 'document',
     new NetworkFirst({
-      cacheName: 'html-cache',
+      cacheName: 'html-cache-v1',
       plugins: [
         new CacheableResponsePlugin({
           statuses: [0, 200],
@@ -131,7 +126,7 @@ try {
     })
   );
 
-  console.log('[SW] Workbox caching initialized');
+  console.log('[SW] Workbox caching initialized (without IndexedDB)');
 
 } catch (error) {
   console.error('[SW] Error initializing Workbox:', error);

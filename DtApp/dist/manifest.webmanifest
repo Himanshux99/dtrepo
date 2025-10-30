@@ -1,1 +1,29 @@
-{"name":"V++","short_name":"V++","description":"Your app description","start_url":"/","display":"standalone","background_color":"#ffffff","theme_color":"#ffffff","lang":"en","scope":"/","icons":[{"src":"/android-chrome-48x48.png","sizes":"64x64","type":"image/svg+xml"},{"src":"/android-chrome-192x192.png","sizes":"192x192","type":"file/svg+xml"},{"src":"/android-chrome-512x512.png","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+    "name": "V++",
+    "short_name": "V++",
+    "description": "Your app description",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "lang": "en",
+    "scope": "/",
+    "icons": [
+        {
+            "src": "/Ellipse 41.svg",
+            "sizes": "64x64",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "/Ellipse 41.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "/Ellipse 41.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}  

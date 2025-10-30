@@ -28,17 +28,17 @@ export default defineConfig({
         start_url: '/',
         icons: [
           { 
-            src: '/android-chrome-48x48.png', 
+            src: '/Ellipse 41.svg', 
             sizes: '64x64', 
             type: 'image/svg+xml' 
           },
           { 
-            src: '/android-chrome-192x192.png', 
+            src: '/Ellipse 41.svg', 
             sizes: '192x192', 
-            type: 'file/svg+xml' 
+            type: 'image/svg+xml' 
           },
           { 
-            src: '/android-chrome-512x512.png', 
+            src: '/Ellipse 41.svg', 
             sizes: '512x512', 
             type: 'image/svg+xml', 
             purpose: 'any maskable' 

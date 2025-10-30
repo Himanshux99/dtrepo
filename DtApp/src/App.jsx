@@ -51,7 +51,7 @@ function App() {
       <Routes>
         {/* Routes with Navbar */}
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Login />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           {/* Student Routes */}
           <Route
