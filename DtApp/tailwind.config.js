@@ -12,6 +12,9 @@ export default {
         secondary: "#000000ff",  // gray-500
         accent: "#f97316",     // orange-500
       },},
+      screens: {
+      'below-390': { 'max': '390px' }, // 👈 only below 390px
+    },
   },
   fontFamily: {
         inter: ['Inter', 'sans-serif'],

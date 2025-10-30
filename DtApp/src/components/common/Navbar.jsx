@@ -69,25 +69,15 @@ function Navbar() {
   return (
     <nav className={styles.navbar}>
       <div className={styles.navContainer+ " bg-none"}>
-        <Link to="/" className={styles.brand}>
+        <div className={styles.brand}>
           <div className={styles.brandIcon}>
             <img src="/Ellipse 41.png" alt="Logo" className={'w-12'} />
           </div>
           <span className='text-2xl'>Hello User</span>
-        </Link>
+        </div>
 
         {/* Desktop Navigation */}
-        <div className={styles.navLinks}>
-          {currentUser ? (
-            <>
-
-            </>
-          ) : (
-            <Link to="/login" className="btn btn-primary">
-              Login
-            </Link>
-          )}
-        </div>
+         
 
         <button
           className={"size-12 rounded-full  flex items-center justify-center transition-colors "}

@@ -167,10 +167,13 @@ function StudentSchedulePage() {
 
             <div className={"bg-white rounded-t-3xl h-full pt-4 mt-2 pb-16"}>
                 {activeTab === 'schedule' && (
-                    <div className={`bg-white h-full pb-16 `}>
-                        <div className={"flex flex-row items-center justify-around mb-2 mx-8 "}>
+                    <div className={`h-full pb-16 w-full`}>
+                        <div className={"flex flex-row items-center justify-center gap-2 mb-2 below-390:mb-0"}>
                             {dayAbbreviations.slice(1, 6).map((day, index) => (
-                                <button key={day} onClick={() => setActiveDay(index + 1)} className={`${activeDay === (index + 1) ? 'bg-primary text-primary' : 'bg-tertiary text-secondary'} px-2 py-4 w-16 rounded-lg font-bold tracking-widest`}>{day}</button>
+                                <button key={day} onClick={() => setActiveDay(index + 1)} 
+                                className={`${activeDay === (index + 1) 
+                                    ? 'bg-primary text-primary' 
+                                    : 'bg-tertiary text-secondary'} px-4 py-4 rounded-lg font-bold below-390:p-3 below-390:text-sm my-2`}>{day}</button>
                             ))}
                         </div>
                         <div className={""}>
