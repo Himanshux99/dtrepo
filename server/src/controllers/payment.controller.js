@@ -1,6 +1,6 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import { db } from "../firebase/firebase.js"; // adjust path if your firebase entry file differs
+import { db, admin } from "../firebase/firebase.js"; // ensure admin is exported from firebase.js
 import { log } from "console";
 
 import dotenv from 'dotenv';
@@ -15,6 +15,23 @@ const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
+
+/**
+ * Helper: resolve uid from req.user or Authorization Bearer token
+ */
+const resolveUid = async (req) => {
+  if (req.user && req.user.uid) return req.user.uid;
+  const authHeader = req.headers?.authorization || req.headers?.Authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+  const idToken = authHeader.split(" ")[1];
+  try {
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    return decoded.uid;
+  } catch (err) {
+    console.error("Failed to verify ID token:", err);
+    return null;
+  }
+};
 
 /**
  * @desc   Create Razorpay Order
@@ -32,12 +49,18 @@ export const createOrder = async (req, res) => {
       });
     }
 
+    // resolve uid from req or Authorization header
+    const uid = await resolveUid(req);
+    if (!uid) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
       notes: {
-        userId: req.user.uid,
+        userId: uid,
       },
     });
 
@@ -86,11 +109,17 @@ export const verifyPayment = async (req, res) => {
       });
     }
 
+    // resolve uid (fallback to verifying ID token if req.user absent)
+    const uid = await resolveUid(req);
+    if (!uid) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
     // Store payment record
     await db.collection("payments").doc(payment_id).set({
       order_id,
       payment_id,
-      userId: req.user.uid,
+      userId: uid,
       verified: true,
       createdAt: new Date(),
     });

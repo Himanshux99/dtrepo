@@ -1,5 +1,5 @@
 // const { admin } = require("../firebase");
-import { admin } from "../firebase/firebase";
+import { admin } from "../firebase/firebase.js";
 
 /**
  * Firebase Authentication Middleware

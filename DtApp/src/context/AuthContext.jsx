@@ -108,6 +108,19 @@ export function AuthProvider({ children }) {
     return sendPasswordResetEmail(auth, email);
   }
 
+  // New: return Firebase ID token for authenticated REST calls
+  async function getIdToken(forceRefresh = false) {
+    try {
+      const user = auth.currentUser;
+      if (!user) return null;
+      const token = await user.getIdToken(forceRefresh);
+      return token;
+    } catch (error) {
+      console.error('Failed to get ID token:', error);
+      return null;
+    }
+  }
+
   // --- User State Management ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -141,6 +154,7 @@ export function AuthProvider({ children }) {
     logout,
     refreshUser,
     sendPasswordReset,
+    getIdToken, // expose token helper
   };
 
   // Render children only when not loading
