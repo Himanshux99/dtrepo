@@ -63,25 +63,25 @@ function VReferPage() {
     }
 
     return (
-        <div className={'flex flex-col bg-white m-8 rounded-lg text-secondary font-bold text-center'}>
+        <div className={'flex flex-col max-w-[400px] bg-white m-8 rounded-lg text-secondary font-bold text-center'}>
             <Toaster position="top-center" />
             <div className={"flex flex-col items-center p-8"}>
                 <div className={"mb-4"}><Linkicon size={50}/></div>
                 <h1>Your V-Refer Link</h1>
-                <p>
+                <p className='text-wrap'>
                     This link is personalized for your branch and semester. Use it to access notes and other resources.
                 </p>
                 
-                <div className={"p-4"}>
+                <p className={"p-4 text-wrap break-all "}>
                     {vReferLink ? vReferLink : "Could not generate link."}
-                </div>
+                </p>
 
-                <div className={"flex flex-row w-full mt-4 justify-center"}>
+                <div className={"flex flex-row w-full mt-4 gap-2 justify-center"}>
                     <a href={vReferLink} target="_blank" rel="noopener noreferrer" 
-                    className='mx-8 flex flex-col items-center  bg-primary rounded-lg text-white font-bold font-inter w-full p-2'>
+                    className='flex flex-col items-center  bg-primary rounded-lg text-white font-bold font-inter w-full p-2'>
                         Go to V-Refer
                     </a>
-                    <button onClick={handleCopyLink} className='mx-8 flex flex-col items-center bg-primary rounded-lg text-white font-bold font-inter w-full p-2'>
+                    <button onClick={handleCopyLink} className='flex flex-col items-center bg-primary rounded-lg text-white font-bold font-inter w-full p-2'>
                         Copy Link
                     </button>
                 </div>
