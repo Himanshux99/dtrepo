@@ -3,13 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Navbar.module.css';
 import { CircleUserRound } from 'lucide-react';
-import { extractUsernameFromEmail } from '../../utils/profileUtils';
+// import { extractUsernameFromEmail } from '../../utils/profileUtils';
 
 function Navbar() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [name,setName]=useState("")
+  const [name,setName]=useState("");
+  if(location.pathname==="/" || location.pathname==="/signup") return null;  
   
   const handleLogout = async () => {
     try {

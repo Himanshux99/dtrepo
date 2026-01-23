@@ -133,7 +133,7 @@ const getTabsForRole = (role) => {
                     label: "Queue",
                     icon: <Printer size={24} />,
                     path: "/staff/queue"
-                },,{
+                },{
                     label: "Rates",
                     icon: <HandCoins  size={24} />,
                     path: "/admin/rates"
@@ -166,7 +166,7 @@ const location = useLocation();
 const tabs = getTabsForRole(currentUser?.role);
 if(location.pathname==="/student/complete-profile" || location.pathname==="/login" || location.pathname==="/signup" || location.pathname==="/") return null;
 return (
-    <nav className="fixed bottom-4 left-6 right-6 bg-primary shadow-md border-2 border-white rounded-full">
+    <nav className="fixed max-w-[500px] min-w-[350px] w-[30%] bottom-4 bg-primary shadow-md border-2 border-white rounded-full">
         <div className="flex justify-around items-center text-white mx-4 py-2">
             {tabs.map(tab => {
                 const isActive = location.pathname === tab.path;

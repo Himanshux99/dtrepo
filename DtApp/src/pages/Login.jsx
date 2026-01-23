@@ -116,7 +116,7 @@ function Login() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-primary py-12 px-4 text-primary">
+    <div className="min-h-screen flex items-start justify-center bg-primary py-12 px-4 text-primary">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8 flex flex-col items-center">
@@ -198,16 +198,11 @@ function Login() {
         </div>
 
         {/* Sign Up Links */}
-        <div className="text-center">
-          <p className="text-secondary mb-4">
-            Don't have an account?
-          </p>
-          <div className="space-y-3">
-            <Link to="/signup" className="btn-secondary">
+          <div className="space-y-3 mt-4">
+            <Link to="/signup" className="btn-secondary hover:text-white !hover:bg-secondary-600">
               Don't have an Account? Create Account
             </Link>
           </div>
-        </div>
       </div>
     </div>
   );

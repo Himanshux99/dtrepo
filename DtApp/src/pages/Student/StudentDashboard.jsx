@@ -42,7 +42,7 @@ function StudentDashboard() {
             <div className="text-5xl"><Linkicon size={70} /></div>
             <h3 className="text-xl font-bold my-2">V-Refer</h3>
             <p className="text-secondary">
-              Access personalized notes and academic resources.
+              Access personalized notes and academic resources, which are updated daily.
             </p>
           </div>
         </Link>

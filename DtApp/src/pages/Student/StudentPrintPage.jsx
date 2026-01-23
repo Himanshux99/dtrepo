@@ -92,6 +92,9 @@ function StudentPrintPage() {
     const [uploading, setUploading] = useState(false);
     const [jobs, setJobs] = useState([]);
 
+    // toggle for "How this works" panel
+    const [showHowWorks, setShowHowWorks] = useState(false);
+
     // ✅ FIX: Load Razorpay script on component mount
     useEffect(() => {
         const script = document.createElement('script');
@@ -415,6 +418,31 @@ function StudentPrintPage() {
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold mb-2">Print Services</h1>
                 <p>Submit your documents for printing with our secure service</p>
+            </div>
+
+            {/* How this works toggle */}
+            <div className="text-center mb-6">
+                <button
+                    type="button"
+                    onClick={() => setShowHowWorks(!showHowWorks)}
+                    className="inline-flex items-center px-4 py-2 bg-secondary rounded-lg font-bold text-secondary"
+                >
+                    {showHowWorks ? 'X' : 'How this works'}
+                </button>
+
+                {showHowWorks && (
+                    <div className="mt-4 text-left bg-tertiary p-4 rounded-lg text-secondary max-w-3xl mx-auto">
+                        <h3 className="font-bold mb-2">How this works</h3>
+                        <ol className="list-decimal list-inside text-sm space-y-1">
+                            <li>Upload the document you want to print.</li>
+                            <li>Select number of copies and options (color, sided, stapling).</li>
+                            <li>Pay the shown amount to submit your job.</li>
+                            <li>You will receive a token like A-04 or B-24.</li>
+                            <li>Track the job status here: Pending, Printed (Ready), or Collected.</li>
+                            <li>If the job shows Printed/Ready, go to the stationery and show the token to staff to collect your prints.</li>
+                        </ol>
+                    </div>
+                )}
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full bg-secondary p-6 rounded-lg">

@@ -25,7 +25,7 @@ function SettingsPage() {
     };
 
     return (
-        <div className="max-w-[600px] mx-auto m-8 pb-16 rounded-lg  text-white text-center">
+        <div className="max-w-[600px] min-w-[350px] mx-auto m-8 pb-16 rounded-lg  text-white text-center">
             <Toaster position="top-center" />
 
             <div className=" grid grid-cols-1 gap-4 text-left bg-white p-8 rounded-lg">
