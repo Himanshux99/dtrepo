@@ -250,31 +250,28 @@ function StaffPrintQueuePage() {
       {/* Tab Navigation */}
       <div className={"flex gap-2 items-center justify-center"}>
         <button
-          className={`${
-            activeTab === "In Progress"
-              ? "bg-secondary text-secondary"
-              : "bg-tertiary text-secondary"
-          } p-2 rounded-lg font-bold`}
+          className={`${activeTab === "In Progress"
+            ? "bg-secondary text-secondary"
+            : "bg-tertiary text-secondary"
+            } p-2 rounded-lg font-bold`}
           onClick={() => setActiveTab("In Progress")}
         >
           Queue ({jobs.filter((j) => j.status === "In Progress").length})
         </button>
         <button
-          className={`${
-            activeTab === "Ready"
-              ? "bg-secondary text-secondary"
-              : "bg-tertiary text-secondary"
-          } p-2 rounded-lg font-bold`}
+          className={`${activeTab === "Ready"
+            ? "bg-secondary text-secondary"
+            : "bg-tertiary text-secondary"
+            } p-2 rounded-lg font-bold`}
           onClick={() => setActiveTab("Ready")}
         >
           Printed ({jobs.filter((j) => j.status === "Ready").length})
         </button>
         <button
-          className={`${
-            activeTab === "Collected"
-              ? "bg-secondary text-secondary"
-              : "bg-tertiary text-secondary"
-          } p-2 rounded-lg font-bold`}
+          className={`${activeTab === "Collected"
+            ? "bg-secondary text-secondary"
+            : "bg-tertiary text-secondary"
+            } p-2 rounded-lg font-bold`}
           onClick={() => setActiveTab("Collected")}
         >
           Collected ({jobs.filter((j) => j.status === "Collected").length})
@@ -291,102 +288,113 @@ function StaffPrintQueuePage() {
         {filteredJobs.map((job) => (
           <div key={job.id} className={"card m-2"}>
             {console.log("Rendering job:", job)}
-            <div className={"flex flex-col gap-2 items-start"}>
+            <div className={"flex flex-col  items-center"}>
               <h3 className="font-bold text-lg text-left">
                 Slot ID:{" "}
                 <span className={"font-bold text-lg"}>{job.slotId}</span>
-                <span className={"font-semibold text-lg"}>
+                
+              </h3>
+              <span className={"font-semibold text-lg"}>
                   {" - " + job.submittedByEmail}
                 </span>
-              </h3>
-              <div className="flex flex-rows w-full justify-between">
-                <div className="flex flex-col gap-4 items-start">
-                  <p style={{ margin: "0" }}>
-                    <strong>Copies : </strong>
-                    <span className="bg-tertiary p-2 rounded-lg font-semibold">
-                      {job.copies}
-                    </span>
-                  </p>
-                  <p style={{ margin: "0" }}>
-                    <strong>Colour : </strong>
-                    <span className="bg-tertiary p-2 rounded-lg font-semibold">
-                      {job.color}
-                    </span>
-                  </p>
-                  <p style={{ margin: "0" }}>
-                    <strong>Sided : </strong>
-                    <span className="bg-tertiary p-2 rounded-lg font-semibold">
-                      {job.sided}
-                    </span>
-                  </p>
-                  <p style={{ margin: "0" }}>
-                    <strong>Stapling : </strong>
-                    <span className="bg-tertiary p-2 rounded-lg font-semibold">
-                      {job.isStapled ? "Yes" : "No"}
-                    </span>
-                  </p>
+              {/* <div className="flex flex-rows w-full justify-between items-center"> */}
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-x-8 gap-y-3 w-full">
+                {/* Row 1, Col 1 */}
+                <div className="flex items-center justify-between border-b border-gray-100 pb-1">
+                  <strong className="text-sm">Copies:</strong>
+                  <span className="bg-tertiary px-2 py-1 rounded-md font-semibold text-sm">
+                    {job.copies}
+                  </span>
                 </div>
 
-                <div
-                  className={
-                    "flex flex-col gap-2 mt-4 font-bold text-white justify-start items-center"
-                  }
-                >
-                  {job.files.map((fileData, index) => (
-                    <a
-                      key={index}
-                      href={fileData.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-primary font-bold text-white p-2 rounded-lg"
-                      title={`Click to view ${fileData.fileName}`}
-                    >
-                      Download File
-                    </a>
-                  ))}
-                  {/* Action: Mark as Ready (Only shown on 'In Progress' tab) */}
-                  {job.status === "In Progress" && (
-                    <button
-                      className={"bg-green-600 p-2 rounded-lg"}
-                      onClick={() => updateJobStatus(job.id, "Ready")}
-                    >
-                      Mark Printed
-                    </button>
-                  )}
+                {/* Row 1, Col 2 */}
+                <div className="flex items-center justify-between border-b border-gray-100 pb-1">
+                  <strong className="text-sm">Colour:</strong>
+                  <span className="bg-tertiary px-2 py-1 rounded-md font-semibold text-sm">
+                    {job.color}
+                  </span>
+                </div>
 
-                  {/* Action: Mark as Collected (Only shown on 'Ready' tab) */}
-                  {job.status === "Ready" && (
-                    <button
-                      className={"bg-green-600 p-2 rounded-lg"}
-                      onClick={() => updateJobStatus(job.id, "Collected")}
-                    >
-                      Mark Collected
-                    </button>
-                  )}
+                {/* Row 2, Col 1 */}
+                <div className="flex items-center justify-between border-b border-gray-100 pb-1">
+                  <strong className="text-sm">Sided:</strong>
+                  <span className="bg-tertiary px-2 py-1 rounded-md font-semibold text-sm">
+                    {job.sided}
+                  </span>
+                </div>
 
-                  {/* Delete Job Button (Visible on all tabs) */}
-                  {currentUser &&
-                    (currentUser.role === "staff" ||
-                      currentUser.role === "admin") && (
-                      <button
-                        className={"bg-red-600 p-2 rounded-lg"}
-                        onClick={() => deleteJob(job)}
-                      >
-                        Delete Job
-                      </button>
-                    )}
+                {/* Row 2, Col 2 */}
+                <div className="flex items-center justify-between border-b border-gray-100 pb-1">
+                  <strong className="text-sm">Stapling:</strong>
+                  <span className="bg-tertiary px-2 py-1 rounded-md font-semibold text-sm">
+                    {job.isStapled ? "Yes" : "No"}
+                  </span>
                 </div>
               </div>
 
-              {job.instructions && (
+
+
+{job.instructions && (
                 <div className="flex flex-col gap-2 text-left justify-center items-start mt-2">
-                  <strong className="font-bold">Instructions:</strong>
-                  <span className="font-semibold italic bg-tertiary p-2 rounded-lg">
+                  <strong className="font-bold text-center w-full">Instructions:</strong>
+                  <span className="font-semibold max-w-[400px] h-auto italic bg-tertiary p-2 rounded-lg break-all">
                     {job.instructions}
                   </span>
                 </div>
               )}
-              <small className="font-semibold">
+              <div
+                className={
+                  "flex flex-cols gap-2 mt-2  font-bold text-white justify-start items-center"
+                }
+              >
+                {job.files.map((fileData, index) => (
+                  <a
+                    key={index}
+                    href={fileData.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-primary font-bold text-white p-2 rounded-lg"
+                    title={`Click to view ${fileData.fileName}`}
+                  >
+                    Download File
+                  </a>
+                ))}
+                {/* Action: Mark as Ready (Only shown on 'In Progress' tab) */}
+                {job.status === "In Progress" && (
+                  <button
+                    className={"bg-green-600 p-2 rounded-lg"}
+                    onClick={() => updateJobStatus(job.id, "Ready")}
+                  >
+                    Mark Printed
+                  </button>
+                )}
+
+                {/* Action: Mark as Collected (Only shown on 'Ready' tab) */}
+                {job.status === "Ready" && (
+                  <button
+                    className={"bg-green-600 p-2 rounded-lg"}
+                    onClick={() => updateJobStatus(job.id, "Collected")}
+                  >
+                    Mark Collected
+                  </button>
+                )}
+
+                {/* Delete Job Button (Visible on all tabs) */}
+                {currentUser &&
+                  (currentUser.role === "staff" ||
+                    currentUser.role === "admin") && (
+                    <button
+                      className={"bg-red-600 p-2 rounded-lg"}
+                      onClick={() => deleteJob(job)}
+                    >
+                      Delete Job
+                    </button>
+                  )}
+              </div>
+              {/* </div> */}
+
+              
+              <small className="font-semibold mt-2">
                 Submitted At: {job.submittedAt.toDate().toLocaleString()}
               </small>
             </div>

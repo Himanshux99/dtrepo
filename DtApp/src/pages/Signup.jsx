@@ -54,7 +54,7 @@ function Signup() {
       // 4. Use email and password from the unified state
       await signup(formData.email, formData.password);
       setSignupSuccess(true);
-      toast.success("Account created! Please check your email to verify.");
+      toast.success("Account created! Please check your email to verify.", 1000);
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         toast.error("This email is already registered. Please log in.");
@@ -67,23 +67,26 @@ function Signup() {
 
   if (signupSuccess) {
     return (
-      <div className={"card"}>
-        <h2>✅ Account Created!</h2>
-        <p>
-          We've sent a verification link to <strong>{formData.email}</strong>.
-        </p>
-        <p>
-          Please click the link in the email to activate your account before
-          logging in.
-        </p>
-        <Link
-          to="/login"
-          className={styles.submitButton}
-          style={{ textAlign: "center", textDecoration: "none" }}
-        >
-          Go to Login
-        </Link>
+      <div className="flex flex-cols justify-center items-center h-screen w-screen p-4">
+        <div className={"card text-secondary text-center font-semibold"}>
+          <h1 className="text-2xl font-bold border-b-2 border-secondary pb-2 mb-2">Account Created!</h1>
+          <p>
+            We've sent a verification link to <strong>{formData.email}</strong>.
+          </p>
+          <p>
+            Please click the link in the email to activate your account before
+            logging in.
+          </p>
+          <Link
+            to="/login"
+            className={"bg-primary text-primary p-2 rounded-lg mt-4 inline-block"}
+            style={{ textAlign: "center", textDecoration: "none" }}
+          >
+            Go to Login
+          </Link>
+        </div>
       </div>
+
     );
   }
 

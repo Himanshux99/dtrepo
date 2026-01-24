@@ -104,23 +104,23 @@ function SlotStatusDashboard() {
 
 
   return (
-    <div className={styles.dashboardContainer}>
+    <div className={"w-[80%] pb-16"}>
       <h1>Print Slot Status Dashboard</h1>
       <p>Total Slots: {MAX_SLOTS}. Active: {slotMap.filter(s => s.isActive).length}. Empty: {slotMap.filter(s => !s.isActive).length}.</p>
       
-      <button onClick={fetchSlotStatus} className={styles.refreshButton}>Refresh Status</button>
+      <button onClick={fetchSlotStatus} className={""}>Refresh Status</button>
 
-      <div className={styles.statusLegend}>
-        <div className={`${styles.slotCard} ${styles.slotEmpty}`}>Empty</div>
-        <div className={`${styles.slotCard} ${styles.slotInProgress}`}>In Progress</div>
-        <div className={`${styles.slotCard} ${styles.slotReady}`}>Ready for Pickup</div>
+      <div className={""}>
+        <div className={`${""} ${""}`}>Empty</div>
+        <div className={`${""} ${""}`}>In Progress</div>
+        <div className={`${""} ${""}`}>Ready for Pickup</div>
       </div>
 
-      <div className={styles.slotGridContainer}>
+      <div className={"grid grid-cols-2 gap-10 w-full"}>
         {Object.entries(groupedSlots).map(([group, slots]) => (
-          <div key={group} className={styles.slotGroup}>
+          <div key={group} className={""}>
             <h2>Group {group}</h2>
-            <div className={styles.slotGroupGrid}>
+            <div className='grid grid-cols-5 gap-2'>
               {slots.map(slot => (
                 // Use a different container to allow space for buttons
                 <div key={slot.id} className={styles.slotWrapper}>

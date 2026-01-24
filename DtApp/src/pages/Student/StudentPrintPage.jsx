@@ -17,6 +17,7 @@ import { useAuth } from "../../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import { PDFDocument } from "pdf-lib";
 import { FileUp, Check, Ellipsis, File, ChevronDown, X, User } from "lucide-react";
+// import { log } from "console";
 
 // --- Configuration ---
 const RATES_DOC_REF = doc(db, "config", "print_rates");
@@ -99,7 +100,7 @@ const countPDFPagesFallback = async (file) => {
 };
 
 function StudentPrintPage() {
-  const { currentUser, getIdToken } = useAuth();
+  const { currentUser } = useAuth();
   const [files, setFiles] = useState([]);
   const [totalPageCount, setTotalPageCount] = useState(0);
   const [manualPageCount, setManualPageCount] = useState(0);
@@ -423,7 +424,7 @@ function StudentPrintPage() {
       console.error("Error submitting print job after payment:", error);
       toast.error(
         error.message ||
-          "Payment successful, but job submission failed. Please contact staff.",
+        "Payment successful, but job submission failed. Please contact staff.",
         { id: toastId, duration: 8000 },
       );
     } finally {
@@ -457,107 +458,108 @@ function StudentPrintPage() {
     setUploading(true); // ✅ FIX: Only set once
 
     try {
+      const apiBase = import.meta.env.VITE_API_URL || '';
+      const idToken = await currentUser.getIdToken();
+      // toast.error(idToken)
+      const createResp = await fetch(`${apiBase}/api/payments/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ amount: Math.round(totalPrice * 100) }),
+      });
+      const orderResponse = await createResp.json();
+      if (!createResp.ok || !orderResponse.success) {
+        throw new Error(orderResponse.message || 'Failed to create order');
+      }
+      const order = orderResponse.order;
+
+      if (!order || !order.id) {
+        throw new Error("Invalid order response from server");
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "V-Print Service",
+        description: `Print job with ${effectivePageCount} pages`,
+        order_id: order.id,
+        handler: async function (response) {
+          const toastId = toast.loading("Verifying payment...");
+          try {
             const apiBase = import.meta.env.VITE_API_URL || '';
-            const idToken = await getIdToken();
-            const createResp = await fetch(`${apiBase}/api/payments/create-order`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${idToken}`,
-                },
-                body: JSON.stringify({ amount: Math.round(totalPrice * 100) }),
+            const idToken = await currentUser.getIdToken();
+            const verifyResp = await fetch(`${apiBase}/api/payments/verify-payment`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({
+                order_id: response.razorpay_order_id,
+                payment_id: response.razorpay_payment_id,
+                signature: response.razorpay_signature,
+              }),
             });
-            const orderResponse = await createResp.json();
-            if (!createResp.ok || !orderResponse.success) {
-                throw new Error(orderResponse.message || 'Failed to create order');
+            const verifyJson = await verifyResp.json();
+            if (verifyResp.ok && verifyJson.success) {
+              await submitPrintJob(toastId, response.razorpay_payment_id, effectivePageCount);
+            } else {
+              throw new Error(verifyJson.message || "Payment verification failed");
             }
-            const order = orderResponse.order;
- 
-             if (!order || !order.id) {
-                 throw new Error("Invalid order response from server");
-             }
- 
-             const options = {
-                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                 amount: order.amount,
-                 currency: order.currency,
-                 name: "V-Print Service",
-                 description: `Print job with ${effectivePageCount} pages`,
-                 order_id: order.id,
-                 handler: async function (response) {
-                     const toastId = toast.loading("Verifying payment...");
-                     try {
-                        const apiBase = import.meta.env.VITE_API_URL || '';
-                        const idToken = await getIdToken();
-                        const verifyResp = await fetch(`${apiBase}/api/payments/verify-payment`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${idToken}`,
-                            },
-                            body: JSON.stringify({
-                                order_id: response.razorpay_order_id,
-                                payment_id: response.razorpay_payment_id,
-                                signature: response.razorpay_signature,
-                            }),
-                        });
-                        const verifyJson = await verifyResp.json();
-                        if (verifyResp.ok && verifyJson.success) {
-                            await submitPrintJob(toastId, response.razorpay_payment_id, effectivePageCount);
-                        } else {
-                            throw new Error(verifyJson.message || "Payment verification failed");
-                        }
-                     } catch (err) {
-                         console.error("Payment verification error:", err);
-                         toast.error(
-                             "Payment verification failed. Please contact staff with payment ID: " + 
-                             response.razorpay_payment_id, 
-                             { id: toastId, duration: 8000 }
-                         );
-                         setUploading(false);
-                     }
-                 },
-                 prefill: { 
-                     email: currentUser.email,
-                     name: currentUser.displayName || currentUser.email 
-                 },
-                 theme: { color: "#007bff" },
-                 modal: {
-                     // ✅ FIX: Handle modal dismiss
-                     ondismiss: function() {
-                         toast.error("Payment cancelled");
-                         setUploading(false);
-                     }
-                 }
-             };
- 
-             const rzp = new window.Razorpay(options);
-             
-             // ✅ FIX: Better error handling
-             rzp.on('payment.failed', function (response) {
-                 const errorMsg = response.error?.description || 'Unknown error';
-                 toast.error(`Payment failed: ${errorMsg}`);
-                 console.error("Payment failed:", response.error);
-                 setUploading(false);
-             });
- 
-             rzp.open();
- 
-         } catch (error) {
-             console.error("Payment initiation failed:", error);
-             
-             // ✅ FIX: Better error messages
-             if (error.message.includes("unauthenticated")) {
-                 toast.error("Please log in to continue");
-             } else if (error.message.includes("network")) {
-                 toast.error("Network error. Please check your connection and try again.");
-             } else {
-                 toast.error(`Could not start payment: ${error.message}`);
-             }
-             
-             setUploading(false);
-         }
-     };
+          } catch (err) {
+            console.error("Payment verification error:", err);
+            toast.error(
+              "Payment verification failed. Please contact staff with payment ID: " +
+              response.razorpay_payment_id,
+              { id: toastId, duration: 8000 }
+            );
+            setUploading(false);
+          }
+        },
+        prefill: {
+          email: currentUser.email,
+          name: currentUser.displayName || currentUser.email
+        },
+        theme: { color: "#007bff" },
+        modal: {
+          // ✅ FIX: Handle modal dismiss
+          ondismiss: function () {
+            toast.error("Payment cancelled");
+            setUploading(false);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+
+      // ✅ FIX: Better error handling
+      rzp.on('payment.failed', function (response) {
+        const errorMsg = response.error?.description || 'Unknown error';
+        toast.error(`Payment failed: ${errorMsg}`);
+        console.error("Payment failed:", response.error);
+        setUploading(false);
+      });
+
+      rzp.open();
+
+    } catch (error) {
+      console.error("Payment initiation failed:", error);
+
+      // ✅ FIX: Better error messages
+      if (error.message.includes("unauthenticated")) {
+        toast.error("Please log in to continue");
+      } else if (error.message.includes("network")) {
+        toast.error("Network error. Please check your connection and try again.");
+      } else {
+        toast.error(`Could not start payment: ${error.message}`);
+      }
+
+      setUploading(false);
+    }
+  };
 
   const toggleQuestion = (id) => {
     setOpenFaqs((prev) => {
@@ -594,7 +596,8 @@ function StudentPrintPage() {
           onClick={() => setShowHowWorks(!showHowWorks)}
           className="inline-flex items-center px-4 py-2 bg-secondary rounded-lg font-bold text-secondary"
         >
-          {showHowWorks ? "X" : "How this works"}
+          {showHowWorks ? (<div className="flex flex-cols gap-2 text-center justify-center items-center">Hide this section<X size={20} strokeWidth={3} className="h-full flex flex-cols items-center justify-center" /></div>) : (<div className="flex flex-cols gap-2">How this works<ChevronDown size={25} strokeWidth={3} /></div>)}
+
         </button>
 
         {showHowWorks && (
@@ -871,13 +874,6 @@ function StudentPrintPage() {
                       {job.files[0].fileName.length > 18
                         ? `${job.files[0].fileName.substring(0, 18)}...`
                         : `${job.files[0].fileName}`}
-                    </div>
-                    <div className="text-secondary text-sm">
-                      {job.instructions && (
-                        <>
-                          Instructions: <em>{job.instructions}</em>
-                        </>
-                      )}
                     </div>
                   </div>
                 </div>

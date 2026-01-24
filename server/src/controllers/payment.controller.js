@@ -41,7 +41,7 @@ const resolveUid = async (req) => {
 export const createOrder = async (req, res) => {
   try {
     const { amount } = req.body;
-
+    log("Create Order Request Amount:", amount);
     if (!amount || typeof amount !== "number" || amount < 100) {
       return res.status(400).json({
         success: false,
@@ -51,10 +51,11 @@ export const createOrder = async (req, res) => {
 
     // resolve uid from req or Authorization header
     const uid = await resolveUid(req);
+    log("Create Order Request UID:", uid);
     if (!uid) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+      return res.status(410).json({ success: false, message: "Unauthorized" });
     }
-
+    log("Creating Razorpay order for UID:", uid, "Amount:", amount);
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",

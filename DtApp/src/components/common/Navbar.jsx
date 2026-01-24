@@ -74,7 +74,7 @@ function Navbar() {
           <div className={styles.brandIcon}>
             <img src="/Ellipse 41.png" alt="Logo" className={'w-12'} />
           </div>
-          <span className='text-2xl'>Hello User</span>
+          <span className='text-2xl !hover:text-primary'>Hello User</span>
         </div>
 
         {/* Desktop Navigation */}

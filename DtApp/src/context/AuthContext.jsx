@@ -35,7 +35,19 @@ export function AuthProvider({ children }) {
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
-        setCurrentUser({ ...user, role: userDoc.data().role });
+        const enhancedUser = { 
+          ...user, 
+          role: userDoc.data().role,
+          getIdToken: async (forceRefresh = false) => {
+            try {
+              return await user.getIdToken(forceRefresh);
+            } catch (error) {
+              console.error('Failed to get ID token:', error);
+              return null;
+            }
+          }
+        };
+        setCurrentUser(enhancedUser);
       }
     }
   };
@@ -108,19 +120,6 @@ export function AuthProvider({ children }) {
     return sendPasswordResetEmail(auth, email);
   }
 
-  // New: return Firebase ID token for authenticated REST calls
-  async function getIdToken(forceRefresh = false) {
-    try {
-      const user = auth.currentUser;
-      if (!user) return null;
-      const token = await user.getIdToken(forceRefresh);
-      return token;
-    } catch (error) {
-      console.error('Failed to get ID token:', error);
-      return null;
-    }
-  }
-
   // --- User State Management ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -129,14 +128,39 @@ export function AuthProvider({ children }) {
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
-          setCurrentUser({ ...user, role: userDoc.data().role });
+          const enhancedUser = { 
+            ...user, 
+            role: userDoc.data().role,
+            getIdToken: async (forceRefresh = false) => {
+              try {
+                const token = await user.getIdToken(forceRefresh);
+                console.log(token);
+                return token;
+              } catch (error) {
+                console.error('Failed to get ID token:', error);
+                return null;
+              }
+            }
+          };
+          setCurrentUser(enhancedUser);
           
           // ========== NEW: Check notification permission after login ==========
           checkNotificationPermission();
           // ====================================================================
         } else {
           // Handle case where user exists in Auth but not in Firestore
-          setCurrentUser(user);
+          const enhancedUser = {
+            ...user,
+            getIdToken: async (forceRefresh = false) => {
+              try {
+                return await user.getIdToken(forceRefresh);
+              } catch (error) {
+                console.error('Failed to get ID token:', error);
+                return null;
+              }
+            }
+          };
+          setCurrentUser(enhancedUser);
         }
       } else {
         setCurrentUser(null);
@@ -154,7 +178,6 @@ export function AuthProvider({ children }) {
     logout,
     refreshUser,
     sendPasswordReset,
-    getIdToken, // expose token helper
   };
 
   // Render children only when not loading
