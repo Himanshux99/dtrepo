@@ -33,8 +33,8 @@ function SlotStatusDashboard() {
       querySnapshot.docs.forEach(doc => {
         const data = doc.data();
         activeSlots[data.slotId] = {
-            id: doc.id, // Store Firestore doc ID for update
-            ...data
+          id: doc.id, // Store Firestore doc ID for update
+          ...data
         };
       });
 
@@ -42,7 +42,7 @@ function SlotStatusDashboard() {
       const fullSlotMap = Array.from({ length: MAX_SLOTS }, (_, index) => {
         const slotId = generateSlotId(index);
         const isActive = !!activeSlots[slotId];
-        
+
         return {
           id: slotId,
           isActive: isActive,
@@ -56,7 +56,7 @@ function SlotStatusDashboard() {
     } catch (error) {
       console.error('Error fetching slot status: ', error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   }, []);
 
@@ -104,52 +104,75 @@ function SlotStatusDashboard() {
 
 
   return (
-    <div className={"w-[80%] pb-16"}>
-      <h1>Print Slot Status Dashboard</h1>
-      <p>Total Slots: {MAX_SLOTS}. Active: {slotMap.filter(s => s.isActive).length}. Empty: {slotMap.filter(s => !s.isActive).length}.</p>
-      
-      <button onClick={fetchSlotStatus} className={""}>Refresh Status</button>
+    <div className="w-[80%] pb-16 mx-auto">
+      {/* Header */}
+        <h1 className="text-3xl font-bold text-primary mb-2">
+          Print Slot Status Dashboard
+        </h1>
+      <div className='bg-white p-2 rounded-lg text-xl flex font-bold items-center justify-between px-8'>
+        <p className="text-secondary">
+          Total Slots: {MAX_SLOTS}. Active: {slotMap.filter(s => s.isActive).length}. Empty: {slotMap.filter(s => !s.isActive).length}.
+        </p>
 
-      <div className={""}>
-        <div className={`${""} ${""}`}>Empty</div>
-        <div className={`${""} ${""}`}>In Progress</div>
-        <div className={`${""} ${""}`}>Ready for Pickup</div>
+        {/* Refresh Button */}
+        <button
+          onClick={fetchSlotStatus}
+          className="bg-primary hover:bg-primary-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all"
+        >
+          Refresh Status
+        </button>
       </div>
 
-      <div className={"grid grid-cols-2 gap-10 w-full"}>
+      {/* Status Legend */}
+      <div className="flex gap-4 mb-6">
+        <div className="flex items-center gap-2">
+          <span className="w-4 h-4 bg-gray-200 rounded-full border"></span>
+          Empty
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-4 h-4 bg-yellow-400 rounded-full border"></span>
+          In Progress
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-4 h-4 bg-green-500 rounded-full border"></span>
+          Ready for Pickup
+        </div>
+      </div>
+
+      {/* Slot Grid */}
+      <div className="grid grid-cols-2 gap-10 w-full">
         {Object.entries(groupedSlots).map(([group, slots]) => (
-          <div key={group} className={""}>
-            <h2>Group {group}</h2>
+          <div key={group} className="bg-secondary p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-primary mb-4">Group {group}</h2>
             <div className='grid grid-cols-5 gap-2'>
               {slots.map(slot => (
-                // Use a different container to allow space for buttons
-                <div key={slot.id} className={styles.slotWrapper}>
-                    <div 
-                      className={`${styles.slotCard} ${getSlotClass(slot.status)}`}
-                      title={slot.jobData ? `Job: ${slot.jobData.fileName} by ${slot.jobData.submittedByEmail}` : 'Empty'}
-                    >
-                      {slot.id}
-                    </div>
+                <div key={slot.id} className="flex flex-col items-center">
+                  <div
+                    className={`w-16 h-12 flex items-center justify-center rounded-lg font-bold text-white shadow ${getSlotClass(slot.status)}`}
+                    title={slot.jobData ? `Job: ${slot.jobData.fileName} by ${slot.jobData.submittedByEmail}` : 'Empty'}
+                  >
+                    {slot.id}
+                  </div>
 
-                    {/* STATUS BUTTONS integrated here */}
-                    {slot.status === 'In Progress' && (
-                        <button
-                            className={styles.actionReadyButton} // New CSS class required
-                            onClick={() => updateJobStatus(slot.jobData.id, 'Ready', slot.id)}
-                            title="Mark as Printed"
-                        >
-                            Print
-                        </button>
-                    )}
-                    {slot.status === 'Ready' && (
-                        <button
-                            className={styles.actionCollectButton} // New CSS class required
-                            onClick={() => updateJobStatus(slot.jobData.id, 'Collected', slot.id)}
-                            title="Mark as Collected"
-                        >
-                            Collect
-                        </button>
-                    )}
+                  {/* STATUS BUTTONS */}
+                  {slot.status === 'In Progress' && (
+                    <button
+                      className="mt-2 bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 rounded-md text-sm font-semibold shadow transition-all"
+                      onClick={() => updateJobStatus(slot.jobData.id, 'Ready', slot.id)}
+                      title="Mark as Printed"
+                    >
+                      Print
+                    </button>
+                  )}
+                  {slot.status === 'Ready' && (
+                    <button
+                      className="mt-2 bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-sm font-semibold shadow transition-all"
+                      onClick={() => updateJobStatus(slot.jobData.id, 'Collected', slot.id)}
+                      title="Mark as Collected"
+                    >
+                      Collect
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -157,6 +180,7 @@ function SlotStatusDashboard() {
         ))}
       </div>
     </div>
+
   );
 }
 

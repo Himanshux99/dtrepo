@@ -15,7 +15,7 @@ app.use(cookieParser());
 //CORS configurations
 app.use(
   cors({
-    origin: process.env.CROS_ORIGIN?.split(",") || "http://localhost:5174",
+    origin: process.env.CROS_ORIGIN?.split(",") || "http://localhost:5173",
     credentials: true, //Send or recieve Credentials from the req or res
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Authorization", "Content-Type"],
