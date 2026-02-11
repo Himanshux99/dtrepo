@@ -4,7 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   plugins: [
-    react(),tailwindcss(),autoprefixer(),
+    react(),
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'public',
