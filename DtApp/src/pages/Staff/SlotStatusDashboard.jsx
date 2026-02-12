@@ -144,9 +144,9 @@ function SlotStatusDashboard() {
         {Object.entries(groupedSlots).map(([group, slots]) => (
           <div key={group} className="bg-secondary p-4 rounded-lg shadow-md">
             <h2 className="text-xl !font-bold !text-primary mb-4">Group {group}</h2>
-            <div className='grid grid-cols-5 gap-2'>
+            <div className='grid  grid-cols-2 md:grid-cols-5 gap-2'>
               {slots.map(slot => (
-                <div key={slot.id} className="flex flex-col items-center ">
+                <div key={slot.id} className="flex flex-col items-center">
                   <div
                     className={`w-full pt-1 flex flex-col items-center justify-center rounded-lg font-bold text-white shadow ${getSlotClass(slot.status)}`}
                     title={slot.jobData ? `Job: ${slot.jobData.fileName} by ${slot.jobData.submittedByEmail}` : 'Empty'}

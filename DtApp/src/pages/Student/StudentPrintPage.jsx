@@ -244,7 +244,7 @@ function StudentPrintPage() {
     }
     let pageCost = color === "Color" ? rates.perPageColor : rates.perPageBw;
     let total = effectivePageCount * copies * pageCost;
-    if (sided === "Double-Sided") total *= rates.doubleSidedMultiplier;
+    if (sided === "Double-Sided") { if (effectivePageCount >= 2) total *= rates.doubleSidedMultiplier; }
     if (isStapled) total += rates.staplingFee;
     setTotalPrice(total);
   }, [
@@ -601,9 +601,9 @@ function StudentPrintPage() {
         </button>
 
         {showHowWorks && (
-          <div className="mt-4 text-left bg-tertiary p-4 rounded-lg text-secondary max-w-3xl mx-auto">
-            <h3 className="font-bold mb-2">How this works</h3>
-            <ol className="list-decimal list-inside text-sm space-y-1">
+          <div className="mt-4 text-left bg-white p-4 rounded-lg text-secondary max-w-3xl mx-auto">
+            <h3 className="font-bold mb-2 text-center">How this works</h3>
+            <ol className="list-decimal list-inside text-2sm font-bold space-y-1">
               <li>Upload the document you want to print.</li>
               <li>
                 Select number of copies and options (color, sided, stapling).
@@ -705,100 +705,101 @@ function StudentPrintPage() {
           </div>
         )}
 
-        {/* Rest of your form components remain the same */}
-        <div className="grid md:grid-cols-2 gap-6 font-family">
-          <div className="font-inter font-bold text-secondary flex flex-col items-center gap-4 bg-tertiary p-3 rounded-lg">
-            <div className="flex items-center justify-between gap-1 overflow-hidden w-max">
-              <div className="w-1/2 flex flex-col items-center pr-4">
-                <label className="text-2xl pl-2">Copies</label>
-              </div>
-              <div className="flex gap-2 pr-4">
-                <input
-                  type="number"
-                  min="1"
-                  value={copies}
-                  onChange={(e) => setCopies(Number(e.target.value))}
-                  required
-                  className="h-10 w-16 bg-white text-center text-secondary text-2xl font-bold flex items-center justify-center border-none rounded-lg"
-                />
-                <div className="h-10 flex flex-col-2 item-center gap-1px-2 rounded-lg py-1 bg-white text-2xl transition font-bold">
-                  <button
-                    type="button"
-                    onClick={() => setCopies(Math.max(1, copies - 1))}
-                    className="p-4 flex items-center justify-center"
-                  >
-                    -
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCopies(copies + 1)}
-                    className="p-4 border-l-4 border-[var(--color-primary)] flex items-center justify-center"
-                  >
-                    +
-                  </button>
+        <div className="grid grid-cols-1 gap-3 place-items-center md:grid-cols-2">
+          <div className="grid gap-6 font-family w-full ">
+            <div className="font-inter !w-full font-bold text-secondary bg-tertiary p-2 rounded-lg">
+              <div className="flex items-center justify-between gap-1 ">
+                <div className="flex flex-col items-center pr-4">
+                  <label className="text-2xl pl-2">Copies</label>
+                </div>
+                <div className="flex gap-2 pr-4">
+                  <input
+                    type="number"
+                    min="1"
+                    value={copies}
+                    onChange={(e) => setCopies(Number(e.target.value))}
+                    required
+                    className="h-10 w-16 bg-white text-center text-secondary text-2xl font-bold flex items-center justify-center border-none rounded-lg"
+                  />
+                  <div className="h-10 flex flex-col-2 item-center gap-1px-2 rounded-lg py-1 bg-white text-2xl transition font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setCopies(Math.max(1, copies - 1))}
+                      className="p-4 flex items-center justify-center"
+                    >
+                      -
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCopies(copies + 1)}
+                      className="p-4 border-l-4 border-[var(--color-primary)] flex items-center justify-center"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col-2 bg-tertiary font-inter font-bold rounded-lg w-full text-secondary">
-          <button
-            type="button"
-            onClick={() => setSided("Single-Sided")}
-            className={`${sided === "Single-Sided" ? "bg-primary text-primary" : ""} selectButton`}
-          >
-            Single-Sided
-          </button>
-          <button
-            type="button"
-            onClick={() => setSided("Double-Sided")}
-            className={`${sided === "Double-Sided" ? "bg-primary text-primary" : ""} selectButton`}
-          >
-            Double-Sided
-          </button>
-        </div>
+          <div className=" flex flex-col-2 bg-tertiary font-inter font-bold rounded-lg w-full text-secondary">
+            <button
+              type="button"
+              onClick={() => setSided("Single-Sided")}
+              className={`${sided === "Single-Sided" ? "bg-primary text-primary" : ""} selectButton`}
+            >
+              Single-Sided
+            </button>
+            <button
+              type="button"
+              onClick={() => setSided("Double-Sided")}
+              className={`${sided === "Double-Sided" ? "bg-primary text-primary" : ""} selectButton`}
+            >
+              Double-Sided
+            </button>
+          </div>
 
-        <div className="flex flex-col-2 bg-tertiary font-inter font-bold rounded-lg w-full text-secondary">
-          <button
-            type="button"
-            onClick={() => setColor("B&W")}
-            className={`${color === "B&W" ? "bg-primary text-primary" : ""} selectButton`}
-          >
-            B&W
-          </button>
-          <button
-            type="button"
-            onClick={() => setColor("Color")}
-            className={`${color === "Color" ? "bg-primary text-primary" : ""} selectButton`}
-          >
-            Color
-          </button>
-        </div>
+          <div className=" flex flex-col-2 bg-tertiary font-inter font-bold rounded-lg w-full text-secondary">
+            <button
+              type="button"
+              onClick={() => setColor("B&W")}
+              className={`${color === "B&W" ? "bg-primary text-primary" : ""} selectButton`}
+            >
+              B&W
+            </button>
+            <button
+              type="button"
+              onClick={() => setColor("Color")}
+              className={`${color === "Color" ? "bg-primary text-primary" : ""} selectButton`}
+            >
+              Color
+            </button>
+          </div>
 
-        <div className="flex flex-col-2 bg-tertiary font-inter font-bold rounded-lg w-full text-secondary">
-          <button
-            type="button"
-            onClick={() => setIsStapled(false)}
-            className={
-              !isStapled
-                ? "bg-primary text-primary selectButton"
-                : "selectButton"
-            }
-          >
-            No Stapling
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsStapled(true)}
-            className={
-              isStapled
-                ? "bg-primary text-primary selectButton"
-                : "selectButton"
-            }
-          >
-            Staple
-          </button>
+          <div className=" flex flex-col-2 bg-tertiary font-inter font-bold rounded-lg w-full text-secondary">
+            <button
+              type="button"
+              onClick={() => setIsStapled(false)}
+              className={
+                !isStapled
+                  ? "bg-primary text-primary selectButton"
+                  : "selectButton"
+              }
+            >
+              No Stapling
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsStapled(true)}
+              className={
+                isStapled
+                  ? "bg-primary text-primary selectButton"
+                  : "selectButton"
+              }
+            >
+              Staple
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 text-secondary font-bold text-xl">
@@ -894,11 +895,11 @@ function StudentPrintPage() {
       </div>
       {/* FAQs */}
       <div className="mt-8 ">
-        <div className="flex items-center justify-between mb-4 bg-secondary rounded-lg p-2">
+        <div className="flex items-center justify-between mb-4 bg-secondary rounded-lg p-2" onClick={toggleAllFaqs}>
           <h2 className="text-2xl text-secondary font-bold pl-2">FAQs</h2>
           <button
             type="button"
-            onClick={toggleAllFaqs}
+
             className="px-4 py-2 rounded-md font-bold text-secondary"
           >
             {showFAQs ? (
