@@ -5,7 +5,7 @@ import styles from './SlotStatusDashboard.module.css';
 import toast from 'react-hot-toast';
 
 // Slot System Configuration (Must match PrintServicePage)
-const MAX_SLOTS = 50;
+const MAX_SLOTS = 40;
 const SLOTS_PER_GROUP = 10;
 const generateSlotId = (index) => {
   const groupIndex = Math.floor(index / SLOTS_PER_GROUP);
@@ -85,7 +85,7 @@ function SlotStatusDashboard() {
   // Function to determine the CSS class based on slot status
   const getSlotClass = (status) => {
     switch (status) {
-      case 'Empty': return styles.slotEmpty;
+      case 'Empty': return "bg-gray-700 border-gray-400";
       case 'In Progress': return styles.slotInProgress;
       case 'Ready': return styles.slotReady;
       default: return styles.slotEmpty;
@@ -106,9 +106,9 @@ function SlotStatusDashboard() {
   return (
     <div className="w-[80%] pb-16 mx-auto">
       {/* Header */}
-        <h1 className="text-3xl font-bold text-primary mb-2">
-          Print Slot Status Dashboard
-        </h1>
+      <h1 className="text-3xl font-bold text-primary mb-2">
+        Print Slot Status Dashboard
+      </h1>
       <div className='bg-white p-2 rounded-lg text-xl flex font-bold items-center justify-between px-8'>
         <p className="text-secondary">
           Total Slots: {MAX_SLOTS}. Active: {slotMap.filter(s => s.isActive).length}. Empty: {slotMap.filter(s => !s.isActive).length}.
@@ -124,7 +124,7 @@ function SlotStatusDashboard() {
       </div>
 
       {/* Status Legend */}
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-4 my-3">
         <div className="flex items-center gap-2">
           <span className="w-4 h-4 bg-gray-200 rounded-full border"></span>
           Empty
@@ -143,36 +143,45 @@ function SlotStatusDashboard() {
       <div className="grid grid-cols-2 gap-10 w-full">
         {Object.entries(groupedSlots).map(([group, slots]) => (
           <div key={group} className="bg-secondary p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-primary mb-4">Group {group}</h2>
+            <h2 className="text-xl !font-bold !text-primary mb-4">Group {group}</h2>
             <div className='grid grid-cols-5 gap-2'>
               {slots.map(slot => (
-                <div key={slot.id} className="flex flex-col items-center">
+                <div key={slot.id} className="flex flex-col items-center ">
                   <div
-                    className={`w-16 h-12 flex items-center justify-center rounded-lg font-bold text-white shadow ${getSlotClass(slot.status)}`}
+                    className={`w-full pt-1 flex flex-col items-center justify-center rounded-lg font-bold text-white shadow ${getSlotClass(slot.status)}`}
                     title={slot.jobData ? `Job: ${slot.jobData.fileName} by ${slot.jobData.submittedByEmail}` : 'Empty'}
                   >
                     {slot.id}
+                    {slot.status != 'In Progress' && slot.status != 'Ready' && (
+                      <button
+                        className="w-full mt-1 bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded-md text-sm font-semibold shadow transition-all"
+  
+                      >
+                        Empty
+                      </button>
+                    )}
+                    {slot.status === 'In Progress' && (
+                      <button
+                        className="w-full mt-1 bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 rounded-md text-sm font-semibold shadow transition-all"
+                        onClick={() => updateJobStatus(slot.jobData.id, 'Ready', slot.id)}
+                        title="Mark as Printed"
+                      >
+                        Print
+                      </button>
+                    )}
+                    {slot.status === 'Ready' && (
+                      <button
+                        className="w-full mt-1 bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-sm font-semibold shadow transition-all"
+                        onClick={() => updateJobStatus(slot.jobData.id, 'Collected', slot.id)}
+                        title="Mark as Collected"
+                      >
+                        Collect
+                      </button>
+                    )}
                   </div>
 
                   {/* STATUS BUTTONS */}
-                  {slot.status === 'In Progress' && (
-                    <button
-                      className="mt-2 bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 rounded-md text-sm font-semibold shadow transition-all"
-                      onClick={() => updateJobStatus(slot.jobData.id, 'Ready', slot.id)}
-                      title="Mark as Printed"
-                    >
-                      Print
-                    </button>
-                  )}
-                  {slot.status === 'Ready' && (
-                    <button
-                      className="mt-2 bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-md text-sm font-semibold shadow transition-all"
-                      onClick={() => updateJobStatus(slot.jobData.id, 'Collected', slot.id)}
-                      title="Mark as Collected"
-                    >
-                      Collect
-                    </button>
-                  )}
+
                 </div>
               ))}
             </div>

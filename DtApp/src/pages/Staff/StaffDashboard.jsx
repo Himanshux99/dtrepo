@@ -64,7 +64,7 @@ function StaffDashboard() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 text-secondary border-b-4 pb-8">
         <Link
           to="/staff/queue"
-          className="card px-4 font-bold hover:transform hover:scale-105 transition-all duration-200"
+          className="card px-4 font-bold hover:transform hover:scale-105 transition-all"
         >
           <div className="text-center flex flex-col items-center">
             <div className="text-5xl mb-4">
@@ -79,7 +79,7 @@ function StaffDashboard() {
 
         <Link
           to="/staff/slots"
-          className="card px-4 font-bold hover:transform hover:scale-105 transition-all duration-200"
+          className="card px-4 font-bold hover:transform hover:scale-105 transition-all"
         >
           <div className="text-center flex flex-col items-center">
             <div className="text-5xl mb-4">
@@ -94,7 +94,7 @@ function StaffDashboard() {
 
         <Link
           to="/admin/rates"
-          className="card px-4 font-bold hover:transform hover:scale-105 transition-all duration-200"
+          className="card px-4 font-bold hover:transform hover:scale-105 transition-all"
         >
           <div className="text-center flex flex-col items-center">
             <div className="text-5xl mb-4">
@@ -113,9 +113,8 @@ function StaffDashboard() {
         <h2 className="text-2xl font-bold mb-6 text-primary">
           Recent Activity
         </h2>
-        <div className="card">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-4 p-4 bg-tertiary rounded-lg">
+          <div className="space-y-4 flex-col gap-2">
+            <div className="flex items-center justify-between gap-4 border border-black p-4 bg-tertiary rounded-lg">
               <div className="flex items-center gap-4">
                 <FileText size={30} />
                 <div>
@@ -147,7 +146,6 @@ function StaffDashboard() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
