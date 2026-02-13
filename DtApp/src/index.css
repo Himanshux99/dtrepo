@@ -554,3 +554,11 @@ input::-webkit-inner-spin-button {
 }
 .mb-16{margin-bottom: 6rem !important;
 }
+
+.break-all{
+  word-break: break-all;
+}
+
+.whitespace-normal{
+  white-space: normal;
+}

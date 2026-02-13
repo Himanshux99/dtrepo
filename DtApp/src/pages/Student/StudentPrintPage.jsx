@@ -144,7 +144,7 @@ function StudentPrintPage() {
       id: "f4",
       category: "The Token & Status System",
       q: "What does my token number (e.g., A-04) mean?",
-      a: "Your token is your unique ID. The letter usually represents the printer or category, and the number is your place in the queue.",
+      a: "Your token is your unique ID. You show this to the stationary staff to get your printed documents.",
     },
     {
       id: "f5",
@@ -911,8 +911,7 @@ function StudentPrintPage() {
         </div>
 
         {showFAQs && (
-          <div className="space-y-6 text-secondary text-sm">
-            {categories.map((cat) => (
+<div className="max-w-2xl w-full mx-auto space-y-6 text-secondary text-sm">            {categories.map((cat) => (
               <div key={cat}>
                 <h3 className="text-white font-semibold text-xl mb-2">{cat}</h3>
                 <div className="space-y-2 font-bold">
@@ -934,7 +933,7 @@ function StudentPrintPage() {
                           </span>
                         </button>
                         {!openFaqs.has(f.id) && (
-                          <div className="px-4 py-3 bg-white text-sm text-secondary">
+                            <div className="px-4 py-3 bg-white text-sm text-secondary break-all whitespace-normal">
                             {f.a}
                           </div>
                         )}
