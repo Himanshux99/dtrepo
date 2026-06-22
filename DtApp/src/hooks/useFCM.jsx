@@ -50,7 +50,7 @@ const useFCM = (currentUser) => {
       });
 
       if (token) {
-        console.log('FCM Token:', token);
+        // console.log('FCM Token:', token);
         setFcmToken(token);
         
         // Save token to Firestore

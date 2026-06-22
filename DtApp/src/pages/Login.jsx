@@ -40,7 +40,7 @@ function Login() {
       if (userDoc.exists()) {
         // Profile exists, redirect to the correct dashboard
         const userData = userDoc.data();
-        console.log('User data found:', userData);
+        // console.log('User data found:', userData);
         setLoading(false);
         
         switch (userData.role) {

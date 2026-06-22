@@ -8,15 +8,15 @@ function ProtectedRoute({ children, allowedRoles }) {
   const { currentUser } = useAuth();
   const location = useLocation();
 
-  console.log('ProtectedRoute Check:', {
-    path: location.pathname,
-    currentUser: currentUser ? {
-      email: currentUser.email,
-      role: currentUser.role,
-      emailVerified: currentUser.emailVerified
-    } : null,
-    allowedRoles
-  });
+  // console.log('ProtectedRoute Check:', {
+  //   path: location.pathname,
+  //   currentUser: currentUser ? {
+  //     email: currentUser.email,
+  //     role: currentUser.role,
+  //     emailVerified: currentUser.emailVerified
+  //   } : null,
+  //   allowedRoles
+  // });
 
   if (!currentUser) {
     console.log('No user found, redirecting to login');

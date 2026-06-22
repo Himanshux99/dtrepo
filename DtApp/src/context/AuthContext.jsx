@@ -134,7 +134,7 @@ export function AuthProvider({ children }) {
             getIdToken: async (forceRefresh = false) => {
               try {
                 const token = await user.getIdToken(forceRefresh);
-                console.log(token);
+                // console.log(token);
                 return token;
               } catch (error) {
                 console.error('Failed to get ID token:', error);
