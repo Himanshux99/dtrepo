@@ -4,7 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
 import { decodeRollNumber } from '../../utils/profileUtils';
-import styles from './ProfilePage.module.css';
+import {CircleUser} from "lucide-react";
+
 // REMOVE: import ResetPasswordButton from '../../components/common/ResetPasswordButton'; 
 
 function ProfilePage() {
@@ -45,22 +46,21 @@ function ProfilePage() {
   }
 
   return (
-    <div className={styles.profileContainer}>
-      <div className={styles.profileHeader}>
+    <div className={"container !px-8 p-4 pb-16"}>
+      <div className={"flex flex-col items-center gap-2 mt-4 mb-3 text-2xl font-bold font-inter"}>
+        <CircleUser size={60}/>
         <h2>{decodedData.username}</h2>
-        <p>Student Profile - {profileData.email}</p>
+        <p className='text-[var(--bg-tertiary)] text-lg border-t-2 border-white'>{profileData.email}</p>
       </div>
       
-      {/* REMOVE: <ResetPasswordButton /> */} 
-      
-      <h3>Academic Information</h3>
-      <div className={styles.profileGrid}>
-        <div className={styles.infoItem}><label>Roll Number</label><span>{decodedData.rollNumber}</span></div>
-        <div className={styles.infoItem}><label>Division</label><span>{decodedData.division}</span></div>
-        <div className={styles.infoItem}><label>Branch</label><span>{decodedData.branch}</span></div>
-        <div className={styles.infoItem}><label>Academic Year</label><span>{decodedData.currentAcademicYear}</span></div>
-        <div className={styles.infoItem}><label>Current Semester</label><span>{decodedData.currentSemester}</span></div>
-        <div className={styles.infoItem}><label>Phone Number</label><span>{profileData.phone}</span></div>
+      <h3 className='flex flex-col items-center text-xl font-bold font-inter'>Academic Information</h3>
+      <div className={'grid grid-cols-2 md:grid-cols-2 gap-4 bg-white p-4 rounded-lg'}>
+        <div className={`card text-secondary bg-tertiary font-bold font-inter`}><label>Roll Number : </label><span>{decodedData.rollNumber}</span></div>
+        <div className={`card text-secondary bg-tertiary font-bold font-inter`}><label>Division : </label><span>{decodedData.division}</span></div>
+        <div className={`card text-secondary bg-tertiary font-bold font-inter`}><label>Branch : </label><span>{decodedData.branch}</span></div>
+        <div className={`card text-secondary bg-tertiary font-bold font-inter`}><label>Academic Year : </label><span>{decodedData.currentAcademicYear}</span></div>
+        <div className={`card text-secondary bg-tertiary font-bold font-inter`}><label>Current Semester : </label><span>{decodedData.currentSemester}</span></div>
+        <div className={`card text-secondary bg-tertiary font-bold font-inter`}><label>Phone Number : </label><span>{profileData.phone}</span></div>
       </div>
     </div>
   );

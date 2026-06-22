@@ -1,6 +1,8 @@
-import SettingsPage from './components/common/SettingsPage';
+import { useEffect } from "react";
 
-import StudentPrintPage from './pages/Student/StudentPrintPage';
+import SettingsPage from "./components/common/SettingsPage";
+
+import StudentPrintPage from "./pages/Student/StudentPrintPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -9,7 +11,7 @@ import Unauthorized from "./pages/Unauthorized";
 
 import Layout from "./components/common/Layout";
 import ProtectedRoute from "./components/common/ProtectedRoute";
-import SlotStatusDashboard from './pages/Staff/SlotStatusDashboard'; 
+import SlotStatusDashboard from "./pages/Staff/SlotStatusDashboard";
 import StudentDashboard from "./pages/Student/StudentDashboard";
 import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
 import StaffDashboard from "./pages/Staff/StaffDashboard";
@@ -19,27 +21,38 @@ import PostUpdatePage from "./pages/Teacher/PostUpdatePage";
 import StudentSchedulePage from "./pages/Student/StudentSchedulePage";
 // New Import
 import StaffPrintQueuePage from "./pages/Staff/StaffPrintQueuePage";
-import TeacherProfilePage from './pages/Teacher/TeacherProfilePage';
-import AdminWhitelistPage from './pages/Admin/AdminWhitelistPage';
-
+import TeacherProfilePage from "./pages/Teacher/TeacherProfilePage";
+import AdminWhitelistPage from "./pages/Admin/AdminWhitelistPage";
+import VReferPage from "./pages/Student/VReferPage";
 import Signup from "./pages/Signup";
 import ProfilePage from "./pages/Student/ProfilePage";
 
-import TeacherSignup from './pages/TeacherSignup';
-import ManageSchedulePage from './pages/Teacher/ManageSchedulePage';
+import TeacherSignup from "./pages/TeacherSignup";
+import ManageSchedulePage from "./pages/Teacher/ManageSchedulePage";
+import AdminManageSchedulePage from "./pages/Admin/AdminManageSchedulePage";
+import { Toaster } from "react-hot-toast";
 
-import ManageRatesPage from './pages/Staff/ManageRatesPage';
+import CompleteProfile from "./pages/Student/CompleteProfile";
+import ManageRatesPage from "./pages/Staff/ManageRatesPage";
+import { sendNotificationToUser, NotificationTemplates } from "./utils/notificationHelper";
+import TestNotification from "./components/TestNotification";
 
 
 function App() {
+
+  // REMOVED: Service worker registration - now handled by vite-plugin-pwa
+  // The unified service worker (sw-unified.js) will be automatically registered
+
   return (
+    
     <Router>
+      <Toaster position="top-center" />
+
       <Routes>
         {/* Routes with Navbar */}
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Login />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
-
           {/* Student Routes */}
           <Route
             path="/student"
@@ -57,7 +70,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/student/profile"
             element={
@@ -69,26 +81,46 @@ function App() {
           <Route
             path="/student/print"
             element={
-              // ADD 'teacher' to allowedRoles
               <ProtectedRoute allowedRoles={["student", "teacher"]}>
                 <StudentPrintPage />
               </ProtectedRoute>
             }
           />
-          <Route 
-            path="/student/profile" 
-            element={ 
+          <Route
+            path="/student/v-refer"
+            element={
               <ProtectedRoute allowedRoles={["student"]}>
-                <ProfilePage /> 
+                <VReferPage />
               </ProtectedRoute>
-            } 
-          /> 
-           <Route 
-            path="/student/settings" 
-            element={<ProtectedRoute allowedRoles={["student"]}><SettingsPage /></ProtectedRoute>} 
+            }
           />
 
-          {/* NOTE: You still need to add the /student/print route here if you haven't already */}
+          {/* Complete Profile Route - No role check needed */}
+          <Route
+            path="/student/complete-profile"
+            element={<CompleteProfile />}
+          />
+          {/* ========== NEW: Test Notification Route (Development Only) ========== */}
+          <Route
+            path="/test-notifications"
+            element={
+              <ProtectedRoute
+                allowedRoles={["student", "teacher", "staff", "admin"]}
+              >
+                <TestNotification />
+              </ProtectedRoute>
+            }
+          />
+          {/* ====================================================================== */}
+
+          <Route
+            path="/student/settings"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Teacher Routes */}
           <Route
@@ -110,7 +142,7 @@ function App() {
           <Route
             path="/teacher/profile"
             element={
-              <ProtectedRoute allowedRoles={['teacher']}>
+              <ProtectedRoute allowedRoles={["teacher"]}>
                 <TeacherProfilePage />
               </ProtectedRoute>
             }
@@ -118,22 +150,26 @@ function App() {
           <Route
             path="/teacher/schedule"
             element={
-              <ProtectedRoute allowedRoles={['teacher']}>
+              <ProtectedRoute allowedRoles={["teacher"]}>
                 <ManageSchedulePage />
               </ProtectedRoute>
             }
           />
-          <Route 
-            path="/teacher/profile" 
-            element={ 
+          <Route
+            path="/teacher/profile"
+            element={
               <ProtectedRoute allowedRoles={["teacher"]}>
-                <TeacherProfilePage /> 
+                <TeacherProfilePage />
               </ProtectedRoute>
-            } 
-          /> 
-           <Route 
-            path="/teacher/settings" 
-            element={<ProtectedRoute allowedRoles={["teacher"]}><SettingsPage /></ProtectedRoute>}
+            }
+          />
+          <Route
+            path="/teacher/settings"
+            element={
+              <ProtectedRoute allowedRoles={["teacher"]}>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
           />
           <Route path="/signup/teacher" element={<TeacherSignup />} />
 
@@ -146,44 +182,46 @@ function App() {
               </ProtectedRoute>
             }
           />
-           <Route 
-            path="/staff/settings" 
-            element={ 
+          <Route
+            path="/staff/settings"
+            element={
               <ProtectedRoute allowedRoles={["staff"]}>
-                <SettingsPage /> 
+                <SettingsPage />
               </ProtectedRoute>
-            } 
-          /> 
-          <Route // NEW ROUTE ADDED HERE
+            }
+          />
+          <Route
             path="/staff/queue"
             element={
-              <ProtectedRoute allowedRoles={["staff", "admin"]}> {/* Admin also needs access */}
+              <ProtectedRoute allowedRoles={["staff", "admin"]}>
                 <StaffPrintQueuePage />
               </ProtectedRoute>
             }
           />
-          {/* added a new status dashboard in staff */}
-          <Route // NEW SLOT STATUS DASHBOARD ROUTE
+          <Route
             path="/staff/slots"
             element={
-              <ProtectedRoute allowedRoles={["staff", "admin"]}> 
+              <ProtectedRoute allowedRoles={["staff", "admin"]}>
                 <SlotStatusDashboard />
               </ProtectedRoute>
             }
           />
-          <Route 
-            path="/staff/settings" 
-            element={<ProtectedRoute allowedRoles={["staff"]}><SettingsPage /></ProtectedRoute>} 
+          <Route
+            path="/staff/settings"
+            element={
+              <ProtectedRoute allowedRoles={["staff"]}>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
           />
-          <Route 
-    path="/admin/rates" 
-    element={
-      <ProtectedRoute allowedRoles={['staff']}>
-        <ManageRatesPage />
-      </ProtectedRoute>
-    } 
-/>
-
+          <Route
+            path="/admin/rates"
+            element={
+              <ProtectedRoute allowedRoles={["staff"]}>
+                <ManageRatesPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Admin Routes */}
           <Route
@@ -202,19 +240,25 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route 
-            path="/admin/settings" 
-            element={ 
+          <Route
+            path="/admin/schedule"
+            element={
               <ProtectedRoute allowedRoles={["admin"]}>
-                <SettingsPage /> 
+                <AdminManageSchedulePage />
               </ProtectedRoute>
-            } 
-          /> 
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
-        
 
         {/* Route without Navbar */}
-        <Route path="/login" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>

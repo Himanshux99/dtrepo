@@ -10,7 +10,7 @@ function ResetPasswordButton() {
     const email = currentUser?.email;
 
     return (
-        <div style={{ marginTop: '1.5rem', padding: '1rem', border: '1px solid #444', borderRadius: '8px', background: '#2c2c2c' }}>
+        <div style={{padding: '1rem', border: '1px solid #444', borderRadius: '8px', background: '#2c2c2c' }}>
             <Toaster position="top-center" />
             <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>Account Security</p>
             <button 

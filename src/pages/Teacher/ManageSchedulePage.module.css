@@ -1,0 +1,498 @@
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+.container h1 {
+    margin-bottom: 0.5rem;
+}
+.container p {
+    color: #aaa;
+    margin-bottom: 2rem;
+}
+.addButton {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: var(--color-primary, #007bff);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 2rem;
+}
+.form {
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid var(--color-border, #444);
+}
+.form h4 {
+    margin-top: 0;
+    text-align: left;
+}
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.formGrid input,
+.formGrid select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border, #555);
+    background-color: var(--color-background, #242424);
+    color: var(--color-text, white);
+}
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+.submitButton,
+.cancelButton {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.submitButton {
+    background-color: #28a745;
+    color: white;
+}
+.cancelButton {
+    background-color: #6c757d;
+    color: white;
+}
+.scheduleList {
+    margin-top: 2rem;
+    text-align: left;
+}
+.scheduleList h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.dayGroup {
+    margin-bottom: 2rem;
+}
+.dayGroup h3 {
+    border-bottom: 2px solid var(--color-border, #444);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+.scheduleItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+.itemDetails p {
+    margin: 0;
+    color: var(--color-text, white);
+}
+.itemDetails small {
+    color: #aaa;
+}
+.deleteButton {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.filterContainer {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--color-card, #2c2c2c);
+    border-radius: 8px;
+}
+.filterContainer select {
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+.filterContainer button {
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    background-color: var(--color-primary, #007bff);
+    color: white;
+    cursor: pointer;
+}
+.daySelector {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 0.5rem;
+    border-radius: 30px;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+.daySelector button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-weight: bold;
+    cursor: pointer;
+}
+.daySelector .activeDay {
+    background-color: var(--color-primary, #007bff);
+    color: white;
+}
+
+/* --- NEW: Card based view for Admin --- */
+.scheduleDayView {
+    text-align: center;
+}
+.scheduleDayView h2 {
+    margin-bottom: 1.5rem;
+}
+.cardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.scheduleCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: left;
+    border-left: 5px solid #3788d8;
+}
+.timeSection {
+    flex-basis: 80px;
+    flex-shrink: 0;
+}
+.timeSection .time {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0;
+}
+.timeSection .timeEnd {
+    color: #aaa;
+    font-size: 0.8rem;
+    margin: 0;
+}
+.detailsSection {
+    flex-grow: 1;
+}
+.detailsSection .subject {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0;
+}
+.detailsSection .venue {
+    color: #ffc107;
+    margin: 0.25rem 0 0;
+}
+.noClass {
+    color: #777;
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* --- NEW: Actions section for Edit/Delete --- */
+.actionsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.editButton, .deleteButton {
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.editButton {
+    background-color: #17a2b8;
+    color: white;
+}
+.deleteButton {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Ensure original list styles don't conflict */
+.scheduleList h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.dayGroup, .scheduleItem {
+    display: none; /* Hide old list view */
+}
+.daySelector {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 0.5rem;
+    border-radius: 30px;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--color-border, #444);
+}
+.daySelector button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.daySelector .activeDay {
+    background-color: var(--color-primary, #007bff);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* --- NEW: Card based view --- */
+.scheduleDayView {
+    text-align: center;
+}
+.scheduleDayView h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+.cardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.scheduleCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: left;
+    border-left: 5px solid #3788d8;
+}
+.timeSection {
+    flex-basis: 80px;
+    flex-shrink: 0;
+}
+.timeSection .time {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0;
+}
+.timeSection .timeEnd {
+    color: #aaa;
+    font-size: 0.8rem;
+    margin: 0;
+}
+.detailsSection {
+    flex-grow: 1;
+}
+.detailsSection .subject {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0;
+}
+.detailsSection .venue {
+    color: #ffc107;
+    margin: 0.25rem 0 0;
+}
+.noClass {
+    color: #777;
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* --- NEW: Actions section for Edit/Delete --- */
+.actionsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.editButton, .deleteButton {
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.editButton {
+    background-color: #17a2b8; /* Teal */
+    color: white;
+}
+.deleteButton {
+    background-color: #dc3545; /* Red */
+    color: white;
+}
+
+/* Hide old list view styles if they exist */
+.dayGroup, .scheduleItem {
+    display: none; 
+}
+.filterContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--color-card, #2c2c2c);
+    border-radius: 8px;
+}
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+}
+.filterGroup label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #aaa;
+}
+.filterContainer select {
+    padding: 0.75rem;
+    border-radius: 4px;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+.filterButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    border: none;
+    background-color: var(--color-primary, #007bff);
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* --- NEW: Day Selector Tabs & Card View (Copied from student schedule styles) --- */
+.daySelector {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 0.5rem;
+    border-radius: 30px;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+.daySelector button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-weight: bold;
+    cursor: pointer;
+}
+.daySelector .activeDay {
+    background-color: var(--color-primary, #007bff);
+    color: white;
+}
+
+.scheduleDayView {
+    text-align: center;
+}
+.scheduleDayView h2 {
+    margin-bottom: 1.5rem;
+}
+.cardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.scheduleCard {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--color-card, #2c2c2c);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: left;
+    border-left: 5px solid #3788d8;
+}
+.timeSection, .detailsSection, .actionsSection {
+    display: flex;
+    flex-direction: column;
+}
+.timeSection {
+    flex-basis: 80px;
+    flex-shrink: 0;
+}
+.timeSection .time {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0;
+}
+.timeSection .timeEnd {
+    color: #aaa;
+    font-size: 0.8rem;
+    margin: 0;
+}
+.detailsSection {
+    flex-grow: 1;
+}
+.detailsSection .subject {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0;
+}
+.detailsSection .venue {
+    color: #ffc107;
+    margin: 0.25rem 0 0;
+}
+.noClass {
+    color: #777;
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+}
+
+.actionsSection {
+    gap: 0.5rem;
+}
+.editButton, .deleteButton {
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    width: 100%;
+}
+.editButton {
+    background-color: #17a2b8;
+    color: white;
+}
+.deleteButton {
+    background-color: #dc3545;
+    color: white;
+}

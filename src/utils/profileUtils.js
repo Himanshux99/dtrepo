@@ -6,7 +6,8 @@ const BRANCH_MAP = {
 };
 
 const BRANCH_SHORT_MAP = {
-  101: "IT",
+  101: "INFT",
+  
   102: "CMPN",
   104: "EXTC",
   108: "EXCS",
@@ -31,7 +32,7 @@ export const decodeRollNumber = (rollNumber, email) => {
 
   const admissionYearShort = parseInt(rollNumber.substring(0, 2), 10);
   const branchCode = rollNumber.substring(2, 5);
-  const division = rollNumber.substring(5, 6);
+  const division = rollNumber.substring(5, 6).toUpperCase();
   const specificRollNo = rollNumber.substring(6);
   const admissionYear = 2000 + admissionYearShort;
   const currentYear = new Date().getFullYear();

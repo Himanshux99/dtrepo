@@ -1,0 +1,79 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.card {
+    background-color: var(--color-card);
+    color: var(--color-text);
+    padding: 2.5rem;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+}
+
+.icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.card h1 {
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+
+.card p {
+    color: #aaa;
+    margin-bottom: 2rem;
+}
+
+.linkDisplay {
+    background-color: var(--color-background);
+    padding: 1rem;
+    border-radius: 8px;
+    word-wrap: break-word;
+    font-family: monospace;
+    margin-bottom: 2rem;
+    border: 1px dashed var(--color-border);
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.primaryButton, .secondaryButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.primaryButton {
+    background-color: var(--color-primary);
+    color: white;
+    text-decoration: none;
+}
+
+.primaryButton:hover {
+    opacity: 0.9;
+}
+
+.secondaryButton {
+    background-color: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+.secondaryButton:hover {
+    background-color: var(--color-border);
+}
